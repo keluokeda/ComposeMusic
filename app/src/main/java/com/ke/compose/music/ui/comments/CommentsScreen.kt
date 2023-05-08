@@ -1,0 +1,262 @@
+package com.ke.compose.music.ui.comments
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.outlined.ThumbUp
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.items
+import com.ke.compose.music.db.Comment
+import com.ke.compose.music.niceCount
+import com.ke.compose.music.observeWithLifecycle
+import com.ke.compose.music.toast
+import com.ke.compose.music.ui.component.AppTopBar
+import com.ke.compose.music.ui.component.Avatar
+import com.ke.compose.music.ui.theme.ComposeMusicTheme
+
+
+@Composable
+fun CommentsRoute(
+    onBackButtonClick: () -> Unit,
+    onMoreCommentClick: (Long, CommentType, Long) -> Unit
+) {
+    val viewModel: CommentsViewModel = hiltViewModel()
+
+    val sending by viewModel.sending.collectAsStateWithLifecycle()
+    val list = viewModel.comments.collectAsLazyPagingItems()
+    val context = LocalContext.current.applicationContext
+    viewModel.sendCommentResult.observeWithLifecycle {
+        if (it) {
+            list.refresh()
+            context.toast("评论成功")
+        } else {
+            context.toast("评论失败")
+        }
+    }
+
+    CommentScreen(list, sending, onBackButtonClick, {
+        viewModel.toggleLiked(it)
+    }, {
+        viewModel.sendComment(it)
+    }, {
+        onMoreCommentClick(viewModel.id, viewModel.commentType, it.commentId)
+    })
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CommentScreen(
+    list: LazyPagingItems<Comment>,
+    sending: Boolean,
+    onBackButtonClick: () -> Unit,
+    onThumbClick: (Comment) -> Unit,
+    onSendComment: (String) -> Unit,
+    onMoreCommentClick: (Comment) -> Unit
+) {
+    var text by remember {
+        mutableStateOf("")
+    }
+
+    Scaffold(topBar = {
+        AppTopBar(
+            title = {
+                Text(text = "评论")
+            }, navigationIcon = {
+                IconButton(onClick = onBackButtonClick) {
+                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
+                }
+            })
+    }) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+            ) {
+
+                items(items = list, key = {
+                    it.commentId
+                }) {
+                    CommentItem(
+                        comment = it!!,
+                        onThumbClick = onThumbClick,
+                        onMoreCommentClick = {
+                            onMoreCommentClick(it)
+                        }
+                    )
+                }
+
+            }
+
+            TextField(
+                enabled = !sending,
+                value = text, onValueChange = {
+                    text = it
+                }, label = {
+                    Text(text = "评论")
+                }, trailingIcon = {
+                    IconButton(onClick = {
+                        onSendComment(text)
+                        text = ""
+                    }, enabled = !sending && text.isNotEmpty()) {
+                        Icon(imageVector = Icons.Default.Send, contentDescription = null)
+                    }
+                }, modifier = Modifier.fillMaxWidth(), shape = TextFieldDefaults.outlinedShape
+            )
+        }
+
+    }
+}
+
+
+@Composable
+private fun CommentItem(
+    comment: Comment,
+    modifier: Modifier = Modifier,
+    onThumbClick: (Comment) -> Unit,
+    onMoreCommentClick: () -> Unit
+) {
+    Column(modifier = modifier) {
+        Row(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+            Avatar(url = comment.userAvatar, size = 40)
+            Spacer(modifier = Modifier.width(8.dp))
+            Column {
+                Text(text = comment.username, style = MaterialTheme.typography.bodySmall)
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(text = comment.content)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "${comment.timeString} ${comment.ipLocation}",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    IconButton(onClick = {
+                        onThumbClick(comment)
+                    }) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            if (comment.likedCount > 0)
+                                Text(
+                                    text = comment.likedCount.niceCount(),
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            Icon(
+                                imageVector = if (comment.liked) Icons.Default.ThumbUp else Icons.Outlined.ThumbUp,
+                                contentDescription = null,
+                                tint = Color.Gray,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+
+
+                    }
+                }
+
+                if (comment.replyCount > 0)
+
+                    Text(
+                        text = comment.replyCount.niceCount() + "条回复>",
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.clickable {
+                            onMoreCommentClick()
+                        }
+                    )
+
+            }
+        }
+        Divider(modifier = Modifier.height(0.2.dp))
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun CommentItemNoChildCommentPreview() {
+    ComposeMusicTheme {
+        CommentItem(
+            comment = Comment(
+                0,
+                0,
+                "汉库克",
+                "",
+                0,
+                "好喜欢路飞啊",
+                "1分钟前",
+                0,
+                10,
+                "北京",
+                owner = false,
+                liked = true,
+                replyCount = 0
+            ),
+            onThumbClick = {},
+            onMoreCommentClick = {}
+        )
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun CommentItemPreview() {
+    ComposeMusicTheme {
+        CommentItem(
+            comment = Comment(
+                0,
+                0,
+                "汉库克",
+                "",
+                0,
+                "好喜欢路飞啊",
+                "1分钟前",
+                0,
+                10,
+                "北京",
+                owner = false,
+                liked = true,
+                replyCount = 10
+            ),
+            onThumbClick = {},
+            onMoreCommentClick = {}
+        )
+    }
+}
+

@@ -1,0 +1,88 @@
+package com.ke.compose.music.ui.users
+
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.LoadType
+import androidx.paging.PagingState
+import androidx.paging.RemoteMediator
+import com.ke.compose.music.db.UserDao
+import com.ke.music.api.HttpService
+import com.ke.music.api.entity.UsersProvider
+import com.ke.music.api.response.User
+import com.orhanobut.logger.Logger
+
+@OptIn(ExperimentalPagingApi::class)
+class UsersRemoteMediator(
+    private val userDao: UserDao,
+    private val httpService: HttpService,
+    private val sourceId: Long,
+    private val usersType: UsersType
+) : RemoteMediator<Int, com.ke.compose.music.db.User>() {
+
+    private var offset = 0
+
+    override suspend fun initialize(): InitializeAction {
+        return InitializeAction.LAUNCH_INITIAL_REFRESH
+    }
+
+
+    override suspend fun load(
+        loadType: LoadType,
+        state: PagingState<Int, com.ke.compose.music.db.User>
+    ): MediatorResult {
+
+        Logger.d("开始加载数据 $loadType $offset")
+        when (loadType) {
+            LoadType.REFRESH -> {
+                userDao.deleteByTypeAndSourceId(usersType, sourceId)
+            }
+
+            LoadType.PREPEND -> {
+                return MediatorResult.Success(endOfPaginationReached = true)
+            }
+
+            LoadType.APPEND -> {
+                offset += state.config.pageSize
+            }
+        }
+
+
+        val provider: UsersProvider = when (usersType) {
+            UsersType.PlaylistSubscribers -> {
+                httpService.playlistSubscribers(sourceId, offset, state.config.pageSize)
+            }
+
+            UsersType.Follows -> {
+                throw IllegalArgumentException(usersType.name)
+            }
+        }
+
+
+
+
+        userDao.insertAll(provider.users().map { convert(it, usersType, sourceId) })
+
+
+
+
+        return MediatorResult.Success(
+            endOfPaginationReached = !provider.more()
+        )
+    }
+}
+
+private fun convert(
+    user: User,
+    usersType: UsersType,
+    sourceId: Long
+): com.ke.compose.music.db.User {
+    return com.ke.compose.music.db.User(
+        id = 0,
+        userId = user.userId,
+        name = user.nickname,
+        avatar = user.avatarUrl,
+        followed = user.followed,
+        signature = user.signature ?: "",
+        usersType = usersType,
+        sourceId = sourceId
+    )
+}
