@@ -52,25 +52,12 @@ sealed interface NavigationAction {
     /**
      * 导航到用户歌单列表
      */
-    data class NavigateToPlaylistList(val ids: LongArray) : NavigationAction {
+    object NavigateToPlaylistList : NavigationAction {
         override fun createPath(): String {
-            return Screen.PlaylistList.createPath(ids = ids)
+            return Screen.PlaylistList.createPath()
         }
 
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
 
-            other as NavigateToPlaylistList
-
-            if (!ids.contentEquals(other.ids)) return false
-
-            return true
-        }
-
-        override fun hashCode(): Int {
-            return ids.contentHashCode()
-        }
     }
 }
 

@@ -98,9 +98,9 @@ sealed class Screen(val route: String) {
     /**
      * 我的歌单列表
      */
-    object PlaylistList : Screen("/playlist/list?ids={ids}") {
+    object PlaylistList : Screen("/playlist/list") {
 
-        fun createPath(ids: LongArray) = "/playlist/list?ids=$ids"
+        fun createPath() = "/playlist/list"
 
     }
 }

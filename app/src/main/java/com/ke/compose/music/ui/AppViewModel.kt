@@ -1,7 +1,7 @@
 package com.ke.compose.music.ui
 
-import android.annotation.SuppressLint
 import android.content.Context
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ke.compose.music.domain.AddOrRemoveSongsToPlaylistRequest
@@ -19,17 +19,44 @@ import javax.inject.Inject
 class AppViewModel @Inject constructor(
     private val addOrRemoveSongsToPlaylistUseCase: AddOrRemoveSongsToPlaylistUseCase,
     @ApplicationContext private val context: Context
-) : ViewModel() {
+) : ViewModel(), IAppViewModel {
+
+
+    override var selectedSongList: List<Long> = emptyList()
 
 
     /**
      * 添加歌曲到歌单
      */
-    internal fun collectSongsToPlaylist(songIds: List<Long>, playlistId: Long) {
+    override fun collectSongsToPlaylist(songIds: List<Long>, playlistId: Long) {
         viewModelScope.launch {
             val request = AddOrRemoveSongsToPlaylistRequest(playlistId, songIds, true)
             addOrRemoveSongsToPlaylistUseCase(request)
             context.toast("保存成功")
         }
     }
+}
+
+interface IAppViewModel {
+
+    fun collectSongsToPlaylist(songIds: List<Long>, playlistId: Long)
+
+    /**
+     * 选中的歌曲列表
+     */
+    var selectedSongList: List<Long>
+}
+
+private val defaultAppViewModel = object : IAppViewModel {
+    override fun collectSongsToPlaylist(songIds: List<Long>, playlistId: Long) {
+
+    }
+
+    override var selectedSongList: List<Long> = emptyList()
+
+
+}
+
+val LocalAppViewModel = staticCompositionLocalOf {
+    defaultAppViewModel as IAppViewModel
 }

@@ -16,12 +16,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ListItem
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.BookmarkAdd
 import androidx.compose.material.icons.filled.BookmarkAdded
 import androidx.compose.material.icons.filled.Comment
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Share
@@ -84,6 +86,9 @@ fun PlaylistDetailRoute(
         uiState = uiState,
         onBackButtonTap,
         { viewModel.loadData() },
+        onDeleteSong = {
+            viewModel.deleteSong(it)
+        },
         onCommentButtonClick,
         onCoverImageClick,
         onPlaylistSubscribersClick
@@ -101,6 +106,7 @@ private fun PlaylistDetailScreen(
     uiState: PlaylistDetailUiState,
     onBackButtonTap: () -> Unit,
     reload: () -> Unit,
+    onDeleteSong: (Song) -> Unit,
     onCommentButtonClick: (Playlist) -> Unit,
     onCoverImageClick: (Playlist) -> Unit,
     onPlaylistSubscribersClick: (Playlist) -> Unit,
@@ -114,7 +120,20 @@ private fun PlaylistDetailScreen(
     }
 
 
-    SongBottomSheetLayout(selectedSong = selectedSong, sheetState, actions = { /*TODO*/ }) {
+    SongBottomSheetLayout(selectedSong = selectedSong, sheetState, actions = {
+        if ((uiState as? PlaylistDetailUiState.Detail)?.playlist?.creator?.userId == MainApplication.currentUserId) {
+            ListItem(icon = {
+                Icon(imageVector = Icons.Default.Delete, contentDescription = null)
+            }, modifier = Modifier.clickable {
+                scope.launch {
+                    sheetState.hide()
+                    onDeleteSong(selectedSong!!)
+                }
+            }) {
+                Text(text = "删除")
+            }
+        }
+    }) {
         Scaffold(
             topBar = {
                 AppTopBar(title = {
@@ -449,7 +468,7 @@ private fun PlaylistSubscribersView(
 @Composable
 private fun PlaylistDetailScreenLoadingPreview() {
     ComposeMusicTheme {
-        PlaylistDetailScreen(uiState = PlaylistDetailUiState.Loading, {}, {}, {}, {}, {}, {})
+        PlaylistDetailScreen(uiState = PlaylistDetailUiState.Loading, {}, {}, {}, {}, {}, {}, {})
     }
 }
 
@@ -457,7 +476,7 @@ private fun PlaylistDetailScreenLoadingPreview() {
 @Composable
 private fun PlaylistDetailScreenErrorPreview() {
     ComposeMusicTheme {
-        PlaylistDetailScreen(uiState = PlaylistDetailUiState.Error, {}, {}, {}, {}, {}, {})
+        PlaylistDetailScreen(uiState = PlaylistDetailUiState.Error, {}, {}, {}, {}, {}, {}, {})
     }
 }
 
@@ -469,7 +488,7 @@ private fun PlaylistDetailScreenContentPreview() {
         PlaylistDetailUiState.Detail(1988, 2000, 109900, 3245, mockSongList, mockPlaylist, false)
 
     ComposeMusicTheme {
-        PlaylistDetailScreen(uiState = detail, onBackButtonTap = {}, {}, {}, {}, {}) {
+        PlaylistDetailScreen(uiState = detail, onBackButtonTap = {}, {}, {}, {}, {}, {}) {
 
         }
     }

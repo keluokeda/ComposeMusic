@@ -2,12 +2,15 @@ package com.ke.compose.music.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.ke.compose.music.ui.AppViewModel
+import com.ke.compose.music.ui.LocalAppViewModel
 import com.ke.compose.music.ui.Screen
 import com.ke.compose.music.ui.album.detail.AlbumDetailRoute
 import com.ke.compose.music.ui.child_comments.ChildCommentsRoute
@@ -32,11 +35,12 @@ import java.net.URLDecoder
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
+    val appViewModel = hiltViewModel<AppViewModel>()
     CompositionLocalProvider(LocalNavigationHandler provides {
         navController.navigate(it.createPath())
     }, LocalBackHandler provides {
         navController.popBackStack()
-    }) {
+    }, LocalAppViewModel provides appViewModel) {
         NavigationTree(navController)
     }
 
@@ -187,15 +191,16 @@ private fun NavigationTree(navController: NavHostController) {
             AlbumDetailRoute()
         }
 
-        composable(Screen.PlaylistList.route, arguments = listOf(
-            navArgument("ids") {
-                type = NavType.LongArrayType
-            }
-        )) {
+        composable(
+            Screen.PlaylistList.route
+        ) {
 
-            PlaylistListRoute(onSelected = { playlistId, songIds ->
+            val appViewModel = LocalAppViewModel.current
+            PlaylistListRoute({
+                appViewModel.collectSongsToPlaylist(
+                    appViewModel.selectedSongList, it
+                )
                 navController.popBackStack()
-
             }) {
                 navController.navigate(Screen.PlaylistNew.route)
             }

@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.ke.compose.music.ui.LocalAppViewModel
 import com.ke.compose.music.ui.comments.CommentType
 import com.ke.compose.music.ui.share.ShareType
 import com.ke.compose.music.ui.theme.ComposeMusicTheme
@@ -53,14 +54,20 @@ fun SongBottomSheetLayout(
             }) {
                 Text(text = "下一首播放")
             }
+
+            val appViewModel = LocalAppViewModel.current
+
             ListItem(icon = {
                 Icon(imageVector = Icons.Default.LibraryAdd, contentDescription = null)
             }, modifier = Modifier.clickable {
-                navigationHandler.navigate(
-                    NavigationAction.NavigateToPlaylistList(
-                        longArrayOf(selectedSong!!.id)
+                scope.launch {
+                    sheetState.hide()
+                    appViewModel.selectedSongList = listOf(selectedSong!!.id)
+                    navigationHandler.navigate(
+                        NavigationAction.NavigateToPlaylistList
                     )
-                )
+                }
+
             }) {
                 Text(text = "收藏到歌单")
             }

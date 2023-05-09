@@ -36,7 +36,7 @@ import com.ke.music.api.response.mockPlaylist
 
 @Composable
 fun PlaylistListRoute(
-    onSelected: (Long, LongArray) -> Unit,
+    onSelected: (Long) -> Unit,
     onNewButtonClick: () -> Unit
 ) {
     val viewModel: PlaylistListViewModel = hiltViewModel()
@@ -47,7 +47,7 @@ fun PlaylistListRoute(
             viewModel.loadPlaylist()
         },
         onSelected = {
-            onSelected(it.id, viewModel.ids)
+            onSelected(it.id)
         },
         onNewButtonClick = onNewButtonClick
     )

@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ke.compose.music.domain.Result
+import com.ke.music.api.response.Song
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,6 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PlaylistDetailViewModel @Inject constructor(
     private val getPlaylistDetailUseCase: GetPlaylistDetailUseCase,
+    private val deleteSongFromPlaylistUseCase: DeleteSongFromPlaylistUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<PlaylistDetailUiState>(PlaylistDetailUiState.Loading)
@@ -45,6 +47,23 @@ class PlaylistDetailViewModel @Inject constructor(
         _uiState.value = detail.copy(
             subscribed = !detail.subscribed
         )
+    }
+
+    internal fun deleteSong(song: Song) {
+        val detail = _uiState.value as? PlaylistDetailUiState.Detail ?: return
+
+
+        viewModelScope.launch {
+            detail.songs.toMutableList().apply {
+                if (remove(song)) {
+                    _uiState.value = detail.copy(
+                        songs = this
+                    )
+                    deleteSongFromPlaylistUseCase(id to song.id)
+                }
+            }
+
+        }
     }
 
 }
