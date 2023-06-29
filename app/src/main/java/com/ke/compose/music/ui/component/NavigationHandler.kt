@@ -56,8 +56,37 @@ sealed interface NavigationAction {
         override fun createPath(): String {
             return Screen.PlaylistList.createPath()
         }
+    }
+
+    /**
+     * 网友精选碟
+     */
+    object NavigateToPlaylistTop : NavigationAction {
+        override fun createPath(): String {
+            return Screen.PlaylistTop.route
+        }
+    }
+
+    /**
+     * 精品歌单
+     */
+    object NavigateToHighqualityPlaylist : NavigationAction {
+        override fun createPath(): String {
+            return Screen.HighqualityPlaylist.route
+        }
+    }
+
+    object NavigateToDownloadedMusic : NavigationAction {
+        override fun createPath(): String {
+            return Screen.DownloadedMusic.route
+        }
+    }
 
 
+    object NavigateToDownloadingMusic : NavigationAction {
+        override fun createPath(): String {
+            return Screen.DownloadingMusic.route
+        }
     }
 }
 

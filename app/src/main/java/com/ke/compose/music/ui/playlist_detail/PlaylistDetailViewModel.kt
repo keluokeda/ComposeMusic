@@ -3,67 +3,81 @@ package com.ke.compose.music.ui.playlist_detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ke.compose.music.domain.Result
-import com.ke.music.api.response.Song
+import com.ke.compose.music.repository.MusicRepository
+import com.ke.compose.music.repository.PlaylistRepository
+import com.ke.compose.music.repository.UserIdRepository
+import com.ke.compose.music.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class PlaylistDetailViewModel @Inject constructor(
-    private val getPlaylistDetailUseCase: GetPlaylistDetailUseCase,
-    private val deleteSongFromPlaylistUseCase: DeleteSongFromPlaylistUseCase,
-    savedStateHandle: SavedStateHandle
+    private val loadPlaylistDetailUseCase: LoadPlaylistDetailUseCase,
+    private val togglePlaylistSubscribedUseCase: TogglePlaylistSubscribedUseCase,
+    savedStateHandle: SavedStateHandle,
+    private val musicRepository: MusicRepository,
+    private val playlistRepository: PlaylistRepository,
+    userIdRepository: UserIdRepository,
+    private val userRepository: UserRepository
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow<PlaylistDetailUiState>(PlaylistDetailUiState.Loading)
 
-    internal val uiState: StateFlow<PlaylistDetailUiState>
-        get() = _uiState
 
-    private val id = savedStateHandle.get<String>("id")!!.toLong()
+    internal val id = savedStateHandle.get<String>("id")!!.toLong()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    internal val uiState =
+        userIdRepository.userIdFlow.flatMapLatest { userId ->
+            musicRepository.queryMusicListByPlaylistId(id)
+                .combine(playlistRepository.findById(id)) { list, playlist -> list to playlist }
+                .combine(
+                    playlistRepository.checkUserHasSubscribePlaylist(
+                        userId,
+                        id
+                    )
+                ) { pair, subscribed ->
+
+                    val user = userRepository.findById(pair.second?.creatorId ?: 0L)
+
+                    PlaylistDetailUiState(
+                        pair.second, pair.first, subscribed, user
+                    )
+                }
+
+        }.stateIn(
+            viewModelScope, SharingStarted.Eagerly, PlaylistDetailUiState(
+                null,
+                emptyList(), false, null
+            )
+        )
 
     init {
         loadData()
     }
 
-    internal fun loadData() {
+    private fun loadData() {
         viewModelScope.launch {
-            _uiState.value = PlaylistDetailUiState.Loading
-            when (val result = getPlaylistDetailUseCase(id)) {
-                is Result.Error -> {
-                    _uiState.value = PlaylistDetailUiState.Error
-                }
-
-                is Result.Success -> {
-                    _uiState.value = result.data
-                }
-            }
+            loadPlaylistDetailUseCase(id)
         }
     }
 
-    internal fun toggleBooked(detail: PlaylistDetailUiState.Detail) {
-        _uiState.value = detail.copy(
-            subscribed = !detail.subscribed
-        )
-    }
-
-    internal fun deleteSong(song: Song) {
-        val detail = _uiState.value as? PlaylistDetailUiState.Detail ?: return
-
-
+    internal fun toggleBooked(detail: PlaylistDetailUiState) {
+//        _uiState.value = detail.copy(
+//            subscribed = !detail.subscribed,
+//            bookedCount = detail.bookedCount + if (detail.subscribed) -1 else 1
+//        )
+//        viewModelScope.launch {
+//            togglePlaylistSubscribedUseCase(detail.playlist.id to !detail.subscribed)
+//        }
         viewModelScope.launch {
-            detail.songs.toMutableList().apply {
-                if (remove(song)) {
-                    _uiState.value = detail.copy(
-                        songs = this
-                    )
-                    deleteSongFromPlaylistUseCase(id to song.id)
-                }
-            }
-
+            togglePlaylistSubscribedUseCase(id to !detail.subscribed)
         }
     }
+
 
 }

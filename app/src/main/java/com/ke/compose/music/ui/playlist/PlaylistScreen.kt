@@ -39,12 +39,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.ke.compose.music.MainApplication
+import com.ke.compose.music.convert
+import com.ke.compose.music.db.entity.Playlist
+import com.ke.compose.music.ui.LocalAppViewModel
 import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.component.LocalNavigationHandler
 import com.ke.compose.music.ui.component.NavigationAction
 import com.ke.compose.music.ui.share.ShareType
-import com.ke.music.api.response.Playlist
 import com.ke.music.api.response.mockPlaylist
 
 
@@ -56,13 +57,15 @@ fun PlaylistRoute(
     ) {
     val viewModel: PlaylistViewModel = hiltViewModel()
 
+    val playlistList by viewModel.playlistList.collectAsStateWithLifecycle()
+
     PlaylistScreen(
-        playlistList = viewModel.list.collectAsStateWithLifecycle().value,
+        playlistList = playlistList,
         refreshing = viewModel.refreshing.collectAsStateWithLifecycle().value,
         {
             viewModel.refresh()
         }, onItemClick, onNewPlaylistClick, {
-            viewModel.deletePlaylist(it)
+            viewModel.deletePlaylist(it.id)
         }
     )
 }
@@ -126,6 +129,8 @@ private fun PlaylistItem(
         mutableStateOf(false)
     }
 
+    val viewModel = LocalAppViewModel.current
+
     Column {
 
         Row(modifier = modifier
@@ -155,6 +160,7 @@ private fun PlaylistItem(
                     expanded = false
                 }) {
                     DropdownMenuItem(text = { Text(text = "下载") }, onClick = {
+                        viewModel.downloadPlaylist(playlist.id)
                         expanded = false
                     })
                     val navigationHandler = LocalNavigationHandler.current
@@ -175,7 +181,9 @@ private fun PlaylistItem(
                         onDeletePlaylistClick(playlist)
                     })
 
-                    if (playlist.creator.userId == MainApplication.currentUserId)
+                    val appViewModel = LocalAppViewModel.current
+
+                    if (playlist.creatorId == appViewModel.currentUserId)
                         DropdownMenuItem(text = { Text(text = "编辑") }, onClick = {
                             expanded = false
                         })
@@ -190,7 +198,7 @@ private fun PlaylistItem(
 @Preview(showBackground = true)
 @Composable
 private fun PlaylistItemPreview() {
-    val playlist = mockPlaylist
+    val playlist = mockPlaylist.convert()
 
     PlaylistItem(playlist = playlist, onClick = {}, {})
 }
@@ -198,7 +206,7 @@ private fun PlaylistItemPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun PlaylistItemShowMenuPreview() {
-    val playlist = mockPlaylist
+    val playlist = mockPlaylist.convert()
 
     PlaylistItem(playlist = playlist, onClick = {}, {})
 }

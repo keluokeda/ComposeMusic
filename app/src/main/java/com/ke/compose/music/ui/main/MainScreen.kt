@@ -22,10 +22,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.ke.compose.music.db.entity.Playlist
 import com.ke.compose.music.ui.home.HomeScreen
 import com.ke.compose.music.ui.message.MessageRoute
 import com.ke.compose.music.ui.playlist.PlaylistRoute
-import com.ke.music.api.response.Playlist
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

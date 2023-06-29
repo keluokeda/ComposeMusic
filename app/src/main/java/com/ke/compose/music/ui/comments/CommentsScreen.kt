@@ -1,7 +1,9 @@
 package com.ke.compose.music.ui.comments
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +18,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.outlined.ThumbUp
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -23,6 +26,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -31,23 +35,29 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
-import com.ke.compose.music.db.Comment
+import com.ke.compose.music.Keyboard
+import com.ke.compose.music.entity.QueryCommentResult
+import com.ke.compose.music.keyboardAsState
 import com.ke.compose.music.niceCount
 import com.ke.compose.music.observeWithLifecycle
 import com.ke.compose.music.toast
 import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.component.Avatar
-import com.ke.compose.music.ui.theme.ComposeMusicTheme
+import com.orhanobut.logger.Logger
 
 
 @Composable
@@ -61,8 +71,10 @@ fun CommentsRoute(
     val list = viewModel.comments.collectAsLazyPagingItems()
     val context = LocalContext.current.applicationContext
     viewModel.sendCommentResult.observeWithLifecycle {
-        if (it) {
-            list.refresh()
+        if (it != null) {
+            if (it) {
+                list.refresh()
+            }
             context.toast("评论成功")
         } else {
             context.toast("评论失败")
@@ -71,22 +83,31 @@ fun CommentsRoute(
 
     CommentScreen(list, sending, onBackButtonClick, {
         viewModel.toggleLiked(it)
+    }, { content, selected ->
+        viewModel.sendComment(content, selected?.commentId)
+    }, canDeleteComment = {
+        viewModel.canDeleteComment(it)
+    }, deleteComment = {
+        viewModel.deleteComment(it)
     }, {
-        viewModel.sendComment(it)
-    }, {
-        onMoreCommentClick(viewModel.id, viewModel.commentType, it.commentId)
+        onMoreCommentClick(viewModel.id, viewModel.commentType, it)
     })
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class,
+    ExperimentalLayoutApi::class
+)
 @Composable
 private fun CommentScreen(
-    list: LazyPagingItems<Comment>,
+    list: LazyPagingItems<QueryCommentResult>,
     sending: Boolean,
     onBackButtonClick: () -> Unit,
-    onThumbClick: (Comment) -> Unit,
-    onSendComment: (String) -> Unit,
-    onMoreCommentClick: (Comment) -> Unit
+    onThumbClick: (QueryCommentResult) -> Unit,
+    onSendComment: (String, QueryCommentResult?) -> Unit,
+    canDeleteComment: (QueryCommentResult) -> Boolean,
+    deleteComment: (Long) -> Unit,
+    onMoreCommentClick: (Long) -> Unit
 ) {
     var text by remember {
         mutableStateOf("")
@@ -108,6 +129,64 @@ private fun CommentScreen(
                 .padding(paddingValues)
         ) {
 
+            val keyboardController = LocalSoftwareKeyboardController.current
+
+            val focusRequester = remember {
+                FocusRequester()
+            }
+
+
+            //要删除的评论
+            var deleteTargetComment by remember {
+                mutableStateOf<QueryCommentResult?>(null)
+            }
+
+
+            var selectedComment by remember {
+                mutableStateOf<QueryCommentResult?>(null)
+            }
+
+
+            val isKeyboardOpen by keyboardAsState()
+
+            Logger.d("isKeyboardOpen $isKeyboardOpen")
+            if (isKeyboardOpen == Keyboard.Closed) {
+                selectedComment = null
+            }
+
+            var isDialogOpen by remember {
+                mutableStateOf(false)
+            }
+
+
+            if (isDialogOpen) {
+                AlertDialog(
+                    onDismissRequest = {
+                        isDialogOpen = false
+                        deleteTargetComment = null
+                    },
+                    title = {
+                        Text(text = "提示")
+                    },
+                    text = {
+                        Text(text = "是否删除该评论")
+                    },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            isDialogOpen = false
+                            deleteComment(deleteTargetComment?.commentId ?: 0L)
+                        }) {
+                            Text(text = "删除")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { isDialogOpen = false }) {
+                            Text(text = "取消")
+                        }
+                    }
+                )
+            }
+
             LazyColumn(
                 modifier = Modifier
                     .weight(1f)
@@ -120,27 +199,49 @@ private fun CommentScreen(
                         comment = it!!,
                         onThumbClick = onThumbClick,
                         onMoreCommentClick = {
-                            onMoreCommentClick(it)
-                        }
-                    )
+                            onMoreCommentClick(it.commentId)
+                        },
+                        onClick = { selected ->
+                            focusRequester.requestFocus()
+                            keyboardController?.show()
+                            selectedComment = selected
+                        }, onLongClick = { comment ->
+                            if (canDeleteComment(comment)) {
+                                isDialogOpen = true
+                                deleteTargetComment = comment
+                            }
+                        })
                 }
 
             }
 
+
+
             TextField(
                 enabled = !sending,
-                value = text, onValueChange = {
+                value = text,
+                onValueChange = {
                     text = it
-                }, label = {
+                },
+                label = {
                     Text(text = "评论")
-                }, trailingIcon = {
+                },
+                placeholder = {
+                    Text(text = if (selectedComment == null) "" else "回复${selectedComment?.username}")
+                },
+
+                trailingIcon = {
                     IconButton(onClick = {
-                        onSendComment(text)
+                        onSendComment(text, selectedComment)
                         text = ""
                     }, enabled = !sending && text.isNotEmpty()) {
                         Icon(imageVector = Icons.Default.Send, contentDescription = null)
                     }
-                }, modifier = Modifier.fillMaxWidth(), shape = TextFieldDefaults.outlinedShape
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
+                shape = TextFieldDefaults.outlinedShape
             )
         }
 
@@ -150,12 +251,24 @@ private fun CommentScreen(
 
 @Composable
 private fun CommentItem(
-    comment: Comment,
+    comment: QueryCommentResult,
     modifier: Modifier = Modifier,
-    onThumbClick: (Comment) -> Unit,
-    onMoreCommentClick: () -> Unit
+    onThumbClick: (QueryCommentResult) -> Unit,
+    onMoreCommentClick: () -> Unit,
+    onClick: (QueryCommentResult) -> Unit = {},
+    onLongClick: (QueryCommentResult) -> Unit = {}
 ) {
-    Column(modifier = modifier) {
+
+
+    Column(modifier = modifier
+        .pointerInput(Unit) {
+            detectTapGestures(onLongPress = {
+//                Logger.d("长按了 $comment")
+                onLongClick(comment)
+            }, onTap = {
+                onClick(comment)
+            })
+        }) {
         Row(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
             Avatar(url = comment.userAvatar, size = 40)
             Spacer(modifier = Modifier.width(8.dp))
@@ -165,7 +278,7 @@ private fun CommentItem(
                 Text(text = comment.content)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = "${comment.timeString} ${comment.ipLocation}",
+                        text = "${comment.timeString} ${comment.ip}",
                         style = MaterialTheme.typography.bodySmall
                     )
                     Spacer(modifier = Modifier.weight(1f))
@@ -204,59 +317,61 @@ private fun CommentItem(
         }
         Divider(modifier = Modifier.height(0.2.dp))
     }
+
+
 }
 
-
-@Preview(showBackground = true)
-@Composable
-fun CommentItemNoChildCommentPreview() {
-    ComposeMusicTheme {
-        CommentItem(
-            comment = Comment(
-                0,
-                0,
-                "汉库克",
-                "",
-                0,
-                "好喜欢路飞啊",
-                "1分钟前",
-                0,
-                10,
-                "北京",
-                owner = false,
-                liked = true,
-                replyCount = 0
-            ),
-            onThumbClick = {},
-            onMoreCommentClick = {}
-        )
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun CommentItemPreview() {
-    ComposeMusicTheme {
-        CommentItem(
-            comment = Comment(
-                0,
-                0,
-                "汉库克",
-                "",
-                0,
-                "好喜欢路飞啊",
-                "1分钟前",
-                0,
-                10,
-                "北京",
-                owner = false,
-                liked = true,
-                replyCount = 10
-            ),
-            onThumbClick = {},
-            onMoreCommentClick = {}
-        )
-    }
-}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun CommentItemNoChildCommentPreview() {
+//    ComposeMusicTheme {
+//        CommentItem(
+//            comment = Comment(
+//                0,
+//                0,
+//                "汉库克",
+//                "",
+//                0,
+//                "好喜欢路飞啊",
+//                "1分钟前",
+//                0,
+//                10,
+//                "北京",
+//                owner = false,
+//                liked = true,
+//                replyCount = 0
+//            ),
+//            onThumbClick = {},
+//            onMoreCommentClick = {}
+//        )
+//    }
+//}
+//
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun CommentItemPreview() {
+//    ComposeMusicTheme {
+//        CommentItem(
+//            comment = Comment(
+//                0,
+//                0,
+//                "汉库克",
+//                "",
+//                0,
+//                "好喜欢路飞啊",
+//                "1分钟前",
+//                0,
+//                10,
+//                "北京",
+//                owner = false,
+//                liked = true,
+//                replyCount = 10
+//            ),
+//            onThumbClick = {},
+//            onMoreCommentClick = {}
+//        )
+//    }
+//}
 

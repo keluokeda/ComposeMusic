@@ -1,14 +1,22 @@
 package com.ke.compose.music.ui.component
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridItemScope
+import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -22,10 +30,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.compose.LazyPagingItems
 import coil.compose.AsyncImage
+import com.ke.compose.music.ui.comments.LocalMusicController
+import com.ke.compose.music.ui.comments.MusicControllerAction
 import com.ke.compose.music.ui.theme.ComposeMusicTheme
 import com.ke.music.api.response.Album
 import com.ke.music.api.response.Singer
@@ -56,11 +68,18 @@ private fun AvatarPreview() {
 }
 
 @Composable
-fun SongView(song: Song, modifier: Modifier = Modifier, onMoreButtonClick: (Song) -> Unit) {
+fun SongView(
+    song: Song,
+    modifier: Modifier = Modifier,
+    onMoreButtonClick: (Song) -> Unit
+) {
     val size = 40.dp
+    val musicController = LocalMusicController.current
     Column {
         Row(modifier = modifier
-            .clickable { }
+            .clickable {
+                musicController.sendAction(MusicControllerAction.PlayNow(song.id))
+            }
             .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically) {
 
@@ -108,7 +127,7 @@ fun SongView(song: Song, modifier: Modifier = Modifier, onMoreButtonClick: (Song
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun SongViewHasMvPreview() {
     val song = Song(
@@ -123,3 +142,84 @@ fun SongViewHasMvPreview() {
     }
 }
 
+
+@Composable
+fun PlaylistView(name: String, cover: String, onClick: () -> Unit) {
+    Box(modifier = Modifier
+        .clickable {
+            onClick()
+        }
+        .aspectRatio(1f), contentAlignment = Alignment.BottomCenter) {
+        AsyncImage(
+            model = cover,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+        Text(
+            text = "$name\n",
+            style = MaterialTheme.typography.bodySmall,
+            color = Color.White,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    Color.Black.copy(
+                        alpha = 0.3f
+                    )
+                )
+        )
+    }
+}
+
+
+@Preview(widthDp = 120, heightDp = 200, showBackground = true)
+@Composable
+fun PlaylistViewPreview() {
+    ComposeMusicTheme {
+        Column {
+            PlaylistView(name = "汉库克美美哒", cover = "") {
+
+            }
+        }
+    }
+}
+
+fun <T : Any> LazyGridScope.items(
+    items: LazyPagingItems<T>,
+    key: ((item: T) -> Any)? = null,
+    span: ((item: T) -> GridItemSpan)? = null,
+    contentType: ((item: T) -> Any)? = null,
+    itemContent: @Composable LazyGridItemScope.(value: T?) -> Unit
+) {
+    items(
+        count = items.itemCount,
+        key = if (key == null) null else { index ->
+            val item = items.peek(index)
+            if (item == null) {
+//                PagingPlaceholderKey(index)
+            } else {
+                key(item)
+            }
+        },
+        span = if (span == null) null else { index ->
+            val item = items.peek(index)
+            if (item == null) {
+                GridItemSpan(1)
+            } else {
+                span(item)
+            }
+        },
+        contentType = if (contentType == null) {
+            { null }
+        } else { index ->
+            val item = items.peek(index)
+            if (item == null) {
+                null
+            } else {
+                contentType(item)
+            }
+        }
+    ) { index ->
+        itemContent(items[index])
+    }
+}

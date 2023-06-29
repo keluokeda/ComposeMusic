@@ -3,36 +3,56 @@ package com.ke.compose.music.ui.album.detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ke.compose.music.domain.successOr
+import com.ke.compose.music.repository.AlbumRepository
+import com.ke.compose.music.repository.MusicRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AlbumDetailViewModel @Inject constructor(
-    private val getAlbumDetailUseCase: GetAlbumDetailUseCase,
-    savedStateHandle: SavedStateHandle
+    private val loadAlbumDetailUseCase: LoadAlbumDetailUseCase,
+    private val toggleCollectAlbumUseCase: ToggleCollectAlbumUseCase,
+    savedStateHandle: SavedStateHandle,
+    musicRepository: MusicRepository,
+    albumRepository: AlbumRepository
 ) :
     ViewModel() {
 
     internal val id = savedStateHandle.get<Long>("id")!!
 
-    private val _uiState = MutableStateFlow<AlbumDetailUiState>(AlbumDetailUiState.Loading)
 
-    internal val uiState: StateFlow<AlbumDetailUiState>
-        get() = _uiState
+    internal val uiState = albumRepository.getAlbumEntity(id)
+        .combine(
+            musicRepository.queryMusicListByAlbumId(id)
+        ) { entity, list ->
+            AlbumDetailUiState(entity, list)
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, AlbumDetailUiState(null, emptyList()))
+
 
     init {
         loadDetail()
     }
 
 
-    internal fun loadDetail() {
+    /**
+     * 切换收藏
+     */
+    internal fun toggleCollect() {
+        val collected = uiState.value.albumEntity?.collected ?: return
+
         viewModelScope.launch {
-            _uiState.value = AlbumDetailUiState.Loading
-            _uiState.value = getAlbumDetailUseCase(id).successOr(AlbumDetailUiState.Error)
+            toggleCollectAlbumUseCase(id to !collected)
+        }
+
+    }
+
+    private fun loadDetail() {
+        viewModelScope.launch {
+            loadAlbumDetailUseCase(id)
         }
     }
 }

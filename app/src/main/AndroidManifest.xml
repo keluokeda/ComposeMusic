@@ -2,8 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".MainApplication"
@@ -17,6 +18,19 @@
         android:theme="@style/Theme.ComposeMusic"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <service
+            android:name=".service.MusicDownloadService"
+            android:enabled="true"
+            android:exported="false" />
+        <service
+            android:name=".service.MusicPlayerService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

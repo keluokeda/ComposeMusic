@@ -1,9 +1,9 @@
 package com.ke.compose.music.ui
 
+import com.ke.compose.music.db.entity.Playlist
 import com.ke.compose.music.ui.comments.CommentType
 import com.ke.compose.music.ui.share.ShareType
 import com.ke.compose.music.ui.users.UsersType
-import com.ke.music.api.response.Playlist
 import java.net.URLEncoder
 
 sealed class Screen(val route: String) {
@@ -12,6 +12,16 @@ sealed class Screen(val route: String) {
     object Login : Screen("/app/login")
 
     object Main : Screen("/app/main")
+
+    /**
+     * 已下载的音乐
+     */
+    object DownloadedMusic : Screen("/downloaded/music")
+
+    /**
+     * 下载中的音乐
+     */
+    object DownloadingMusic : Screen("/downloading/music")
 
     /**
      * 歌单详情
@@ -103,4 +113,19 @@ sealed class Screen(val route: String) {
         fun createPath() = "/playlist/list"
 
     }
+
+    /**
+     * 网友精选碟
+     */
+    object PlaylistTop : Screen("/playlist/top")
+
+    /**
+     * 歌单分类
+     */
+    object PlaylistCategory : Screen("/playlist/category")
+
+    /**
+     * 精品歌单
+     */
+    object HighqualityPlaylist : Screen("/playlist/highquality")
 }

@@ -8,20 +8,16 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.ke.compose.music.db.Comment
-import com.ke.compose.music.db.CommentDao
 import com.ke.compose.music.domain.successOr
+import com.ke.compose.music.entity.QueryCommentResult
+import com.ke.compose.music.repository.CommentRepository
+import com.ke.compose.music.repository.UserIdRepository
 import com.ke.music.api.HttpService
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flatMap
-import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -31,40 +27,38 @@ import javax.inject.Inject
 internal class CommentsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     httpService: HttpService,
-    private val commentDao: CommentDao,
+    private val commentRepository: CommentRepository,
     private val likeCommentUseCase: LikeCommentUseCase,
-    private val sendCommentUseCase: SendCommentUseCase
+    private val sendCommentUseCase: SendCommentUseCase,
+    private val deleteCommentUseCase: DeleteCommentUseCase,
+    private val userIdRepository: UserIdRepository
 ) : ViewModel() {
     internal val id = savedStateHandle.get<Long>("id")!!
 
     internal val commentType: CommentType = savedStateHandle.get<CommentType>("type")!!
 
-    private val _sortType = MutableStateFlow(3)
-
-    internal val sortType: StateFlow<Int>
-        get() = _sortType
 
     private val _sending = MutableStateFlow(false)
     internal val sending: StateFlow<Boolean>
         get() = _sending
 
-    private val _sendCommentResult = Channel<Boolean>(capacity = Channel.CONFLATED)
+    private val _sendCommentResult = Channel<Boolean?>(capacity = Channel.CONFLATED)
 
     /**
      * 发送评论结果
+     * true表示成功并且需要刷新列表 false表示成功不需要刷新列表 null表示失败
      */
-    internal val sendCommentResult: Flow<Boolean>
+    internal val sendCommentResult: Flow<Boolean?>
         get() = _sendCommentResult.receiveAsFlow()
 
     private val remoteMediator = CommentsRemoteMediator(
-        commentDao,
         httpService,
         id,
         commentType,
-        _sortType.value
+        commentRepository
     )
 
-    val comments: Flow<PagingData<Comment>> = Pager(
+    val comments: Flow<PagingData<QueryCommentResult>> = Pager(
         config = PagingConfig(
             pageSize = 50,
             enablePlaceholders = false,
@@ -72,38 +66,41 @@ internal class CommentsViewModel @Inject constructor(
         ),
         remoteMediator = remoteMediator
     ) {
-        commentDao.getComments()
+        commentRepository.getComments(id, commentType)
     }.flow
         .cachedIn(viewModelScope)
 
-    internal fun toggleLiked(comment: Comment) {
+    internal fun toggleLiked(comment: QueryCommentResult) {
         viewModelScope.launch {
-            val newComment = comment.copy(
-                liked = !comment.liked,
-                likedCount = if (comment.liked) comment.likedCount - 1 else comment.likedCount + 1
-            )
-            commentDao.updateItem(newComment)
-
             val request = LikeCommentRequest(id, commentType, comment.commentId, !comment.liked)
             likeCommentUseCase(request)
         }
     }
 
-    internal fun toggleSortType(type: Int) {
-        _sortType.value = type
-        remoteMediator.sortType = type
-    }
+
+    fun canDeleteComment(queryCommentResult: QueryCommentResult) =
+        queryCommentResult.userId == userIdRepository.userId
 
     /**
      * 发布评论
      */
-    internal fun sendComment(content: String) {
+    internal fun sendComment(content: String, parentCommentId: Long?) {
         viewModelScope.launch {
             _sending.value = true
-            val request = SendCommentRequest(commentType, id, null, content)
+            val request = SendCommentRequest(commentType, id, parentCommentId, content)
             val success = sendCommentUseCase(request).successOr(false)
             _sending.value = false
-            _sendCommentResult.send(success)
+            _sendCommentResult.send(if (success) parentCommentId == null else null)
+        }
+    }
+
+    internal fun deleteComment(commentId: Long) {
+        viewModelScope.launch {
+            deleteCommentUseCase(
+                DeleteCommentRequest(
+                    commentType, id, commentId, false
+                )
+            )
         }
     }
 }

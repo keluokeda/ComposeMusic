@@ -26,7 +26,8 @@ val mockPlaylist = Playlist(
     "发掘最好听的艺人，锁定@云音乐艺人精选！",
     trackCount = 120,
     playCount = 100000,
-    subscribers = mockUserList
+    subscribers = mockUserList,
+    updateTime = 0
 )
 
 val mockSong =

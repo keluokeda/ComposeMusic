@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'com.google.dagger.hilt.android'
+    id 'kotlin-parcelize'
 }
 kapt {
     correctErrorTypes true
@@ -60,14 +61,15 @@ android {
 
 dependencies {
 
-    implementation 'androidx.core:core-ktx:1.10.0'
+    implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
-    implementation 'androidx.activity:activity-compose:1.7.1'
+    implementation 'androidx.activity:activity-compose:1.7.2'
     implementation platform('androidx.compose:compose-bom:2023.04.00')
     implementation 'androidx.compose.ui:ui'
     implementation 'androidx.compose.ui:ui-graphics'
     implementation 'androidx.compose.ui:ui-tooling-preview'
     implementation 'androidx.compose.material3:material3'
+    implementation "androidx.compose.runtime:runtime-livedata"
     implementation project(path: ':api')
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
@@ -102,10 +104,12 @@ dependencies {
     // Optional - Add full set of material icons
     implementation 'androidx.compose.material:material-icons-extended'
     implementation 'androidx.lifecycle:lifecycle-runtime-compose:2.6.1'
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.1"
 
-    implementation "androidx.compose.material:material:1.4.2"
+    implementation "androidx.compose.material:material:1.4.3"
     implementation("io.coil-kt:coil-compose:2.3.0")
-    implementation "androidx.paging:paging-compose:1.0.0-alpha18"
+    implementation "androidx.paging:paging-compose:1.0.0-alpha20"
+
 
     def room_version = "2.5.1"
 
@@ -117,4 +121,21 @@ dependencies {
     implementation "androidx.room:room-paging:$room_version"
 
     implementation("org.greenrobot:eventbus:3.3.1")
+
+    implementation "androidx.lifecycle:lifecycle-service:2.6.1"
+
+    implementation 'me.laoyuyu.aria:core:3.8.16'
+    kapt 'me.laoyuyu.aria:compiler:3.8.16'
+
+
+    implementation "androidx.media3:media3-exoplayer:1.0.2"
+    implementation "androidx.media3:media3-exoplayer-dash:1.0.2"
+    implementation "androidx.media3:media3-ui:1.0.2"
+    implementation "androidx.media:media:1.6.0"
+
+    // Glide dependencies
+    implementation "com.github.bumptech.glide:glide:4.15.1"
+    kapt "com.github.bumptech.glide:compiler:4.15.1"
+
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
 }

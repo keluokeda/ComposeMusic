@@ -1,5 +1,6 @@
 package com.ke.compose.music.ui.component
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -91,6 +92,19 @@ fun SongBottomSheetLayout(
             }
 
             ListItem(icon = {
+                Icon(imageVector = Icons.Default.Comment, contentDescription = null)
+            }, modifier = Modifier.clickable {
+                scope.launch {
+                    sheetState.hide()
+                }
+                appViewModel.downloadMusic(selectedSong!!.id)
+            }) {
+
+
+                Text(text = "下载")
+            }
+
+            ListItem(icon = {
                 Icon(imageVector = Icons.Default.Share, contentDescription = null)
             }, modifier = Modifier.clickable {
 
@@ -141,6 +155,7 @@ fun SongBottomSheetLayout(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun SongBottomSheetLayoutPreview() {
     ComposeMusicTheme {

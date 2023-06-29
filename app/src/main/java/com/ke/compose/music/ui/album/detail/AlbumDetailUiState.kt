@@ -1,20 +1,12 @@
 package com.ke.compose.music.ui.album.detail
 
-import com.ke.music.api.response.Song
+import com.ke.compose.music.entity.AlbumEntity
+import com.ke.compose.music.entity.MusicEntity
 
-sealed interface AlbumDetailUiState {
-    object Loading : AlbumDetailUiState
-
-    data class Detail(
-        val id: Long,
-        val name: String,
-        val description: String?,
-        val artistName: String,
-        val artistId: Long,
-        val image: String,
-        val publishTime: String,
-        val songs: List<Song>
-    ) : AlbumDetailUiState
-
-    object Error : AlbumDetailUiState
+internal data class AlbumDetailUiState(
+    val albumEntity: AlbumEntity?,
+    val musicList: List<MusicEntity>
+) {
+    val hasData: Boolean
+        get() = albumEntity != null && musicList.isNotEmpty()
 }

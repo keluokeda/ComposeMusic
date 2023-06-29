@@ -70,7 +70,7 @@ private fun LoginScreen(
     url: String?,
     onLogin: () -> Unit,
     refresh: () -> Unit,
-    width: Int = 200,
+    width: Int = 250,
     loading: Boolean
 ) {
     Scaffold(

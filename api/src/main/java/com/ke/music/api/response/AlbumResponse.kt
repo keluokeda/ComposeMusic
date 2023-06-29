@@ -15,5 +15,9 @@ data class AlbumData(
     val id: Long,
     val artist: Singer,
     val publishTime: Long,
-    val picUrl: String
+    val picUrl: String,
+    val artists: List<Singer>,
+    val company: String
 )
+
+

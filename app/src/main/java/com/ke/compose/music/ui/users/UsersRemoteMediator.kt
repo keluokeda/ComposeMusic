@@ -4,10 +4,9 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
-import com.ke.compose.music.db.UserDao
+import com.ke.compose.music.db.dao.UserDao
 import com.ke.music.api.HttpService
 import com.ke.music.api.entity.UsersProvider
-import com.ke.music.api.response.User
 import com.orhanobut.logger.Logger
 
 @OptIn(ExperimentalPagingApi::class)
@@ -16,7 +15,7 @@ class UsersRemoteMediator(
     private val httpService: HttpService,
     private val sourceId: Long,
     private val usersType: UsersType
-) : RemoteMediator<Int, com.ke.compose.music.db.User>() {
+) : RemoteMediator<Int, com.ke.compose.music.db.entity.User>() {
 
     private var offset = 0
 
@@ -27,13 +26,13 @@ class UsersRemoteMediator(
 
     override suspend fun load(
         loadType: LoadType,
-        state: PagingState<Int, com.ke.compose.music.db.User>
+        state: PagingState<Int, com.ke.compose.music.db.entity.User>
     ): MediatorResult {
 
         Logger.d("开始加载数据 $loadType $offset")
         when (loadType) {
             LoadType.REFRESH -> {
-                userDao.deleteByTypeAndSourceId(usersType, sourceId)
+//                userDao.deleteByTypeAndSourceId(usersType, sourceId)
             }
 
             LoadType.PREPEND -> {
@@ -57,9 +56,7 @@ class UsersRemoteMediator(
         }
 
 
-
-
-        userDao.insertAll(provider.users().map { convert(it, usersType, sourceId) })
+//        userDao.insertAll(provider.users().map { convert(it, usersType, sourceId) })
 
 
 
@@ -70,19 +67,3 @@ class UsersRemoteMediator(
     }
 }
 
-private fun convert(
-    user: User,
-    usersType: UsersType,
-    sourceId: Long
-): com.ke.compose.music.db.User {
-    return com.ke.compose.music.db.User(
-        id = 0,
-        userId = user.userId,
-        name = user.nickname,
-        avatar = user.avatarUrl,
-        followed = user.followed,
-        signature = user.signature ?: "",
-        usersType = usersType,
-        sourceId = sourceId
-    )
-}

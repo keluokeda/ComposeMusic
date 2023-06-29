@@ -1,17 +1,23 @@
 package com.ke.music.api
 
+import com.ke.music.api.response.AlbumDynamicResponse
 import com.ke.music.api.response.AlbumResponse
 import com.ke.music.api.response.CodeResponse
 import com.ke.music.api.response.CommentsResponse
+import com.ke.music.api.response.HighQualityPlaylistsResponse
 import com.ke.music.api.response.LoginQRCreateResponse
 import com.ke.music.api.response.LoginQRKeyResponse
 import com.ke.music.api.response.LoginStatusResponse
-import com.ke.music.api.response.MusicCommentsResponse
+import com.ke.music.api.response.MusicUrlResponse
+import com.ke.music.api.response.PlaylistCategoryResponse
 import com.ke.music.api.response.PlaylistDetailResponse
 import com.ke.music.api.response.PlaylistDynamicResponse
 import com.ke.music.api.response.PlaylistSubscribersResponse
+import com.ke.music.api.response.PlaylistTagsResponse
+import com.ke.music.api.response.PlaylistTopResponse
 import com.ke.music.api.response.PlaylistTracksResponse
 import com.ke.music.api.response.PrivateMessageResponse
+import com.ke.music.api.response.SongDetailResponse
 import com.ke.music.api.response.UserFollowsResponse
 import com.ke.music.api.response.UserPlaylistResponse
 import retrofit2.http.GET
@@ -92,7 +98,7 @@ interface HttpService {
      * 删除歌单
      */
     @GET("playlist/delete")
-    suspend fun deletePlaylist(@Query("id") id: Long): CodeResponse
+    suspend fun deletePlaylist(@Query("id") id: Long)
 
     /**
      * 获取资源评论
@@ -110,6 +116,7 @@ interface HttpService {
         @Query("pageNo") pageNo: Int,
         @Query("cursor") cursor: Long?
     ): CommentsResponse
+
 
     /**
      * 子评论
@@ -153,6 +160,17 @@ interface HttpService {
         @Query("content") content: String,
         @Query("commentId") commentId: Long? = null
     ): CodeResponse
+
+
+    /**
+     * 删除评论
+     */
+    @GET("comment?t=0")
+    suspend fun deleteComment(
+        @Query("type") type: Int,
+        @Query("id") id: Long,
+        @Query("commentId") commentId: Long
+    )
 
     /**
      * 获取某个用户关注的人
@@ -222,6 +240,15 @@ interface HttpService {
         @Query("id") id: Long
     ): AlbumResponse
 
+
+    /**
+     * 专辑动态信息
+     */
+    @GET("album/detail/dynamic")
+    suspend fun getAlbumDynamic(
+        @Query("id") id: Long
+    ): AlbumDynamicResponse
+
     /**
      * 添加或删除歌曲到歌单
      */
@@ -230,5 +257,89 @@ interface HttpService {
         @Query("op") option: String,
         @Query("pid") playlistId: Long,
         @Query("tracks") tracks: String
+    )
+
+    /**
+     *网友精选碟
+     */
+    @GET("top/playlist")
+    suspend fun getTopPlaylist(
+        @Query("cat") category: String? = null,
+        @Query("limit") limit: Int,
+        @Query("offset") offset: Int
+    ): PlaylistTopResponse
+
+    /**
+     * 歌单分类
+     */
+    @GET("playlist/catlist")
+    suspend fun getPlaylistCategory(): PlaylistCategoryResponse
+
+    /**
+     * 精品歌单标签列表
+     */
+    @GET("playlist/highquality/tags")
+    suspend fun getPlaylistTags(): PlaylistTagsResponse
+
+    /**
+     * 精品歌单列表
+     */
+    @GET("top/playlist/highquality")
+    suspend fun getHighQualityPlaylists(
+        @Query("cat") category: String?,
+        @Query("limit") limit: Int = 50,
+        @Query("before") before: Long? = null
+    ): HighQualityPlaylistsResponse
+
+    /**
+     * 收藏或取消收藏歌单
+     * @param type 1收藏 2取消收藏
+     */
+    @GET("playlist/subscribe")
+    suspend fun subscribePlaylist(
+        @Query("id") id: Long,
+        @Query("t") type: Int
     ): CodeResponse
+
+    /**
+     * 获取歌曲播放地址
+     */
+    @GET("song/url/v1")
+    suspend fun getSongUrl(
+        @Query("id") id: Long,
+        @Query("level") level: String = "jymaster"
+    ): MusicUrlResponse
+
+    /**
+     * 获取歌曲详情
+     */
+    @GET("song/detail")
+    suspend fun getSongDetail(
+        @Query("ids") id: Long,
+    ): SongDetailResponse
+
+
+    /**
+     * 获取歌曲详情
+     */
+    @GET("song/detail")
+    suspend fun getSongsDetail(
+        @Query("ids") ids: String,
+    ): SongDetailResponse
+
+
+    /**
+     * 收藏或取消收藏专辑
+     * @param action 1表示收藏 0表示取消收藏
+     */
+    @GET("album/sub")
+    suspend fun collectAlbum(@Query("id") albumId: Long, @Query("t") action: Int)
+
+    /**
+     * 获取歌曲下载地址
+     */
+//    @GET("song/download/url")
+//    suspend fun getSongDownloadUrl(
+//        @Query("id") id: Long,
+//    ): MusicDownloadUrlResponse
 }

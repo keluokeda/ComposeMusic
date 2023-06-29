@@ -31,13 +31,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.items
-import com.ke.compose.music.db.ChildComment
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
+import com.ke.compose.music.entity.QueryChildCommentResult
+import com.ke.compose.music.entity.QueryCommentAndUserResult
 import com.ke.compose.music.niceCount
 import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.component.Avatar
 import com.ke.compose.music.ui.theme.ComposeMusicTheme
-import com.ke.music.api.response.Comment
+import com.orhanobut.logger.Logger
 
 @Composable
 fun ChildCommentsRoute(
@@ -48,7 +50,9 @@ fun ChildCommentsRoute(
 
     val rootComment by viewModel.rootComment.collectAsStateWithLifecycle()
 
+    Logger.d("child comment size = ${comments.itemCount}")
     ChildCommentsScreen(comments, rootComment, onBackClick) {
+//        viewModel.toggleLiked(it)
         viewModel.toggleLiked(it)
     }
 }
@@ -57,10 +61,10 @@ fun ChildCommentsRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ChildCommentsScreen(
-    comments: LazyPagingItems<ChildComment>,
-    rootComment: Comment?,
+    comments: LazyPagingItems<QueryChildCommentResult>,
+    rootComment: QueryCommentAndUserResult?,
     onBackClick: () -> Unit,
-    onThumbClick: (ChildComment) -> Unit
+    onThumbClick: (QueryChildCommentResult) -> Unit
 ) {
     Scaffold(topBar = {
         AppTopBar(title = { Text(text = "回复") }, navigationIcon = {
@@ -72,21 +76,28 @@ private fun ChildCommentsScreen(
 
         LazyColumn(modifier = Modifier.padding(padding)) {
             if (rootComment != null) {
-                val name = rootComment.user.nickname
-                val avatar = rootComment.user.avatarUrl
-                val time = rootComment.timeString
+                val name = rootComment.username
+                val avatar = rootComment.userAvatar
+                val time = rootComment.time
                 val content = rootComment.content
                 item {
-                    Header(avatar, name, time, content?:"")
+                    Header(avatar, name, time, content)
                 }
 
 
             }
 
-            items(comments, key = {
-                it.id
-            }) {
-                CommentItem(comment = it!!, onThumbClick = onThumbClick)
+            items(
+                count = comments.itemCount,
+                key = comments.itemKey(key = {
+                    it.commentId
+                }),
+                contentType = comments.itemContentType(
+
+                )
+            ) { index ->
+                val item = comments[index]
+                CommentItem(comment = item!!, onThumbClick = onThumbClick)
             }
         }
     }
@@ -126,11 +137,12 @@ private fun HeaderPreview() {
     }
 }
 
+
 @Composable
 private fun CommentItem(
-    comment: ChildComment,
+    comment: QueryChildCommentResult,
     modifier: Modifier = Modifier,
-    onThumbClick: (ChildComment) -> Unit
+    onThumbClick: (QueryChildCommentResult) -> Unit
 ) {
     Column(modifier = modifier) {
         Row(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
@@ -153,10 +165,10 @@ private fun CommentItem(
                     }
                 }
                 Spacer(modifier = Modifier.height(2.dp))
-                Text(text = comment.content)
+                Text(text = comment.content ?: "")
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = "${comment.timeString} ${comment.ipLocation}",
+                        text = "${comment.timeString} ${comment.ip}",
                         style = MaterialTheme.typography.bodySmall
                     )
                     Spacer(modifier = Modifier.weight(1f))

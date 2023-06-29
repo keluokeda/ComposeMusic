@@ -10,10 +10,7 @@ data class CommentsResponse(
 
 @JsonClass(generateAdapter = true)
 data class CommentData(
-    /**
-     * 如果是查询某个评论的子评论，就不是空，是主评论
-     */
-    val ownerComment: Comment? = null,
+
 
     /**
      * 子评论

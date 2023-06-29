@@ -6,10 +6,25 @@ import androidx.room.Room
 import com.franmontiel.persistentcookiejar.PersistentCookieJar
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor
-import com.ke.compose.music.db.AppDatabase
-import com.ke.compose.music.db.ChildCommentDao
-import com.ke.compose.music.db.CommentDao
-import com.ke.compose.music.db.UserDao
+import com.ke.compose.music.db.AppFileDatabase
+import com.ke.compose.music.db.AppMemoryDatabase
+import com.ke.compose.music.db.dao.AlbumArtistCrossRefDao
+import com.ke.compose.music.db.dao.AlbumDao
+import com.ke.compose.music.db.dao.AlbumDetailDao
+import com.ke.compose.music.db.dao.ArtistDao
+import com.ke.compose.music.db.dao.ChildCommentDao
+import com.ke.compose.music.db.dao.CommentDao
+import com.ke.compose.music.db.dao.DownloadDao
+import com.ke.compose.music.db.dao.MusicArtistCrossRefDao
+import com.ke.compose.music.db.dao.MusicDao
+import com.ke.compose.music.db.dao.PlaylistDao
+import com.ke.compose.music.db.dao.PlaylistMusicCrossRefDao
+import com.ke.compose.music.db.dao.PlaylistSubscriberCrossRefDao
+import com.ke.compose.music.db.dao.PlaylistTagDao
+import com.ke.compose.music.db.dao.UserAlbumCrossRefDao
+import com.ke.compose.music.db.dao.UserDao
+import com.ke.compose.music.db.dao.UserLikeCommentCrossRefDao
+import com.ke.compose.music.db.dao.UserPlaylistCrossRefDao
 import com.ke.music.api.HttpService
 import dagger.Module
 import dagger.Provides
@@ -25,6 +40,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
+@Suppress("unused")
 object AppModule {
 
     @Provides
@@ -65,34 +81,132 @@ object AppModule {
         return Retrofit.Builder()
             .addConverterFactory(MoshiConverterFactory.create())
             .client(okHttpClient)
-            .baseUrl("https://music.cpolar.top/")
+            .baseUrl("https://ke-music.cpolar.top/")
             .build()
             .create(HttpService::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideAppDatabase(
+    fun provideAppMemoryDatabase(
         @ApplicationContext context: Context
-    ): AppDatabase {
-        return Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
+    ): AppMemoryDatabase {
+        return Room.inMemoryDatabaseBuilder(context, AppMemoryDatabase::class.java).build()
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideAppFileDatabase(
+        @ApplicationContext context: Context
+    ): AppFileDatabase {
+        val builder = Room.databaseBuilder(context, AppFileDatabase::class.java, "app")
+
+//        builder.setQueryCallback(object : RoomDatabase.QueryCallback {
+//            override fun onQuery(sqlQuery: String, bindArgs: List<Any?>) {
+//                Logger.d("$sqlQuery $bindArgs")
+//            }
+//
+//        }, Executors.newFixedThreadPool(128))
+        return builder.build()
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideCommentDao(appFileDatabase: AppFileDatabase): CommentDao {
+        return appFileDatabase.commentDao()
     }
 
     @Provides
     @Singleton
-    fun provideCommentDao(appDatabase: AppDatabase): CommentDao {
-        return appDatabase.commentDao()
+    fun provideChildCommentDao(appFileDatabase: AppFileDatabase): ChildCommentDao {
+        return appFileDatabase.childCommentDao()
+    }
+
+
+    @Provides
+    @Singleton
+    fun providePlaylistTagDao(appMemoryDatabase: AppMemoryDatabase): PlaylistTagDao {
+        return appMemoryDatabase.playlistTagDao()
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideUserPlaylistCrossRefDao(appFileDatabase: AppFileDatabase): UserPlaylistCrossRefDao =
+        appFileDatabase.userPlaylistCrossRefDao()
+
+    @Provides
+    @Singleton
+    fun providePlaylistDao(appFileDatabase: AppFileDatabase): PlaylistDao =
+        appFileDatabase.playlistDao()
+
+    @Provides
+    @Singleton
+    fun providePlaylistSubscriberCrossRefDao(appFileDatabase: AppFileDatabase): PlaylistSubscriberCrossRefDao =
+        appFileDatabase.playlistSubscriberCrossRefDao()
+
+    @Provides
+    @Singleton
+    fun provideUserDao(appFileDatabase: AppFileDatabase): UserDao = appFileDatabase.userDao()
+
+    @Provides
+    @Singleton
+    fun provideMusicDao(appFileDatabase: AppFileDatabase): MusicDao = appFileDatabase.musicDao()
+
+    @Provides
+    @Singleton
+    fun provideAlbumDao(appFileDatabase: AppFileDatabase): AlbumDao = appFileDatabase.albumDao()
+
+//    @Provides
+//    @Singleton
+//    fun provideAlbumMusicCrossRefDao(appFileDatabase: AppFileDatabase): AlbumMusicCrossRefDao =
+//        appFileDatabase.albumMusicCrossRefDao()
+
+    @Provides
+    @Singleton
+    fun provideMusicArtistCrossRefDao(appFileDatabase: AppFileDatabase): MusicArtistCrossRefDao =
+        appFileDatabase.musicArtistCrossRefDao()
+
+    @Provides
+    @Singleton
+    fun provideArtistDao(appFileDatabase: AppFileDatabase): ArtistDao = appFileDatabase.artistDao()
+
+
+    @Provides
+    @Singleton
+    fun providePlaylistMusicCrossRefDao(appFileDatabase: AppFileDatabase): PlaylistMusicCrossRefDao {
+        return appFileDatabase.playlistMusicCrossRefDao()
     }
 
     @Provides
     @Singleton
-    fun provideChildCommentDao(appDatabase: AppDatabase): ChildCommentDao {
-        return appDatabase.childCommentDao()
+    fun provideDownloadDao(appFileDatabase: AppFileDatabase): DownloadDao {
+        return appFileDatabase.downloadDao()
     }
 
     @Provides
     @Singleton
-    fun provideUserDao(appDatabase: AppDatabase): UserDao {
-        return appDatabase.userDao()
+    fun provideUserLikeCommentCrossRefDao(appFileDatabase: AppFileDatabase): UserLikeCommentCrossRefDao {
+        return appFileDatabase.userLikeCommentCrossRefDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAlbumDetailDao(appFileDatabase: AppFileDatabase): AlbumDetailDao {
+        return appFileDatabase.albumDetailDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAlbumArtistCrossRefDao(appFileDatabase: AppFileDatabase): AlbumArtistCrossRefDao {
+        return appFileDatabase.albumArtistCrossRefDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserAlbumCrossRefDao(appFileDatabase: AppFileDatabase): UserAlbumCrossRefDao {
+        return appFileDatabase.userAlbumCrossRefDao()
     }
 }

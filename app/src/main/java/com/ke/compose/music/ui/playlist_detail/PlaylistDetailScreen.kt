@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Comment
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.rememberModalBottomSheetState
@@ -52,28 +53,26 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.ke.compose.music.MainApplication
+import com.ke.compose.music.db.entity.Playlist
+import com.ke.compose.music.entity.MusicEntity
 import com.ke.compose.music.niceCount
+import com.ke.compose.music.ui.LocalAppViewModel
 import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.component.Avatar
 import com.ke.compose.music.ui.component.LocalNavigationHandler
+import com.ke.compose.music.ui.component.MusicBottomSheetLayout
+import com.ke.compose.music.ui.component.MusicView
 import com.ke.compose.music.ui.component.NavigationAction
-import com.ke.compose.music.ui.component.SongBottomSheetLayout
-import com.ke.compose.music.ui.component.SongView
 import com.ke.compose.music.ui.share.ShareType
 import com.ke.compose.music.ui.theme.ComposeMusicTheme
-import com.ke.music.api.response.Playlist
-import com.ke.music.api.response.Song
 import com.ke.music.api.response.User
-import com.ke.music.api.response.mockPlaylist
-import com.ke.music.api.response.mockSongList
 import kotlinx.coroutines.launch
 
 @Composable
 fun PlaylistDetailRoute(
     onBackButtonTap: () -> Unit,
-    onCommentButtonClick: (Playlist) -> Unit,
-    onPlaylistSubscribersClick: (Playlist) -> Unit,
+    onCommentButtonClick: (Long) -> Unit,
+    onPlaylistSubscribersClick: (Long) -> Unit,
     onCoverImageClick: (Playlist) -> Unit,
 ) {
 
@@ -82,12 +81,14 @@ fun PlaylistDetailRoute(
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    val appViewModel = LocalAppViewModel.current
     PlaylistDetailScreen(
         uiState = uiState,
         onBackButtonTap,
-        { viewModel.loadData() },
-        onDeleteSong = {
-            viewModel.deleteSong(it)
+        onDeleteMusic = {
+            appViewModel.removeMusicsFromPlaylist(
+                listOf(it.musicId), viewModel.id
+            )
         },
         onCommentButtonClick,
         onCoverImageClick,
@@ -105,29 +106,29 @@ fun PlaylistDetailRoute(
 private fun PlaylistDetailScreen(
     uiState: PlaylistDetailUiState,
     onBackButtonTap: () -> Unit,
-    reload: () -> Unit,
-    onDeleteSong: (Song) -> Unit,
-    onCommentButtonClick: (Playlist) -> Unit,
+    onDeleteMusic: (MusicEntity) -> Unit,
+    onCommentButtonClick: (Long) -> Unit,
     onCoverImageClick: (Playlist) -> Unit,
-    onPlaylistSubscribersClick: (Playlist) -> Unit,
-    bookClick: (PlaylistDetailUiState.Detail) -> Unit,
+    onPlaylistSubscribersClick: (Long) -> Unit,
+    bookClick: (PlaylistDetailUiState) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
 
-    var selectedSong by remember {
-        mutableStateOf<Song?>(null)
+    var selectedMusic by remember {
+        mutableStateOf<MusicEntity?>(null)
     }
 
+    val appViewModel = LocalAppViewModel.current
 
-    SongBottomSheetLayout(selectedSong = selectedSong, sheetState, actions = {
-        if ((uiState as? PlaylistDetailUiState.Detail)?.playlist?.creator?.userId == MainApplication.currentUserId) {
+    MusicBottomSheetLayout(musicEntity = selectedMusic, sheetState, actions = {
+        if ((uiState).playlist?.creatorId == appViewModel.currentUserId) {
             ListItem(icon = {
                 Icon(imageVector = Icons.Default.Delete, contentDescription = null)
             }, modifier = Modifier.clickable {
                 scope.launch {
                     sheetState.hide()
-                    onDeleteSong(selectedSong!!)
+                    onDeleteMusic(selectedMusic!!)
                 }
             }) {
                 Text(text = "删除")
@@ -149,174 +150,178 @@ private fun PlaylistDetailScreen(
                     .padding(paddingValues)
                     .fillMaxSize()
             ) {
-                when (uiState) {
-                    is PlaylistDetailUiState.Detail -> {
+                if (uiState.hasData) {
 
 
-                        LazyColumn {
-                            val imageSize = 100
-                            item {
-                                Row(
-                                    modifier = Modifier.padding(
-                                        start = 16.dp,
-                                        top = 16.dp,
+                    LazyColumn {
+                        val imageSize = 100
+                        item {
+                            Row(
+                                modifier = Modifier.padding(
+                                    start = 16.dp,
+                                    top = 16.dp,
+                                    end = 16.dp
+                                ),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                AsyncImage(
+                                    model = uiState.playlist?.coverImgUrl,
+                                    contentScale = ContentScale.Crop,
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(imageSize.dp)
+                                        .clickable {
+                                            uiState.playlist?.let { onCoverImageClick(it) }
+                                        }
+                                        .background(MaterialTheme.colorScheme.primary)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+
+                                Column {
+                                    Text(text = uiState.playlist?.name ?: "", maxLines = 2)
+                                    Spacer(modifier = Modifier.height(4.dp))
+
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Avatar(
+                                            url = uiState.creator?.avatar ?: "",
+                                            size = 24
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(
+                                            text = uiState.creator?.name ?: "",
+                                            style = MaterialTheme.typography.bodySmall,
+                                        )
+                                    }
+                                }
+                            }
+
+                        }
+
+                        item {
+                            Text(
+                                text = uiState.playlist?.description ?: "",
+                                style = MaterialTheme.typography.bodySmall,
+                                maxLines = 1,
+                                modifier = Modifier
+                                    .clickable {
+
+                                    }
+                                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                            )
+                        }
+
+
+                        item {
+                            val navigationHandler = LocalNavigationHandler.current
+
+                            PlaylistDetailInfo(
+                                uiState.playlist?.shareCount ?: 0,
+                                uiState.playlist?.commentCount ?: 0,
+                                uiState.playlist?.bookedCount ?: 0,
+                                uiState.subscribed,
+                                {
+                                    navigationHandler.navigate(
+                                        NavigationAction.NavigateToShare(
+                                            ShareType.Playlist,
+                                            uiState.playlist?.id ?: 0,
+                                            uiState.playlist?.name ?: "",
+                                            uiState.playlist?.description ?: "",
+                                            uiState.playlist?.coverImgUrl ?: ""
+                                        )
+                                    )
+                                },
+                                {
+                                    onCommentButtonClick(uiState.playlist?.id ?: 0)
+                                },
+                                {
+                                    bookClick(uiState)
+                                },
+                                appViewModel.currentUserId != uiState.playlist?.creatorId
+                            )
+                        }
+
+
+                        stickyHeader {
+                            Row(
+                                modifier = Modifier
+                                    .background(MaterialTheme.colorScheme.background)
+                                    .padding(
+                                        top = 8.dp,
+                                        bottom = 8.dp,
+                                        start = 12.dp,
                                         end = 16.dp
                                     ),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    AsyncImage(
-                                        model = uiState.playlist.coverImgUrl,
-                                        contentScale = ContentScale.Crop,
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .size(imageSize.dp)
-                                            .clickable {
-                                                onCoverImageClick(uiState.playlist)
-                                            }
-                                            .background(MaterialTheme.colorScheme.primary)
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                IconButton(onClick = { /*TODO*/ }) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.PlayCircle,
+                                        contentDescription = null
                                     )
-                                    Spacer(modifier = Modifier.width(8.dp))
-
-                                    Column {
-                                        Text(text = uiState.playlist.name, maxLines = 2)
-                                        Spacer(modifier = Modifier.height(4.dp))
-
-                                        Row(verticalAlignment = Alignment.CenterVertically) {
-                                            Avatar(
-                                                url = uiState.playlist.creator.avatarUrl,
-                                                size = 24
-                                            )
-                                            Spacer(modifier = Modifier.width(4.dp))
-                                            Text(
-                                                text = uiState.playlist.creator.nickname,
-                                                style = MaterialTheme.typography.bodySmall,
-                                            )
-                                        }
-                                    }
                                 }
 
-                            }
-
-                            item {
                                 Text(
-                                    text = uiState.playlist.description ?: "",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    maxLines = 1,
+                                    text = "播放全部",
                                     modifier = Modifier
-                                        .clickable {
-
-                                        }
-                                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                                        .weight(1f)
+                                        .padding(start = 4.dp)
                                 )
-                            }
-
-
-                            item {
-                                val navigationHandler = LocalNavigationHandler.current
-
-                                PlaylistDetailInfo(
-                                    uiState.shareCount,
-                                    uiState.commentCount,
-                                    uiState.bookedCount,
-                                    uiState.subscribed,
-                                    {
-                                        navigationHandler.navigate(
-                                            NavigationAction.NavigateToShare(
-                                                ShareType.Playlist,
-                                                uiState.playlist.id,
-                                                uiState.playlist.name,
-                                                uiState.playlist.description ?: "",
-                                                uiState.playlist.coverImgUrl
-                                            )
-                                        )
-                                    },
-                                    {
-                                        onCommentButtonClick(uiState.playlist)
-                                    },
-                                    {
-                                        bookClick(uiState)
-                                    },
-                                    uiState.playlist.creator.userId != MainApplication.currentUserId
-                                )
-                            }
-
-
-                            stickyHeader {
-                                Row(
-                                    modifier = Modifier
-                                        .background(MaterialTheme.colorScheme.background)
-                                        .padding(
-                                            top = 8.dp,
-                                            bottom = 8.dp,
-                                            start = 12.dp,
-                                            end = 16.dp
-                                        ),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    IconButton(onClick = { /*TODO*/ }) {
-                                        Icon(
-                                            imageVector = Icons.Outlined.PlayCircle,
-                                            contentDescription = null
-                                        )
-                                    }
-
-                                    Text(
-                                        text = "播放全部",
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .padding(start = 4.dp)
+                                IconButton(onClick = {
+                                    appViewModel.downloadPlaylist(uiState.playlist?.id ?: 0)
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Download,
+                                        contentDescription = null
                                     )
-                                    IconButton(onClick = { /*TODO*/ }) {
+                                }
+                            }
+                        }
+
+
+                        items(uiState.songs, key = {
+                            it.musicId
+                        }) { musicEntity ->
+
+                            MusicView(
+                                musicEntity = musicEntity,
+                                rightButton = {
+                                    IconButton(onClick = {
+                                        selectedMusic = musicEntity
+                                        scope.launch {
+                                            sheetState.show()
+                                        }
+                                    }) {
                                         Icon(
-                                            imageVector = Icons.Default.Download,
+                                            imageVector = Icons.Default.MoreVert,
                                             contentDescription = null
                                         )
                                     }
-                                }
-                            }
+                                },
 
 
-                            items(uiState.songs, key = {
-                                it.id
-                            }) { song ->
-                                SongView(song = song) {
-                                    selectedSong = it
-                                    scope.launch {
-                                        sheetState.show()
-                                    }
-                                }
-                            }
-
-
-
-                            item {
-                                PlaylistSubscribersView(
-                                    userList = uiState.playlist.subscribers,
-                                    count = uiState.bookedCount, {
-                                        onPlaylistSubscribersClick(uiState.playlist)
-                                    }
                                 )
-                            }
+                        }
+
+
+
+                        item {
+                            PlaylistSubscribersView(
+                                userList = emptyList(),
+                                count = uiState.playlist?.bookedCount ?: 0, {
+                                    onPlaylistSubscribersClick(uiState.playlist?.id ?: 0)
+                                }
+                            )
                         }
                     }
-
-                    PlaylistDetailUiState.Error -> {
-                        OutlinedButton(
-                            onClick = reload,
-                            modifier = Modifier.align(Alignment.Center)
-                        ) {
-                            Text(text = "出错了，点我重试")
-                        }
-                    }
-
-                    PlaylistDetailUiState.Loading -> {
-                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                    }
+                } else {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
+
             }
         }
     }
 }
+
 
 /**
  * @param bookEnable 自己的不能点
@@ -468,29 +473,38 @@ private fun PlaylistSubscribersView(
 @Composable
 private fun PlaylistDetailScreenLoadingPreview() {
     ComposeMusicTheme {
-        PlaylistDetailScreen(uiState = PlaylistDetailUiState.Loading, {}, {}, {}, {}, {}, {}, {})
+        PlaylistDetailScreen(
+            uiState = PlaylistDetailUiState(null, emptyList(), false, null),
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+        )
     }
 }
 
-@Preview(showSystemUi = true)
-@Composable
-private fun PlaylistDetailScreenErrorPreview() {
-    ComposeMusicTheme {
-        PlaylistDetailScreen(uiState = PlaylistDetailUiState.Error, {}, {}, {}, {}, {}, {}, {})
-    }
-}
 
-
-@Preview(showSystemUi = true)
-@Composable
-private fun PlaylistDetailScreenContentPreview() {
-    val detail =
-        PlaylistDetailUiState.Detail(1988, 2000, 109900, 3245, mockSongList, mockPlaylist, false)
-
-    ComposeMusicTheme {
-        PlaylistDetailScreen(uiState = detail, onBackButtonTap = {}, {}, {}, {}, {}, {}) {
-
-        }
-    }
-}
+//
+//@Preview(showSystemUi = true)
+//@Composable
+//private fun PlaylistDetailScreenContentPreview() {
+//    val detail =
+//        PlaylistDetailUiState.Detail(
+//            1988,
+//            2000,
+//            109900,
+//            3245,
+//            mockSongList,
+//            mockPlaylist.convert(),
+//            false
+//        )
+//
+//    ComposeMusicTheme {
+//        PlaylistDetailScreen(uiState = detail, onBackButtonTap = {}, {}, {}, {}, {}, {}) {
+//
+//        }
+//    }
+//}
 

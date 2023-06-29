@@ -8,36 +8,38 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.ke.compose.music.db.ChildComment
-import com.ke.compose.music.db.ChildCommentDao
+import com.ke.compose.music.entity.QueryChildCommentResult
+import com.ke.compose.music.repository.ChildCommentRepository
+import com.ke.compose.music.repository.CommentRepository
 import com.ke.compose.music.ui.comments.CommentType
 import com.ke.compose.music.ui.comments.LikeCommentRequest
 import com.ke.compose.music.ui.comments.LikeCommentUseCase
 import com.ke.music.api.HttpService
-import com.ke.music.api.response.Comment
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 internal class ChildCommentsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val childCommentDao: ChildCommentDao,
     httpService: HttpService,
-    private val likeCommentUseCase: LikeCommentUseCase
+    private val likeCommentUseCase: LikeCommentUseCase,
+    private val childCommentRepository: ChildCommentRepository,
+    private val commentRepository: CommentRepository
 ) :
     ViewModel() {
     private val sourceId = savedStateHandle.get<Long>("id")!!
     private val commentType = savedStateHandle.get<CommentType>("type")!!
     private val commentId = savedStateHandle.get<Long>("commentId")!!
 
-    private val _rootComment = MutableStateFlow<Comment?>(null)
 
-    internal val rootComment: StateFlow<Comment?>
-        get() = _rootComment
+    internal val rootComment = commentRepository.queryCommentAndUser(commentId).stateIn(
+        viewModelScope, SharingStarted.Eagerly, null
+    )
+
 
     private val remoteMediator =
         ChildCommentsRemoteMediator(
@@ -45,13 +47,11 @@ internal class ChildCommentsViewModel @Inject constructor(
             commentType,
             sourceId,
             commentId,
-            childCommentDao
-        ) {
-            _rootComment.value = it
-        }
+            childCommentRepository
+        )
 
     @OptIn(ExperimentalPagingApi::class)
-    val comments: Flow<PagingData<ChildComment>> = Pager(
+    val comments: Flow<PagingData<QueryChildCommentResult>> = Pager(
         config = PagingConfig(
             pageSize = 50,
             enablePlaceholders = false,
@@ -59,21 +59,21 @@ internal class ChildCommentsViewModel @Inject constructor(
         ),
         remoteMediator = remoteMediator
     ) {
-        childCommentDao.getComments()
+        childCommentRepository.getChildComments(commentId)
     }.flow
         .cachedIn(viewModelScope)
 
-    internal fun toggleLiked(comment: ChildComment) {
+    internal fun toggleLiked(childComment: QueryChildCommentResult) {
         viewModelScope.launch {
-            val newComment = comment.copy(
-                liked = !comment.liked,
-                likedCount = if (comment.liked) comment.likedCount - 1 else comment.likedCount + 1
+            likeCommentUseCase(
+                LikeCommentRequest(
+                    sourceId,
+                    commentType,
+                    childComment.commentId,
+                    !childComment.liked,
+                    true
+                )
             )
-            childCommentDao.updateItem(newComment)
-
-            val request =
-                LikeCommentRequest(sourceId, commentType, comment.commentId, !comment.liked)
-            likeCommentUseCase(request)
         }
     }
 

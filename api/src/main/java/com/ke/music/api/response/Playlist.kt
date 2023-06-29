@@ -38,4 +38,9 @@ data class Playlist(
      * 订阅用户列表
      */
     val subscribers: List<User> = emptyList(),
+
+    /**
+     * 更新时间
+     */
+    val updateTime: Long
 )
