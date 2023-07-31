@@ -1,5 +1,6 @@
 package com.ke.compose.music.ui.playlist_category
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -15,6 +16,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -89,7 +91,9 @@ private fun PlaylistCategoryScreen(
                                 if (it.hot)
                                     MaterialTheme.typography.bodyMedium.copy(
                                         color = Color.Red
-                                    ) else MaterialTheme.typography.bodyMedium
+                                    ) else LocalTextStyle.current.copy(
+                                    color = Color.Black
+                                )
                             )
                         }
                     }
@@ -122,7 +126,7 @@ private fun PlaylistCategoryScreen(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun PlaylistCategoryScreenPreview() {
     ComposeMusicTheme {

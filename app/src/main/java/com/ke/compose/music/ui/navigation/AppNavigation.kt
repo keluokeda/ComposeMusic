@@ -3,8 +3,6 @@ package com.ke.compose.music.ui.navigation
 import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -13,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.navOptions
 import com.ke.compose.music.service.MusicPlayerService
 import com.ke.compose.music.ui.AppViewModel
 import com.ke.compose.music.ui.LocalAppViewModel
@@ -36,6 +35,7 @@ import com.ke.compose.music.ui.playlist_info.PlaylistInfoScreen
 import com.ke.compose.music.ui.playlist_list.PlaylistListRoute
 import com.ke.compose.music.ui.playlist_new.PlaylistNewScreen
 import com.ke.compose.music.ui.playlist_top.PlaylistTopRoute
+import com.ke.compose.music.ui.recommend_songs.RecommendSongsRoute
 import com.ke.compose.music.ui.share.ShareRoute
 import com.ke.compose.music.ui.share.ShareType
 import com.ke.compose.music.ui.slpash.SplashScreen
@@ -230,13 +230,22 @@ private fun NavigationTree(navController: NavHostController) {
             }
         }
 
-        composable(Screen.PlaylistTop.route) {
+        composable(
+            Screen.PlaylistTop.route,
+            arguments = listOf(
+                navArgument("category") {
+                    type = NavType.StringType
+                    defaultValue = "全部"
+                }
+            )
+        ) {
 //            navController.GetOnceResult<String>(keyResult = "result", onResult = {
 //                Logger.d("收到了上个页面的结果 $it")
 //            })
-            val category by it.savedStateHandle.getLiveData<String>("result").observeAsState()
+//            val category by it.savedStateHandle.getLiveData<String>("result").observeAsState()
+
+//            val category = it.savedStateHandle.get<String>("category")
             PlaylistTopRoute(
-                category,
                 onBackButtonClick = { navController.popBackStack() },
                 onItemClick = { playlist ->
                     navController.navigate(Screen.PlaylistDetail.createUrl(playlist))
@@ -251,10 +260,21 @@ private fun NavigationTree(navController: NavHostController) {
             PlaylistCategoryRoute(onBackButtonClick = {
                 navController.popBackStack()
             }, onCategoryClick = {
-                navController.previousBackStackEntry
-                    ?.savedStateHandle
-                    ?.set("result", it)
-                navController.popBackStack()
+//                navController.previousBackStackEntry
+//                    ?.savedStateHandle
+//                    ?.set("category", it)
+//                navController.popBackStack()
+
+//                navController.navigate(Screen.PlaylistTop.createPath(it), navOptions {
+//
+//                })
+
+                navController.navigate(Screen.PlaylistTop.createPath(it), navOptions {
+                    popUpTo(Screen.Main.route) {
+                        inclusive = false
+                    }
+
+                })
             })
         }
 
@@ -276,6 +296,12 @@ private fun NavigationTree(navController: NavHostController) {
 
         composable(Screen.DownloadingMusic.route) {
             DownloadingMusicRoute {
+                navController.popBackStack()
+            }
+        }
+
+        composable(Screen.RecommendSongs.route) {
+            RecommendSongsRoute {
                 navController.popBackStack()
             }
         }

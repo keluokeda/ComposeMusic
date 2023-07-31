@@ -21,6 +21,8 @@ import com.ke.compose.music.db.dao.PlaylistDao
 import com.ke.compose.music.db.dao.PlaylistMusicCrossRefDao
 import com.ke.compose.music.db.dao.PlaylistSubscriberCrossRefDao
 import com.ke.compose.music.db.dao.PlaylistTagDao
+import com.ke.compose.music.db.dao.RecommendSongDao
+import com.ke.compose.music.db.dao.TopPlaylistDao
 import com.ke.compose.music.db.dao.UserAlbumCrossRefDao
 import com.ke.compose.music.db.dao.UserDao
 import com.ke.compose.music.db.dao.UserLikeCommentCrossRefDao
@@ -208,5 +210,17 @@ object AppModule {
     @Singleton
     fun provideUserAlbumCrossRefDao(appFileDatabase: AppFileDatabase): UserAlbumCrossRefDao {
         return appFileDatabase.userAlbumCrossRefDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideRecommendSongDao(appFileDatabase: AppFileDatabase): RecommendSongDao {
+        return appFileDatabase.recommendSongDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideTopPlaylistDao(appFileDatabase: AppFileDatabase): TopPlaylistDao {
+        return appFileDatabase.topPlaylistDao()
     }
 }

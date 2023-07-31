@@ -3,6 +3,7 @@ package com.ke.compose.music.ui.playlist_detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ke.compose.music.domain.Result
 import com.ke.compose.music.repository.MusicRepository
 import com.ke.compose.music.repository.PlaylistRepository
 import com.ke.compose.music.repository.UserIdRepository
@@ -62,7 +63,15 @@ class PlaylistDetailViewModel @Inject constructor(
 
     private fun loadData() {
         viewModelScope.launch {
-            loadPlaylistDetailUseCase(id)
+            when (val result = loadPlaylistDetailUseCase(id)) {
+                is Result.Error -> {
+                    result.exception.printStackTrace()
+                }
+
+                is Result.Success -> {
+
+                }
+            }
         }
     }
 

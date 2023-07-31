@@ -1,9 +1,11 @@
 package com.ke.compose.music.repository
 
+import android.content.Context
 import com.ke.compose.music.db.dao.AlbumDao
 import com.ke.compose.music.db.dao.ArtistDao
 import com.ke.compose.music.db.dao.MusicArtistCrossRefDao
 import com.ke.compose.music.db.dao.MusicDao
+import com.ke.compose.music.db.dao.RecommendSongDao
 import com.ke.compose.music.db.entity.Album
 import com.ke.compose.music.db.entity.Artist
 import com.ke.compose.music.db.entity.Download
@@ -11,8 +13,11 @@ import com.ke.compose.music.db.entity.Music
 import com.ke.compose.music.db.entity.MusicArtistCrossRef
 import com.ke.compose.music.entity.MusicEntity
 import com.ke.compose.music.entity.QueryMusicResult
+import com.ke.compose.music.userIdFlow
 import com.ke.music.api.response.Song
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -22,7 +27,9 @@ class MusicRepository @Inject constructor(
     private val musicDao: MusicDao,
     private val albumDao: AlbumDao,
     private val artistDao: ArtistDao,
+    private val recommendSongDao: RecommendSongDao,
     private val musicArtistCrossRefDao: MusicArtistCrossRefDao,
+    @ApplicationContext private val context: Context
 ) {
 
     suspend fun findById(musicId: Long): Music? = musicDao.findById(musicId)
@@ -154,6 +161,19 @@ class MusicRepository @Inject constructor(
     fun getDownloadedMusics() = musicDao.getDownloadMusics(Download.STATUS_DOWNLOADED).map {
         queryResultToMusicEntityList(it)
     }
+
+
+    /**
+     * 当前用户每日推荐歌曲
+     */
+    fun getRecommendSongs() =
+
+        context.userIdFlow.flatMapLatest { userId ->
+            musicDao.findRecommendSongs(userId)
+                .map {
+                    queryResultToMusicEntityList(it)
+                }
+        }
 
 
 }

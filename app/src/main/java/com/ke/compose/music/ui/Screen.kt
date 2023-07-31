@@ -117,7 +117,10 @@ sealed class Screen(val route: String) {
     /**
      * 网友精选碟
      */
-    object PlaylistTop : Screen("/playlist/top")
+    object PlaylistTop : Screen("/playlist/top/{category}") {
+        fun createPath(category: String = "全部") = "/playlist/top/$category"
+
+    }
 
     /**
      * 歌单分类
@@ -128,4 +131,9 @@ sealed class Screen(val route: String) {
      * 精品歌单
      */
     object HighqualityPlaylist : Screen("/playlist/highquality")
+
+    /**
+     * 每日推荐
+     */
+    object RecommendSongs : Screen("/recommend/songs")
 }

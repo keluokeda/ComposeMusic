@@ -15,6 +15,8 @@ import com.ke.compose.music.db.dao.MusicDao
 import com.ke.compose.music.db.dao.PlaylistDao
 import com.ke.compose.music.db.dao.PlaylistMusicCrossRefDao
 import com.ke.compose.music.db.dao.PlaylistSubscriberCrossRefDao
+import com.ke.compose.music.db.dao.RecommendSongDao
+import com.ke.compose.music.db.dao.TopPlaylistDao
 import com.ke.compose.music.db.dao.UserAlbumCrossRefDao
 import com.ke.compose.music.db.dao.UserDao
 import com.ke.compose.music.db.dao.UserLikeCommentCrossRefDao
@@ -31,6 +33,8 @@ import com.ke.compose.music.db.entity.MusicArtistCrossRef
 import com.ke.compose.music.db.entity.Playlist
 import com.ke.compose.music.db.entity.PlaylistMusicCrossRef
 import com.ke.compose.music.db.entity.PlaylistSubscriberCrossRef
+import com.ke.compose.music.db.entity.RecommendSong
+import com.ke.compose.music.db.entity.TopPlaylist
 import com.ke.compose.music.db.entity.User
 import com.ke.compose.music.db.entity.UserAlbumCrossRef
 import com.ke.compose.music.db.entity.UserLikeCommentCrossRef
@@ -53,10 +57,12 @@ import com.ke.compose.music.db.entity.UserPlaylistCrossRef
         PlaylistMusicCrossRef::class,
         Download::class,
         UserLikeCommentCrossRef::class,
-        UserAlbumCrossRef::class
+        UserAlbumCrossRef::class,
+        RecommendSong::class,
+        TopPlaylist::class
 //        AlbumMusicCrossRef::class
     ],
-    version = 1
+    version = 2
 )
 @TypeConverters(Converts::class)
 abstract class AppFileDatabase : RoomDatabase() {
@@ -93,4 +99,8 @@ abstract class AppFileDatabase : RoomDatabase() {
     abstract fun albumArtistCrossRefDao(): AlbumArtistCrossRefDao
 
     abstract fun userAlbumCrossRefDao(): UserAlbumCrossRefDao
+
+    abstract fun recommendSongDao(): RecommendSongDao
+
+    abstract fun topPlaylistDao(): TopPlaylistDao
 }

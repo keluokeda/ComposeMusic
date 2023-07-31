@@ -17,7 +17,9 @@ import com.ke.music.api.response.PlaylistTagsResponse
 import com.ke.music.api.response.PlaylistTopResponse
 import com.ke.music.api.response.PlaylistTracksResponse
 import com.ke.music.api.response.PrivateMessageResponse
+import com.ke.music.api.response.RecommendSongsResponse
 import com.ke.music.api.response.SongDetailResponse
+import com.ke.music.api.response.UserDetailResponse
 import com.ke.music.api.response.UserFollowsResponse
 import com.ke.music.api.response.UserPlaylistResponse
 import retrofit2.http.GET
@@ -335,11 +337,18 @@ interface HttpService {
     @GET("album/sub")
     suspend fun collectAlbum(@Query("id") albumId: Long, @Query("t") action: Int)
 
+
     /**
-     * 获取歌曲下载地址
+     * 每日推荐
      */
-//    @GET("song/download/url")
-//    suspend fun getSongDownloadUrl(
-//        @Query("id") id: Long,
-//    ): MusicDownloadUrlResponse
+    @GET("recommend/songs")
+    suspend fun recommendSongs(): RecommendSongsResponse
+
+    /**
+     * 用户详情
+     */
+    @GET("user/detail")
+    suspend fun getUserDetail(@Query("uid") userId: Long): UserDetailResponse
+
+
 }

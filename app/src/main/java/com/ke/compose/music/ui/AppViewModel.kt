@@ -159,6 +159,12 @@ class AppViewModel @Inject constructor(
         context.startService(intent)
     }
 
+    override fun downloadRecommendSongs() {
+        val intent = Intent(context, MusicDownloadService::class.java)
+        intent.action = MusicDownloadService.ACTION_DOWNLOAD_RECOMMEND_SONG
+        context.startService(intent)
+    }
+
     override fun playMusic(musicId: Long) {
         controller?.transportControls?.playFromMediaId(musicId.toString(), null)
     }
@@ -189,7 +195,12 @@ interface IAppViewModel {
      */
     fun downloadPlaylist(playlistId: Long)
 
+    /**
+     * 下载专辑
+     */
     fun downloadAlbum(albumId: Long)
+
+    fun downloadRecommendSongs()
 
 
     /**
@@ -227,6 +238,10 @@ private val defaultAppViewModel = object : IAppViewModel {
     }
 
     override fun playMusic(musicId: Long) {
+
+    }
+
+    override fun downloadRecommendSongs() {
 
     }
 

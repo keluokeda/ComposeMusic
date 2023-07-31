@@ -1,8 +1,12 @@
 package com.ke.compose.music.repository
 
+import com.ke.compose.music.convert
 import com.ke.compose.music.db.dao.PlaylistDao
 import com.ke.compose.music.db.dao.PlaylistSubscriberCrossRefDao
+import com.ke.compose.music.db.dao.TopPlaylistDao
 import com.ke.compose.music.db.entity.Playlist
+import com.ke.compose.music.db.entity.TopPlaylist
+import com.ke.music.api.response.PlaylistTopResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -11,6 +15,7 @@ import javax.inject.Singleton
 @Singleton
 class PlaylistRepository @Inject constructor(
     private val playlistDao: PlaylistDao,
+    private val topPlaylistDao: TopPlaylistDao,
     private val playlistSubscriberCrossRefDao: PlaylistSubscriberCrossRefDao,
     private val userIdRepository: UserIdRepository
 ) {
@@ -63,4 +68,26 @@ class PlaylistRepository @Inject constructor(
         val userId = userIdRepository.userId
         playlistSubscriberCrossRefDao.deleteByPlaylistIdAndUserId(playlistId, userId)
     }
+
+    /**
+     * 保存网友精选碟
+     */
+    suspend fun saveTopPlaylists(playlistTopResponse: PlaylistTopResponse) {
+
+        savePlaylistList(playlistTopResponse.playlists.map {
+            it.convert()
+        })
+
+        topPlaylistDao.insertAll(
+            playlistTopResponse.playlists
+                .map {
+                    TopPlaylist(0, it.id, playlistTopResponse.category)
+                }
+        )
+    }
+
+    fun topPlaylist(category: String?) = topPlaylistDao.queryByCategory(category)
+
+    suspend fun deleteTopPlaylistsByCategory(category: String?) =
+        topPlaylistDao.deleteByCategory(category)
 }

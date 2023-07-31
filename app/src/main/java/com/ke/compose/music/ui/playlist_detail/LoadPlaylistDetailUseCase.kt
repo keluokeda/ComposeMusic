@@ -59,6 +59,11 @@ class LoadPlaylistDetailUseCase @Inject constructor(
             //保存歌单订阅者到room
             userRepository.saveUsers(playlist.subscribers)
 
+            userRepository.saveUsers(
+                listOf(
+                    playlist.creator
+                )
+            )
 
             //保存歌单和用户关系到数据库
             playlistSubscriberCrossRefDao.insertAll(
@@ -89,11 +94,6 @@ class LoadPlaylistDetailUseCase @Inject constructor(
                 )
             }
 
-//            PlaylistDetailUiState.Detail.from(
-//                playlist.convert(),
-//                songs,
-//                dynamic
-//            )
         }
     }
 }

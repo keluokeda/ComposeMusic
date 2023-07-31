@@ -11,6 +11,7 @@ import com.ke.compose.music.domain.DownloadMusicListUseCase
 import com.ke.compose.music.domain.GetAlbumSongsUseCase
 import com.ke.compose.music.domain.GetMusicUrlUseCase
 import com.ke.compose.music.domain.GetPlaylistSongsUseCase
+import com.ke.compose.music.domain.GetRecommendSongsUseCase
 import com.ke.compose.music.domain.successOr
 import com.ke.compose.music.repository.DownloadRepository
 import com.orhanobut.logger.Logger
@@ -38,6 +39,9 @@ class MusicDownloadService : LifecycleService() {
 
     @Inject
     lateinit var downloadMusicListUseCase: DownloadMusicListUseCase
+
+    @Inject
+    lateinit var getRecommendSongsUseCase: GetRecommendSongsUseCase
 
     @Inject
     lateinit var downloadRepository: DownloadRepository
@@ -90,6 +94,26 @@ class MusicDownloadService : LifecycleService() {
 
                 lifecycleScope.launch {
                     val songs = getAlbumSongsUseCase(albumId).successOr(emptyList())
+                    val targetList = mutableListOf<Long>()
+
+                    songs.forEach {
+                        if (downloadRepository.canDownload(
+                                it.id,
+                                com.ke.compose.music.db.entity.Download.SOURCE_TYPE_MUSIC
+                            )
+                        ) {
+                            targetList.add(it.id)
+                        }
+                    }
+
+                    downloadMusicList(targetList)
+
+                }
+            }
+
+            ACTION_DOWNLOAD_RECOMMEND_SONG -> {
+                lifecycleScope.launch {
+                    val songs = getRecommendSongsUseCase(Unit).successOr(emptyList())
                     val targetList = mutableListOf<Long>()
 
                     songs.forEach {
@@ -312,6 +336,11 @@ class MusicDownloadService : LifecycleService() {
          * 下载整个专辑
          */
         const val ACTION_DOWNLOAD_ALBUM = "ACTION_DOWNLOAD_ALBUM"
+
+        /**
+         * 下载每日推荐
+         */
+        const val ACTION_DOWNLOAD_RECOMMEND_SONG = "ACTION_DOWNLOAD_RECOMMEND_SONG"
         const val EXTRA_ID = "EXTRA_ID"
 
     }

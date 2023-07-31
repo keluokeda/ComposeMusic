@@ -61,9 +61,9 @@ sealed interface NavigationAction {
     /**
      * 网友精选碟
      */
-    object NavigateToPlaylistTop : NavigationAction {
+    data class NavigateToPlaylistTop(val category: String = "全部") : NavigationAction {
         override fun createPath(): String {
-            return Screen.PlaylistTop.route
+            return Screen.PlaylistTop.createPath(category)
         }
     }
 
@@ -86,6 +86,12 @@ sealed interface NavigationAction {
     object NavigateToDownloadingMusic : NavigationAction {
         override fun createPath(): String {
             return Screen.DownloadingMusic.route
+        }
+    }
+
+    object NavigateToRecommendSongs : NavigationAction {
+        override fun createPath(): String {
+            return Screen.RecommendSongs.route
         }
     }
 }

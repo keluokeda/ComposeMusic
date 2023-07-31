@@ -23,8 +23,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ke.compose.music.db.entity.Playlist
-import com.ke.compose.music.ui.home.HomeScreen
+import com.ke.compose.music.ui.home.HomeRoute
 import com.ke.compose.music.ui.message.MessageRoute
+import com.ke.compose.music.ui.mine.MineRoute
 import com.ke.compose.music.ui.playlist.PlaylistRoute
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,7 +78,7 @@ fun MainRoute(
             startDestination = MainScreenFragment.Home.route
         ) {
             composable(MainScreenFragment.Home.route) {
-                HomeScreen()
+                HomeRoute()
             }
             composable(MainScreenFragment.Message.route) {
                 MessageRoute()
@@ -88,7 +89,7 @@ fun MainRoute(
             }
 
             composable(MainScreenFragment.Mine.route) {
-                Text(text = "我的")
+                MineRoute()
             }
         }
     }
