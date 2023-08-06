@@ -2,7 +2,7 @@ package com.ke.compose.music.ui.playlist_list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ke.compose.music.repository.PlaylistRepository
+import com.ke.music.repository.PlaylistRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn

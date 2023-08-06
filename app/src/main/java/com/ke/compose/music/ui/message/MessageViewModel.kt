@@ -2,8 +2,9 @@ package com.ke.compose.music.ui.message
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ke.compose.music.domain.successOr
 import com.ke.music.api.response.PrivateMessage
+import com.ke.music.repository.domain.GetMessageListUseCase
+import com.ke.music.repository.domain.successOr
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

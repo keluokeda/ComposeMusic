@@ -1,0 +1,91 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'com.google.dagger.hilt.android'
+    id 'kotlin-parcelize'
+}
+
+android {
+    namespace 'com.ke.music.tv'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.ke.music.tv"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.4.2'
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.leanback:leanback:1.0.0'
+    implementation project(path: ':download')
+
+    def composeBom = platform("androidx.compose:compose-bom:2023.06.01")
+    implementation(composeBom)
+    implementation 'androidx.compose.ui:ui'
+    implementation 'androidx.compose.ui:ui-graphics'
+    implementation 'androidx.compose.ui:ui-tooling-preview'
+
+    implementation("androidx.activity:activity-compose:1.7.2")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+
+    // Compose for TV dependencies
+    def tvCompose = "1.0.0-alpha08"
+    implementation("androidx.tv:tv-foundation:$tvCompose")
+    implementation("androidx.tv:tv-material:$tvCompose")
+
+    implementation "com.google.dagger:hilt-android:2.45"
+    kapt "com.google.dagger:hilt-compiler:2.45"
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+
+
+    implementation project(path: ':repository')
+    implementation project(path: ':player')
+    implementation project(path: ':api')
+
+
+    def nav_version = "2.5.3"
+    implementation "androidx.navigation:navigation-compose:$nav_version"
+
+    implementation "com.lightspark:compose-qr-code:1.0.1"
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.10.0"))
+    implementation("com.squareup.okhttp3:okhttp")
+    implementation("com.squareup.okhttp3:logging-interceptor")
+    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
+    implementation 'androidx.lifecycle:lifecycle-runtime-compose:2.6.1'
+
+
+    implementation 'com.github.franmontiel:PersistentCookieJar:v1.0.1'
+
+    implementation("io.coil-kt:coil-compose:2.3.0")
+    implementation 'androidx.compose.material:material-icons-extended'
+
+    implementation 'me.laoyuyu.aria:core:3.8.16'
+    kapt 'me.laoyuyu.aria:compiler:3.8.16'
+
+
+}

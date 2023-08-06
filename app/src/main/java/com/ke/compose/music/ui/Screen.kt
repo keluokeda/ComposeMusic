@@ -1,9 +1,9 @@
 package com.ke.compose.music.ui
 
-import com.ke.compose.music.db.entity.Playlist
-import com.ke.compose.music.ui.comments.CommentType
-import com.ke.compose.music.ui.share.ShareType
-import com.ke.compose.music.ui.users.UsersType
+import com.ke.music.repository.entity.ShareType
+import com.ke.music.repository.entity.UsersType
+import com.ke.music.room.db.entity.Playlist
+import com.ke.music.room.entity.CommentType
 import java.net.URLEncoder
 
 sealed class Screen(val route: String) {

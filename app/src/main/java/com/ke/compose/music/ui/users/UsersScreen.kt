@@ -19,10 +19,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.items
-import com.ke.compose.music.db.entity.User
 import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.component.Avatar
 import com.ke.compose.music.ui.component.LocalBackHandler
+import com.ke.music.room.db.entity.User
 
 @Composable
 fun UsersRoute() {

@@ -1,8 +1,8 @@
 package com.ke.compose.music.ui.playlist_detail
 
-import com.ke.compose.music.db.entity.Playlist
-import com.ke.compose.music.db.entity.User
-import com.ke.compose.music.entity.MusicEntity
+import com.ke.music.room.db.entity.Playlist
+import com.ke.music.room.db.entity.User
+import com.ke.music.room.entity.MusicEntity
 
 
 data class PlaylistDetailUiState(

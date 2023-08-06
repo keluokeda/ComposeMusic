@@ -28,10 +28,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.items
-import com.ke.compose.music.db.entity.Playlist
-import com.ke.compose.music.db.entity.PlaylistTag
 import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.theme.ComposeMusicTheme
+import com.ke.music.room.db.entity.Playlist
+import com.ke.music.room.db.entity.PlaylistTag
 import kotlinx.coroutines.launch
 
 @Composable

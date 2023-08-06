@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">克音乐</string>
+    <string name="notification_channel">现在就放</string>
+    <string name="notification_channel_description">显示通知栏</string>
+</resources>

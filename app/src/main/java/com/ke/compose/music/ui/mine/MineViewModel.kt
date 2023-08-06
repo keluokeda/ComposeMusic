@@ -2,10 +2,10 @@ package com.ke.compose.music.ui.mine
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ke.compose.music.domain.GetUserDetailUseCase
-import com.ke.compose.music.domain.Result
-import com.ke.compose.music.repository.UserIdRepository
 import com.ke.music.api.response.UserDetailResponse
+import com.ke.music.repository.UserIdRepository
+import com.ke.music.repository.domain.GetUserDetailUseCase
+import com.ke.music.repository.domain.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

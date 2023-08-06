@@ -2,10 +2,11 @@ package com.ke.compose.music.ui.users
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.ke.compose.music.db.dao.UserDao
-import com.ke.compose.music.db.entity.User
-import com.ke.compose.music.domain.FollowUserUseCase
 import com.ke.music.api.HttpService
+import com.ke.music.repository.domain.FollowUserUseCase
+import com.ke.music.repository.entity.UsersType
+import com.ke.music.room.db.dao.UserDao
+import com.ke.music.room.db.entity.User
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

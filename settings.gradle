@@ -16,3 +16,9 @@ dependencyResolutionManagement {
 rootProject.name = "ComposeMusic"
 include ':app'
 include ':api'
+include ':commom'
+include ':room'
+include ':repository'
+include ':tv'
+include ':player'
+include ':download'

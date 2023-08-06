@@ -53,8 +53,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.ke.compose.music.db.entity.Playlist
-import com.ke.compose.music.entity.MusicEntity
 import com.ke.compose.music.niceCount
 import com.ke.compose.music.ui.LocalAppViewModel
 import com.ke.compose.music.ui.component.AppTopBar
@@ -63,9 +61,12 @@ import com.ke.compose.music.ui.component.LocalNavigationHandler
 import com.ke.compose.music.ui.component.MusicBottomSheetLayout
 import com.ke.compose.music.ui.component.MusicView
 import com.ke.compose.music.ui.component.NavigationAction
-import com.ke.compose.music.ui.share.ShareType
 import com.ke.compose.music.ui.theme.ComposeMusicTheme
 import com.ke.music.api.response.User
+import com.ke.music.download.LocalDownloadManager
+import com.ke.music.repository.entity.ShareType
+import com.ke.music.room.db.entity.Playlist
+import com.ke.music.room.entity.MusicEntity
 import kotlinx.coroutines.launch
 
 @Composable
@@ -266,8 +267,9 @@ private fun PlaylistDetailScreen(
                                         .weight(1f)
                                         .padding(start = 4.dp)
                                 )
+                                val downloadManager = LocalDownloadManager.current
                                 IconButton(onClick = {
-                                    appViewModel.downloadPlaylist(uiState.playlist?.id ?: 0)
+                                    downloadManager.downloadPlaylist(uiState.playlist?.id ?: 0)
                                 }) {
                                     Icon(
                                         imageVector = Icons.Default.Download,

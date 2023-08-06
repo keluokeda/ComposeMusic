@@ -3,8 +3,12 @@ package com.ke.compose.music.ui.share
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ke.compose.music.domain.successOr
 import com.ke.music.api.response.User
+import com.ke.music.repository.domain.GetShareUsersUseCase
+import com.ke.music.repository.domain.ShareResourceUseCase
+import com.ke.music.repository.domain.successOr
+import com.ke.music.repository.entity.ShareRequest
+import com.ke.music.repository.entity.ShareType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow

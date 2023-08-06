@@ -1,9 +1,9 @@
 package com.ke.compose.music.ui.playlist_highquality
 
-import com.ke.compose.music.db.dao.PlaylistTagDao
-import com.ke.compose.music.db.entity.PlaylistTag
-import com.ke.compose.music.domain.UseCase
 import com.ke.music.api.HttpService
+import com.ke.music.repository.domain.UseCase
+import com.ke.music.room.db.dao.PlaylistTagDao
+import com.ke.music.room.db.entity.PlaylistTag
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 

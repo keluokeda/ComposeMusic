@@ -21,10 +21,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.ke.compose.music.entity.MusicEntity
 import com.ke.compose.music.ui.LocalAppViewModel
-import com.ke.compose.music.ui.comments.CommentType
-import com.ke.compose.music.ui.share.ShareType
+import com.ke.music.download.LocalDownloadManager
+import com.ke.music.repository.entity.ShareType
+import com.ke.music.room.entity.CommentType
+import com.ke.music.room.entity.MusicEntity
 import kotlinx.coroutines.launch
 
 
@@ -87,13 +88,14 @@ fun MusicBottomSheetLayout(
                 Text(text = "评论")
             }
 
+            val downloadManager = LocalDownloadManager.current
             ListItem(icon = {
                 Icon(imageVector = Icons.Default.Download, contentDescription = null)
             }, modifier = Modifier.clickable {
                 scope.launch {
                     sheetState.hide()
                 }
-                appViewModel.downloadMusic(musicEntity!!.musicId)
+                downloadManager.downloadMusic(musicEntity!!.musicId)
             }) {
 
 

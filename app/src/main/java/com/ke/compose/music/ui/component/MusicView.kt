@@ -25,30 +25,31 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.ke.compose.music.db.entity.Album
-import com.ke.compose.music.db.entity.Artist
-import com.ke.compose.music.db.entity.Download
-import com.ke.compose.music.entity.MusicEntity
-import com.ke.compose.music.ui.IAppViewModel
-import com.ke.compose.music.ui.LocalAppViewModel
 import com.ke.compose.music.ui.theme.ComposeMusicTheme
+import com.ke.music.player.service.LocalMusicPlayerController
+import com.ke.music.player.service.MusicPlayerController
+import com.ke.music.room.db.entity.Album
+import com.ke.music.room.db.entity.Artist
+import com.ke.music.room.db.entity.Download
+import com.ke.music.room.entity.MusicEntity
 
 
 @Composable
 fun MusicView(
     musicEntity: MusicEntity,
     rightButton: @Composable () -> Unit = {},
-    onClick: (MusicEntity, IAppViewModel) -> Unit = { entity, viewModel ->
-        viewModel.playMusic(entity.musicId)
+    onClick: (MusicEntity, MusicPlayerController) -> Unit = { entity, controller ->
+        controller.playMusic(entity.musicId)
     }
 ) {
+
     val size = 40.dp
     Column {
-        val appViewModel = LocalAppViewModel.current
+        val controller = LocalMusicPlayerController.current
         Row(
             modifier = Modifier
                 .clickable {
-                    onClick(musicEntity, appViewModel)
+                    onClick(musicEntity, controller)
                 }
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically

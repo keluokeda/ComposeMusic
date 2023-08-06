@@ -2,9 +2,10 @@ package com.ke.compose.music.ui.playlist_new
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ke.compose.music.domain.successOr
-import com.ke.compose.music.repository.UserIdRepository
-import com.ke.compose.music.ui.playlist.LoadUserPlaylistUseCase
+import com.ke.music.repository.UserIdRepository
+import com.ke.music.repository.domain.CreatePlaylistUseCase
+import com.ke.music.repository.domain.LoadUserPlaylistUseCase
+import com.ke.music.repository.domain.successOr
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow

@@ -39,14 +39,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.ke.compose.music.convert
-import com.ke.compose.music.db.entity.Playlist
 import com.ke.compose.music.ui.LocalAppViewModel
 import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.component.LocalNavigationHandler
 import com.ke.compose.music.ui.component.NavigationAction
-import com.ke.compose.music.ui.share.ShareType
 import com.ke.music.api.response.mockPlaylist
+import com.ke.music.download.LocalDownloadManager
+import com.ke.music.repository.convert
+import com.ke.music.repository.entity.ShareType
+import com.ke.music.room.db.entity.Playlist
 
 
 @Composable
@@ -159,8 +160,9 @@ private fun PlaylistItem(
                 DropdownMenu(expanded = expanded, onDismissRequest = {
                     expanded = false
                 }) {
+                    val downloadManager = LocalDownloadManager.current
                     DropdownMenuItem(text = { Text(text = "下载") }, onClick = {
-                        viewModel.downloadPlaylist(playlist.id)
+                        downloadManager.downloadPlaylist(playlist.id)
                         expanded = false
                     })
                     val navigationHandler = LocalNavigationHandler.current

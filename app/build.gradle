@@ -71,6 +71,9 @@ dependencies {
     implementation 'androidx.compose.material3:material3'
     implementation "androidx.compose.runtime:runtime-livedata"
     implementation project(path: ':api')
+    implementation project(path: ':repository')
+    implementation project(path: ':player')
+    implementation project(path: ':download')
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
@@ -84,7 +87,6 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
     def nav_version = "2.5.3"
-    // Jetpack Compose Integration
     implementation "androidx.navigation:navigation-compose:$nav_version"
 
     implementation "com.lightspark:compose-qr-code:1.0.1"
@@ -96,7 +98,6 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor")
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
 
-    implementation 'com.orhanobut:logger:2.2.0'
     implementation 'com.github.franmontiel:PersistentCookieJar:v1.0.1'
 
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1'
@@ -111,14 +112,7 @@ dependencies {
     implementation "androidx.paging:paging-compose:1.0.0-alpha20"
 
 
-    def room_version = "2.5.1"
 
-    implementation "androidx.room:room-runtime:$room_version"
-    implementation "androidx.room:room-ktx:$room_version"
-    // To use Kotlin annotation processing tool (kapt)
-    kapt "androidx.room:room-compiler:$room_version"
-    // optional - Paging 3 Integration
-    implementation "androidx.room:room-paging:$room_version"
 
     implementation("org.greenrobot:eventbus:3.3.1")
 
@@ -127,11 +121,6 @@ dependencies {
     implementation 'me.laoyuyu.aria:core:3.8.16'
     kapt 'me.laoyuyu.aria:compiler:3.8.16'
 
-
-    implementation "androidx.media3:media3-exoplayer:1.0.2"
-    implementation "androidx.media3:media3-exoplayer-dash:1.0.2"
-    implementation "androidx.media3:media3-ui:1.0.2"
-    implementation "androidx.media:media:1.6.0"
 
     // Glide dependencies
     implementation "com.github.bumptech.glide:glide:4.15.1"

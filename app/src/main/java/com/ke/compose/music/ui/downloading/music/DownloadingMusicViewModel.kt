@@ -2,9 +2,9 @@ package com.ke.compose.music.ui.downloading.music
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ke.compose.music.db.entity.Download
-import com.ke.compose.music.entity.QueryDownloadingMusicResult
-import com.ke.compose.music.repository.DownloadRepository
+import com.ke.music.repository.DownloadRepository
+import com.ke.music.room.db.entity.Download
+import com.ke.music.room.entity.QueryDownloadingMusicResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn

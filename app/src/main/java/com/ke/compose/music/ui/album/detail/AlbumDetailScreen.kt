@@ -43,16 +43,16 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.ke.compose.music.entity.MusicEntity
-import com.ke.compose.music.ui.LocalAppViewModel
-import com.ke.compose.music.ui.comments.CommentType
 import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.component.LocalBackHandler
 import com.ke.compose.music.ui.component.LocalNavigationHandler
 import com.ke.compose.music.ui.component.MusicBottomSheetLayout
 import com.ke.compose.music.ui.component.MusicView
 import com.ke.compose.music.ui.component.NavigationAction
-import com.ke.compose.music.ui.share.ShareType
+import com.ke.music.download.LocalDownloadManager
+import com.ke.music.repository.entity.ShareType
+import com.ke.music.room.entity.CommentType
+import com.ke.music.room.entity.MusicEntity
 import kotlinx.coroutines.launch
 
 @Composable
@@ -100,9 +100,10 @@ private fun AlbumDetailScreen(id: Long, uiState: AlbumDetailUiState, onCollectCl
                 }
 
                 if (uiState.hasData) {
-                    val appViewModel = LocalAppViewModel.current
+//                    val appViewModel = LocalAppViewModel.current
+                    val downloadManager = LocalDownloadManager.current
                     IconButton(onClick = {
-                        appViewModel.downloadAlbum(uiState.albumEntity!!.albumId)
+                        downloadManager.downloadAlbum(uiState.albumEntity!!.albumId)
                     }) {
                         Icon(
                             imageVector = Icons.Default.Download,
@@ -196,7 +197,7 @@ private fun AlbumDetailContent(
 
                 if (detail.albumEntity.description != null)
                     Text(
-                        text = detail.albumEntity.description,
+                        text = detail.albumEntity.description ?: "",
                         style = MaterialTheme.typography.bodySmall
                     )
             }

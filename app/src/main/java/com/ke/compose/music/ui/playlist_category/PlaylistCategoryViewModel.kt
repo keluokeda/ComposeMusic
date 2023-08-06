@@ -2,7 +2,8 @@ package com.ke.compose.music.ui.playlist_category
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ke.compose.music.domain.Result
+import com.ke.music.repository.domain.GetPlaylistCategoryListUseCase
+import com.ke.music.repository.domain.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

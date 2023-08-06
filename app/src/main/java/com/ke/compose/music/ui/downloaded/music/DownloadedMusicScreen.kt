@@ -17,9 +17,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ke.compose.music.entity.MusicEntity
 import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.component.MusicView
+import com.ke.music.room.entity.MusicEntity
 
 @Composable
 fun DownloadedMusicRoute(

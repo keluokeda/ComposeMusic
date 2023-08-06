@@ -27,9 +27,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
-import com.ke.compose.music.db.entity.Playlist
 import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.component.items
+import com.ke.music.room.db.entity.Playlist
 
 @Composable
 fun PlaylistTopRoute(

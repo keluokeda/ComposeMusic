@@ -2,13 +2,12 @@ package com.ke.compose.music.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ke.compose.music.domain.Result
-import com.ke.compose.music.domain.successOr
-import com.ke.music.api.HttpService
-import com.orhanobut.logger.Logger
+import com.ke.music.repository.domain.CreateQRUrlUseCase
+import com.ke.music.repository.domain.LoginUseCase
+import com.ke.music.repository.domain.Result
+import com.ke.music.repository.domain.successOr
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

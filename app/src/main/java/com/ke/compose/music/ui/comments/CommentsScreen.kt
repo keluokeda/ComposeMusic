@@ -48,15 +48,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.items
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
 import com.ke.compose.music.Keyboard
-import com.ke.compose.music.entity.QueryCommentResult
 import com.ke.compose.music.keyboardAsState
 import com.ke.compose.music.niceCount
 import com.ke.compose.music.observeWithLifecycle
 import com.ke.compose.music.toast
 import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.component.Avatar
+import com.ke.music.room.entity.CommentType
+import com.ke.music.room.entity.QueryCommentResult
 import com.orhanobut.logger.Logger
 
 
@@ -192,14 +194,20 @@ private fun CommentScreen(
                     .weight(1f)
             ) {
 
-                items(items = list, key = {
-                    it.commentId
-                }) {
+                items(
+                    count = list.itemCount,
+                    key = list.itemKey(key = {
+                        it.commentId
+                    }),
+                    contentType = list.itemContentType(
+                    )
+                ) { index ->
+                    val item = list[index]
                     CommentItem(
-                        comment = it!!,
+                        comment = item!!,
                         onThumbClick = onThumbClick,
                         onMoreCommentClick = {
-                            onMoreCommentClick(it.commentId)
+                            onMoreCommentClick(item.commentId)
                         },
                         onClick = { selected ->
                             focusRequester.requestFocus()

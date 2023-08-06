@@ -2,7 +2,7 @@ package com.ke.compose.music.ui.playlist_highquality
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ke.compose.music.db.dao.PlaylistTagDao
+import com.ke.music.room.db.dao.PlaylistTagDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn

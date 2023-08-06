@@ -33,12 +33,12 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
-import com.ke.compose.music.entity.QueryChildCommentResult
-import com.ke.compose.music.entity.QueryCommentAndUserResult
 import com.ke.compose.music.niceCount
 import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.component.Avatar
 import com.ke.compose.music.ui.theme.ComposeMusicTheme
+import com.ke.music.room.entity.QueryChildCommentResult
+import com.ke.music.room.entity.QueryCommentAndUserResult
 import com.orhanobut.logger.Logger
 
 @Composable
@@ -158,7 +158,7 @@ private fun CommentItem(
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
-                            text = comment.beRepliedUsername,
+                            text = comment.beRepliedUsername ?: "",
                             style = MaterialTheme.typography.bodySmall
                         )
 

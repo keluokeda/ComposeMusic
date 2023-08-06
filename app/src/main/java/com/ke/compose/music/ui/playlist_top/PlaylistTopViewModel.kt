@@ -8,8 +8,9 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.ke.compose.music.repository.PlaylistRepository
 import com.ke.music.api.HttpService
+import com.ke.music.repository.PlaylistRepository
+import com.ke.music.repository.mediator.TopPlaylistRemoteMediator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -30,7 +31,7 @@ class PlaylistTopViewModel @Inject constructor(
 
 
     @OptIn(ExperimentalPagingApi::class)
-    val playlists: Flow<PagingData<com.ke.compose.music.db.entity.Playlist>> = Pager(
+    val playlists: Flow<PagingData<com.ke.music.room.db.entity.Playlist>> = Pager(
         config = PagingConfig(
             pageSize = 50,
             enablePlaceholders = false,

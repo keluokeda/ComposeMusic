@@ -2,8 +2,8 @@ package com.ke.compose.music.ui.downloaded.music
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ke.compose.music.domain.DeleteDownloadedMusicUseCase
-import com.ke.compose.music.repository.MusicRepository
+import com.ke.music.repository.MusicRepository
+import com.ke.music.repository.domain.DeleteDownloadedMusicUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn

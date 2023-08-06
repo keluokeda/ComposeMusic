@@ -1,6 +1,5 @@
 package com.ke.compose.music.ui.navigation
 
-import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
@@ -12,16 +11,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navOptions
-import com.ke.compose.music.service.MusicPlayerService
 import com.ke.compose.music.ui.AppViewModel
 import com.ke.compose.music.ui.LocalAppViewModel
 import com.ke.compose.music.ui.Screen
 import com.ke.compose.music.ui.album.detail.AlbumDetailRoute
 import com.ke.compose.music.ui.child_comments.ChildCommentsRoute
-import com.ke.compose.music.ui.comments.CommentType
 import com.ke.compose.music.ui.comments.CommentsRoute
-import com.ke.compose.music.ui.comments.LocalMusicController
-import com.ke.compose.music.ui.comments.MusicControllerAction
 import com.ke.compose.music.ui.component.LocalBackHandler
 import com.ke.compose.music.ui.component.LocalNavigationHandler
 import com.ke.compose.music.ui.downloaded.music.DownloadedMusicRoute
@@ -37,10 +32,15 @@ import com.ke.compose.music.ui.playlist_new.PlaylistNewScreen
 import com.ke.compose.music.ui.playlist_top.PlaylistTopRoute
 import com.ke.compose.music.ui.recommend_songs.RecommendSongsRoute
 import com.ke.compose.music.ui.share.ShareRoute
-import com.ke.compose.music.ui.share.ShareType
 import com.ke.compose.music.ui.slpash.SplashScreen
 import com.ke.compose.music.ui.users.UsersRoute
-import com.ke.compose.music.ui.users.UsersType
+import com.ke.music.download.DownloadManagerImpl
+import com.ke.music.download.LocalDownloadManager
+import com.ke.music.player.service.LocalMusicPlayerController
+import com.ke.music.player.service.MusicPlayerController
+import com.ke.music.repository.entity.ShareType
+import com.ke.music.repository.entity.UsersType
+import com.ke.music.room.entity.CommentType
 import java.net.URLDecoder
 
 
@@ -49,22 +49,19 @@ fun AppNavigation() {
     val navController = rememberNavController()
     val appViewModel = hiltViewModel<AppViewModel>()
     val context = LocalContext.current
-    CompositionLocalProvider(LocalNavigationHandler provides {
-        navController.navigate(it.createPath())
-    }, LocalBackHandler provides {
-        navController.popBackStack()
-    }, LocalAppViewModel provides appViewModel, LocalMusicController provides {
-        val intent = when (it) {
-            is MusicControllerAction.PlayNow -> {
-                val intent = Intent(context, MusicPlayerService::class.java)
-                intent.action = MusicPlayerService.ACTION_PLAY_NOW
-                intent.putExtra("id", it.id)
-                intent
-            }
-        }
-
-        context.startService(intent)
-    }) {
+    CompositionLocalProvider(
+        LocalNavigationHandler provides {
+            navController.navigate(it.createPath())
+        },
+        LocalBackHandler provides {
+            navController.popBackStack()
+        },
+        LocalAppViewModel provides appViewModel,
+        LocalDownloadManager provides DownloadManagerImpl(context),
+        LocalMusicPlayerController provides MusicPlayerController.createMusicPlayerController(
+            context
+        )
+    ) {
         NavigationTree(navController)
     }
 

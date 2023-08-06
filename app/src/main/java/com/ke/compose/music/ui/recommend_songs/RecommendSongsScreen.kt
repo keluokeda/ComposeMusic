@@ -24,11 +24,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ke.compose.music.entity.MusicEntity
 import com.ke.compose.music.ui.LocalAppViewModel
 import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.component.MusicBottomSheetLayout
 import com.ke.compose.music.ui.component.MusicView
+import com.ke.music.download.LocalDownloadManager
+import com.ke.music.room.entity.MusicEntity
 import kotlinx.coroutines.launch
 
 @Composable
@@ -69,9 +70,10 @@ private fun RecommendSongsScreen(
                 }
             }, actions = {
 
+                val downloadManager = LocalDownloadManager.current
                 if (list.isNotEmpty())
                     IconButton(onClick = {
-                        appViewModel.downloadRecommendSongs()
+                        downloadManager.downloadRecommendSongs()
                     }) {
                         Icon(imageVector = Icons.Default.Download, contentDescription = null)
                     }

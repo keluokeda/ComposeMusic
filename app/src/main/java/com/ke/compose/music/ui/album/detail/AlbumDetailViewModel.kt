@@ -3,8 +3,10 @@ package com.ke.compose.music.ui.album.detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ke.compose.music.repository.AlbumRepository
-import com.ke.compose.music.repository.MusicRepository
+import com.ke.music.repository.AlbumRepository
+import com.ke.music.repository.MusicRepository
+import com.ke.music.repository.domain.LoadAlbumDetailUseCase
+import com.ke.music.repository.domain.ToggleCollectAlbumUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine

@@ -25,10 +25,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.ke.compose.music.db.entity.Download
-import com.ke.compose.music.entity.QueryDownloadingMusicResult
 import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.theme.ComposeMusicTheme
+import com.ke.music.room.db.entity.Download
+import com.ke.music.room.entity.QueryDownloadingMusicResult
 
 @Composable
 fun DownloadingMusicRoute(

@@ -2,7 +2,8 @@ package com.ke.compose.music.ui.recommend_songs
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ke.compose.music.repository.MusicRepository
+import com.ke.music.repository.MusicRepository
+import com.ke.music.repository.domain.LoadRecommendSongsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn

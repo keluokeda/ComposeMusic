@@ -2,8 +2,10 @@ package com.ke.compose.music.ui.playlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ke.compose.music.db.dao.PlaylistDao
-import com.ke.compose.music.repository.UserIdRepository
+import com.ke.music.repository.UserIdRepository
+import com.ke.music.repository.domain.DeletePlaylistUseCase
+import com.ke.music.repository.domain.LoadUserPlaylistUseCase
+import com.ke.music.room.db.dao.PlaylistDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
