@@ -1,6 +1,7 @@
 package com.ke.music.repository
 
 import android.content.Context
+import android.widget.Toast
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
@@ -62,4 +63,8 @@ suspend fun Context.setUserId(userId: Long) {
     userIdStore.edit {
         it[KEY_USER_ID] = userId
     }
+}
+
+fun Context.toast(text: CharSequence) {
+    Toast.makeText(applicationContext, text, Toast.LENGTH_SHORT).show()
 }

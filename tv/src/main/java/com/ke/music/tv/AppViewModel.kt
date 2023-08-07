@@ -2,7 +2,6 @@ package com.ke.music.tv
 
 import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
 import android.media.MediaMetadata
 import android.media.browse.MediaBrowser
 import android.media.session.MediaController
@@ -11,7 +10,6 @@ import android.media.session.PlaybackState
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ke.music.download.MusicDownloadService
 import com.ke.music.player.service.MusicPlayerService
 import com.ke.music.repository.domain.AddOrRemoveSongsToPlaylistRequest
 import com.ke.music.repository.domain.AddOrRemoveSongsToPlaylistUseCase
@@ -136,33 +134,7 @@ class AppViewModel @Inject constructor(
         }
     }
 
-    override fun downloadMusic(musicId: Long) {
-        val intent = Intent(context, MusicDownloadService::class.java)
-        intent.action = MusicDownloadService.ACTION_DOWNLOAD_MUSIC
-        intent.putExtra(MusicDownloadService.EXTRA_ID, musicId)
-        context.startService(intent)
-    }
 
-    override fun downloadPlaylist(playlistId: Long) {
-        val intent = Intent(context, MusicDownloadService::class.java)
-        intent.action = MusicDownloadService.ACTION_DOWNLOAD_PLAYLIST
-        intent.putExtra(MusicDownloadService.EXTRA_ID, playlistId)
-        context.startService(intent)
-    }
-
-
-    override fun downloadAlbum(albumId: Long) {
-        val intent = Intent(context, MusicDownloadService::class.java)
-        intent.action = MusicDownloadService.ACTION_DOWNLOAD_ALBUM
-        intent.putExtra(MusicDownloadService.EXTRA_ID, albumId)
-        context.startService(intent)
-    }
-
-    override fun downloadRecommendSongs() {
-        val intent = Intent(context, MusicDownloadService::class.java)
-        intent.action = MusicDownloadService.ACTION_DOWNLOAD_RECOMMEND_SONG
-        context.startService(intent)
-    }
 
     override fun playMusic(musicId: Long) {
         controller?.transportControls?.playFromMediaId(musicId.toString(), null)
@@ -183,23 +155,7 @@ interface IAppViewModel {
     var selectedSongList: List<Long>
 
 
-    /**
-     * 下载音乐
-     */
-    fun downloadMusic(musicId: Long)
 
-
-    /**
-     * 下载歌单的全部歌曲
-     */
-    fun downloadPlaylist(playlistId: Long)
-
-    /**
-     * 下载专辑
-     */
-    fun downloadAlbum(albumId: Long)
-
-    fun downloadRecommendSongs()
 
 
     /**
@@ -223,26 +179,13 @@ private val defaultAppViewModel = object : IAppViewModel {
     override var selectedSongList: List<Long> = emptyList()
 
 
-    override fun downloadMusic(musicId: Long) {
 
-    }
-
-
-    override fun downloadPlaylist(playlistId: Long) {
-
-    }
-
-    override fun downloadAlbum(albumId: Long) {
-
-    }
 
     override fun playMusic(musicId: Long) {
 
     }
 
-    override fun downloadRecommendSongs() {
 
-    }
 
     override val currentUserId: Long
         get() = 0L

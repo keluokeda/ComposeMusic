@@ -94,6 +94,12 @@ sealed interface NavigationAction {
             return Screen.RecommendSongs.route
         }
     }
+
+    object NavigateToAlbumSquare : NavigationAction {
+        override fun createPath(): String {
+            return Screen.AlbumSquare.route
+        }
+    }
 }
 
 val LocalNavigationHandler = staticCompositionLocalOf { NavigationHandler { } }

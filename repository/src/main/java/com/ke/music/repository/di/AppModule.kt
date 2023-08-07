@@ -1,4 +1,4 @@
-package com.ke.compose.music.di
+package com.ke.music.repository.di
 
 import android.content.Context
 import android.util.Log

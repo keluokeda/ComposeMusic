@@ -9,6 +9,7 @@ import com.ke.music.api.response.LoginQRCreateResponse
 import com.ke.music.api.response.LoginQRKeyResponse
 import com.ke.music.api.response.LoginStatusResponse
 import com.ke.music.api.response.MusicUrlResponse
+import com.ke.music.api.response.NewAlbumListResponse
 import com.ke.music.api.response.PlaylistCategoryResponse
 import com.ke.music.api.response.PlaylistDetailResponse
 import com.ke.music.api.response.PlaylistDynamicResponse
@@ -351,4 +352,14 @@ interface HttpService {
     suspend fun getUserDetail(@Query("uid") userId: Long): UserDetailResponse
 
 
+    /**
+     * 最新专辑
+     * @param area ALL:全部,ZH:华语,EA:欧美,KR:韩国,JP:日本
+     */
+    @GET("album/new")
+    suspend fun getNewAlbumList(
+        @Query("area") area: String,
+        @Query("limit") limit: Int,
+        @Query("offset") offset: Int
+    ): NewAlbumListResponse
 }

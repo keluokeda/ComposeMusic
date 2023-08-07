@@ -12,6 +12,7 @@ import com.ke.music.room.db.dao.CommentDao
 import com.ke.music.room.db.dao.DownloadDao
 import com.ke.music.room.db.dao.MusicArtistCrossRefDao
 import com.ke.music.room.db.dao.MusicDao
+import com.ke.music.room.db.dao.NewAlbumDao
 import com.ke.music.room.db.dao.PlaylistDao
 import com.ke.music.room.db.dao.PlaylistMusicCrossRefDao
 import com.ke.music.room.db.dao.PlaylistSubscriberCrossRefDao
@@ -30,6 +31,7 @@ import com.ke.music.room.db.entity.Comment
 import com.ke.music.room.db.entity.Download
 import com.ke.music.room.db.entity.Music
 import com.ke.music.room.db.entity.MusicArtistCrossRef
+import com.ke.music.room.db.entity.NewAlbum
 import com.ke.music.room.db.entity.Playlist
 import com.ke.music.room.db.entity.PlaylistMusicCrossRef
 import com.ke.music.room.db.entity.PlaylistSubscriberCrossRef
@@ -60,7 +62,8 @@ import com.ke.music.room.db.entity.UserPlaylistCrossRef
         UserLikeCommentCrossRef::class,
         UserAlbumCrossRef::class,
         RecommendSong::class,
-        TopPlaylist::class
+        TopPlaylist::class,
+        NewAlbum::class,
 //        AlbumMusicCrossRef::class
     ],
     version = 2
@@ -104,4 +107,6 @@ abstract class AppFileDatabase : RoomDatabase() {
     abstract fun recommendSongDao(): RecommendSongDao
 
     abstract fun topPlaylistDao(): TopPlaylistDao
+
+    abstract fun newAlbumDao(): NewAlbumDao
 }

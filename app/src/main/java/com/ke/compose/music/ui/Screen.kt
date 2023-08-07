@@ -136,4 +136,9 @@ sealed class Screen(val route: String) {
      * 每日推荐
      */
     object RecommendSongs : Screen("/recommend/songs")
+
+    /**
+     * 专辑广场
+     */
+    object AlbumSquare : Screen("/album/square")
 }

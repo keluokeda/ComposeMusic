@@ -20,4 +20,9 @@ data class AlbumData(
     val company: String
 )
 
+@JsonClass(generateAdapter = true)
+data class NewAlbumListResponse(
+    val albums: List<AlbumData> = emptyList()
+)
+
 

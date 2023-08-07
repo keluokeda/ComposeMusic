@@ -105,6 +105,12 @@ private fun HomeScreen(
                 }) {
                     Text(text = "每日推荐")
                 }
+
+                ListItem(modifier = Modifier.clickable {
+                    navigationHandler.navigate(NavigationAction.NavigateToAlbumSquare)
+                }) {
+                    Text(text = "专辑广场")
+                }
             }
 
             PullRefreshIndicator(

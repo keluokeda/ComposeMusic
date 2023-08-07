@@ -30,68 +30,8 @@ class AppViewModel @Inject constructor(
 
     override var selectedSongList: List<Long> = emptyList()
 
-//    private lateinit var mediaBrowser: MediaBrowser
-//    private var controller: MediaController? = null
-//
-//    private val subscriptionCallback = object : MediaBrowser.SubscriptionCallback() {
-//
-//    }
-//
-//    private val mediaControllerCallback = object : MediaController.Callback() {
-//        override fun onMetadataChanged(metadata: MediaMetadata?) {
-//            Logger.d(metadata)
-//        }
-//
-//        override fun onPlaybackStateChanged(state: PlaybackState?) {
-////            super.onPlaybackStateChanged(state)
-//            Logger.d(state)
-//
-//        }
-//
-//        override fun onQueueChanged(queue: MutableList<MediaSession.QueueItem>?) {
-//            super.onQueueChanged(queue)
-//            Logger.d(queue)
-//
-//        }
-//    }
 
     init {
-//        mediaBrowser = MediaBrowser(
-//            context,
-//            ComponentName(context, MusicPlayerService::class.java),
-//            object : MediaBrowser.ConnectionCallback() {
-//                override fun onConnected() {
-//
-//                    Logger.d("onConnected")
-//
-//                    if (mediaBrowser.isConnected) {
-//                        val mediaId = mediaBrowser.root
-//                        mediaBrowser.unsubscribe(mediaId)
-//                        mediaBrowser.subscribe(mediaId, subscriptionCallback)
-//                        controller =
-//                            MediaController(context, mediaBrowser.sessionToken)
-//                        controller?.registerCallback(mediaControllerCallback)
-//
-//                    }
-//                }
-//
-//                override fun onConnectionFailed() {
-//                    super.onConnectionFailed()
-//                    Logger.d("onConnectionFailed")
-//                }
-//
-//                override fun onConnectionSuspended() {
-//                    super.onConnectionSuspended()
-//                    Logger.d("onConnectionSuspended")
-//
-//                }
-//            },
-//            null
-//        )
-//
-//        mediaBrowser.connect()
-
-
         viewModelScope.launch {
             context.userIdFlow.collect {
                 _currentUserId = it

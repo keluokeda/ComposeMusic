@@ -54,7 +54,6 @@ class TopPlaylistRemoteMediator constructor(
 
             return MediatorResult.Success(
                 endOfPaginationReached =
-//                true
                 !response.more
             )
         } catch (e: Exception) {
