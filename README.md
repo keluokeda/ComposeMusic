@@ -1,5 +1,6 @@
 # ComposeMusic
-网易云音乐Compose版app，包含app、pad、tv
+网易云音乐Compose版app，包含app手机、tablet平板、tv电视三个版本。
+目前还在施工中
 
 
 ### tv版本截图
