@@ -2,8 +2,11 @@ package com.ke.music.tv.ui.components
 
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.ke.music.repository.entity.ShareType
+import com.ke.music.room.entity.AlbumEntity
 import com.ke.music.room.entity.CommentType
+import com.ke.music.room.entity.MusicEntity
 import com.ke.music.tv.ui.Screen
+import java.net.URLEncoder
 
 sealed interface NavigationAction {
 
@@ -27,19 +30,20 @@ sealed interface NavigationAction {
      * 导航到分享
      */
     data class NavigateToShare(
-        val shareType: ShareType,
-        val id: Long,
-        val title: String,
-        val subTitle: String,
-        val cover: String
+//        val shareType: ShareType,
+//        val id: Long,
+//        val title: String,
+//        val subTitle: String,
+//        val cover: String
+        val shareAction: ShareAction
     ) : NavigationAction {
         override fun createPath(): String {
-            return Screen.Share.createPath(shareType, id, title, subTitle, cover)
+            return Screen.Share.createPath(shareAction.createPath())
         }
     }
 
     /**
-     * 导航到转机详情
+     * 导航到专辑详情
      */
     data class NavigateToAlbumDetail(
         val id: Long
@@ -52,9 +56,9 @@ sealed interface NavigationAction {
     /**
      * 导航到用户歌单列表
      */
-    object NavigateToPlaylistList : NavigationAction {
+    data class NavigateToMyPlaylist(val musicId: Long) : NavigationAction {
         override fun createPath(): String {
-            return Screen.PlaylistList.createPath()
+            return Screen.MyPlaylist.createPath(musicId)
         }
     }
 
@@ -64,6 +68,13 @@ sealed interface NavigationAction {
     data class NavigateToPlaylistTop(val category: String = "全部") : NavigationAction {
         override fun createPath(): String {
             return Screen.PlaylistTop.createPath(category)
+        }
+    }
+
+
+    object NavigateToUserPlaylist : NavigationAction {
+        override fun createPath(): String {
+            return Screen.UserPlaylist.route
         }
     }
 
@@ -94,10 +105,69 @@ sealed interface NavigationAction {
             return Screen.RecommendSongs.route
         }
     }
+
+    data class NavigateToPlaylistDetail(private val id: Long) : NavigationAction {
+        override fun createPath(): String {
+            return Screen.PlaylistDetail.createUrl(id)
+        }
+    }
+
 }
 
 val LocalNavigationHandler = staticCompositionLocalOf { NavigationHandler { } }
 
 fun interface NavigationHandler {
     fun navigate(navigationAction: NavigationAction)
+}
+
+sealed interface ShareAction {
+
+    companion object {
+        private fun createPath(
+            shareType: ShareType, id: Long, title: String, subTitle: String, cover: String
+        ) = "/share?type=$shareType&id=$id&title=$title&subTitle=${
+            URLEncoder.encode(
+                subTitle,
+                Charsets.UTF_8.name()
+            )
+        }&cover=$cover"
+    }
+
+    fun createPath(): String
+
+    data class Playlist(val playlist: com.ke.music.room.db.entity.Playlist) : ShareAction {
+        override fun createPath(): String {
+            return Companion.createPath(
+                ShareType.Playlist,
+                playlist.id,
+                playlist.name,
+                playlist.description ?: "",
+                playlist.coverImgUrl
+            )
+        }
+    }
+
+    data class Music(val musicEntity: MusicEntity) : ShareAction {
+        override fun createPath(): String {
+            return Companion.createPath(
+                ShareType.Song,
+                musicEntity.musicId,
+                musicEntity.name,
+                musicEntity.subTitle,
+                musicEntity.album.imageUrl
+            )
+        }
+    }
+
+    data class Album(val albumEntity: AlbumEntity) : ShareAction {
+        override fun createPath(): String {
+            return Companion.createPath(
+                ShareType.Album,
+                albumEntity.albumId,
+                albumEntity.name,
+                albumEntity.description ?: "¬",
+                albumEntity.image
+            )
+        }
+    }
 }

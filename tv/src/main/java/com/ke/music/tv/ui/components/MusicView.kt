@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,6 +55,12 @@ fun MusicView(
     val downloadManager = LocalDownloadManager.current
 
     val focusRequester = FocusRequester()
+
+    LaunchedEffect(key1 = Unit) {
+        if (index == 0) {
+            focusRequester.requestFocus()
+        }
+    }
     ListItem(modifier = Modifier.onFocusChanged {
         hasFocus = it.hasFocus
         if (hasFocus) {
@@ -137,6 +144,10 @@ fun MusicView(
 
         if (hasFocus) {
             Row {
+
+
+                val navigationHandler = LocalNavigationHandler.current
+
                 if (musicEntity.mv != 0L) {
                     IconButton(onClick = { }) {
                         Icon(imageVector = Icons.Default.OndemandVideo, contentDescription = null)
@@ -145,7 +156,9 @@ fun MusicView(
 
                 }
 
-                IconButton(onClick = { }) {
+                IconButton(onClick = {
+                    navigationHandler.navigate(NavigationAction.NavigateToMyPlaylist(musicEntity.musicId))
+                }) {
                     Icon(imageVector = Icons.Default.AddToPhotos, contentDescription = null)
                 }
                 Spacer(modifier = Modifier.width(8.dp))
@@ -154,7 +167,15 @@ fun MusicView(
                 }
                 Spacer(modifier = Modifier.width(8.dp))
 
-                IconButton(onClick = {}) {
+                IconButton(onClick = {
+                    navigationHandler.navigate(
+                        NavigationAction.NavigateToShare(
+                            ShareAction.Music(
+                                musicEntity
+                            )
+                        )
+                    )
+                }) {
                     Icon(imageVector = Icons.Default.Share, contentDescription = null)
                 }
                 Spacer(modifier = Modifier.width(8.dp))
@@ -165,7 +186,9 @@ fun MusicView(
                 }
                 Spacer(modifier = Modifier.width(8.dp))
 
-                IconButton(onClick = {}) {
+                IconButton(onClick = {
+                    navigationHandler.navigate(NavigationAction.NavigateToAlbumDetail(musicEntity.album.albumId))
+                }) {
                     Icon(imageVector = Icons.Default.Album, contentDescription = null)
                 }
                 Spacer(modifier = Modifier.width(8.dp))

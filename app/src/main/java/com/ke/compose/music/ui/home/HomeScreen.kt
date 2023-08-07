@@ -76,6 +76,15 @@ private fun HomeScreen(
 
             Column(modifier = Modifier.verticalScroll(scrollState)) {
                 val navigationHandler = LocalNavigationHandler.current
+
+
+                ListItem(modifier = Modifier.clickable {
+                    navigationHandler.navigate(NavigationAction.NavigateToRecommendSongs)
+                }) {
+                    Text(text = "每日推荐")
+                }
+
+
                 ListItem(modifier = Modifier.clickable {
                     navigationHandler.navigate(NavigationAction.NavigateToPlaylistTop())
                 }) {
@@ -88,28 +97,19 @@ private fun HomeScreen(
                     Text(text = "精品歌单")
                 }
 
-                ListItem(modifier = Modifier.clickable {
-                    navigationHandler.navigate(NavigationAction.NavigateToDownloadedMusic)
-                }) {
-                    Text(text = "已下载的音乐")
-                }
 
-                ListItem(modifier = Modifier.clickable {
-                    navigationHandler.navigate(NavigationAction.NavigateToDownloadingMusic)
-                }) {
-                    Text(text = "下载中的音乐")
-                }
 
-                ListItem(modifier = Modifier.clickable {
-                    navigationHandler.navigate(NavigationAction.NavigateToRecommendSongs)
-                }) {
-                    Text(text = "每日推荐")
-                }
 
                 ListItem(modifier = Modifier.clickable {
                     navigationHandler.navigate(NavigationAction.NavigateToAlbumSquare)
                 }) {
                     Text(text = "专辑广场")
+                }
+
+                ListItem(modifier = Modifier.clickable {
+                    navigationHandler.navigate(NavigationAction.NavigateToArtistList)
+                }) {
+                    Text(text = "歌手列表")
                 }
             }
 

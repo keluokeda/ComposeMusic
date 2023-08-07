@@ -10,6 +10,7 @@ import com.ke.music.room.db.dao.ArtistDao
 import com.ke.music.room.db.dao.ChildCommentDao
 import com.ke.music.room.db.dao.CommentDao
 import com.ke.music.room.db.dao.DownloadDao
+import com.ke.music.room.db.dao.HotArtistDao
 import com.ke.music.room.db.dao.MusicArtistCrossRefDao
 import com.ke.music.room.db.dao.MusicDao
 import com.ke.music.room.db.dao.NewAlbumDao
@@ -29,6 +30,7 @@ import com.ke.music.room.db.entity.Artist
 import com.ke.music.room.db.entity.ChildComment
 import com.ke.music.room.db.entity.Comment
 import com.ke.music.room.db.entity.Download
+import com.ke.music.room.db.entity.HotArtist
 import com.ke.music.room.db.entity.Music
 import com.ke.music.room.db.entity.MusicArtistCrossRef
 import com.ke.music.room.db.entity.NewAlbum
@@ -64,9 +66,10 @@ import com.ke.music.room.db.entity.UserPlaylistCrossRef
         RecommendSong::class,
         TopPlaylist::class,
         NewAlbum::class,
+        HotArtist::class
 //        AlbumMusicCrossRef::class
     ],
-    version = 2
+    version = 3
 )
 @TypeConverters(Converts::class)
 abstract class AppFileDatabase : RoomDatabase() {
@@ -109,4 +112,6 @@ abstract class AppFileDatabase : RoomDatabase() {
     abstract fun topPlaylistDao(): TopPlaylistDao
 
     abstract fun newAlbumDao(): NewAlbumDao
+
+    abstract fun hotArtistDao(): HotArtistDao
 }

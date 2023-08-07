@@ -1,6 +1,5 @@
 package com.ke.music.tv.ui
 
-import com.ke.music.repository.entity.ShareType
 import com.ke.music.repository.entity.UsersType
 import com.ke.music.room.db.entity.Playlist
 import com.ke.music.room.entity.CommentType
@@ -73,18 +72,9 @@ sealed class Screen(val route: String) {
         Screen("/share?type={type}&id={id}&title={title}&subTitle={subTitle}&cover={cover}") {
 
         fun createPath(
-            shareType: ShareType,
-            id: Long,
-            title: String,
-            subTitle: String,
-            cover: String
+            path: String
         ): String {
-            return "/share?type=$shareType&id=$id&title=$title&subTitle=${
-                URLEncoder.encode(
-                    subTitle,
-                    Charsets.UTF_8.name()
-                )
-            }&cover=$cover"
+            return path
         }
     }
 
@@ -108,9 +98,9 @@ sealed class Screen(val route: String) {
     /**
      * 我的歌单列表
      */
-    object PlaylistList : Screen("/playlist/list") {
+    object MyPlaylist : Screen("/mine/playlist?id={id}") {
 
-        fun createPath() = "/playlist/list"
+        fun createPath(musicId: Long) = "/mine/playlist?id=${musicId}"
 
     }
 
@@ -136,4 +126,9 @@ sealed class Screen(val route: String) {
      * 每日推荐
      */
     object RecommendSongs : Screen("/recommend/songs")
+
+    /**
+     * 我的歌单
+     */
+    object UserPlaylist : Screen("/user/playlist")
 }

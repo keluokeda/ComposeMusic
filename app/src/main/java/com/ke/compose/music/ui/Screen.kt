@@ -141,4 +141,9 @@ sealed class Screen(val route: String) {
      * 专辑广场
      */
     object AlbumSquare : Screen("/album/square")
+
+    /**
+     * 歌手列表
+     */
+    object ArtistList : Screen("/artist/list")
 }

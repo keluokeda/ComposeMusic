@@ -2,6 +2,7 @@ package com.ke.music.api
 
 import com.ke.music.api.response.AlbumDynamicResponse
 import com.ke.music.api.response.AlbumResponse
+import com.ke.music.api.response.ArtistListResponse
 import com.ke.music.api.response.CodeResponse
 import com.ke.music.api.response.CommentsResponse
 import com.ke.music.api.response.HighQualityPlaylistsResponse
@@ -362,4 +363,17 @@ interface HttpService {
         @Query("limit") limit: Int,
         @Query("offset") offset: Int
     ): NewAlbumListResponse
+
+    /**
+     * 获取歌手列表
+     * @param type -1全部 1男歌手 2女歌手 3乐队
+     * @param area -1全部  7华语 96欧美 8日本 16韩国 0其他
+     */
+    @GET("artist/list")
+    suspend fun getArtistList(
+        @Query("type") type: Int,
+        @Query("area") area: Int,
+        @Query("limit") limit: Int,
+        @Query("offset") offset: Int
+    ): ArtistListResponse
 }

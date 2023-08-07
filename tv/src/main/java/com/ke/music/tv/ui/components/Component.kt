@@ -2,12 +2,16 @@ package com.ke.music.tv.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridItemScope
+import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.paging.compose.LazyPagingItems
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import coil.compose.AsyncImage
@@ -187,3 +191,44 @@ fun Avatar(modifier: Modifier = Modifier, url: String, size: Int = 48) {
 //        itemContent(items[index])
 //    }
 //}
+
+
+fun <T : Any> LazyGridScope.items(
+    items: LazyPagingItems<T>,
+    key: ((item: T) -> Any)? = null,
+    span: ((item: T) -> GridItemSpan)? = null,
+    contentType: ((item: T) -> Any)? = null,
+    itemContent: @Composable LazyGridItemScope.(value: T?) -> Unit
+) {
+    items(
+        count = items.itemCount,
+        key = if (key == null) null else { index ->
+            val item = items.peek(index)
+            if (item == null) {
+//                PagingPlaceholderKey(index)
+            } else {
+                key(item)
+            }
+        },
+        span = if (span == null) null else { index ->
+            val item = items.peek(index)
+            if (item == null) {
+                GridItemSpan(1)
+            } else {
+                span(item)
+            }
+        },
+        contentType = if (contentType == null) {
+            { null }
+        } else { index ->
+            val item = items.peek(index)
+            if (item == null) {
+                null
+            } else {
+                contentType(item)
+            }
+        }
+    ) { index ->
+        itemContent(items[index])
+    }
+}

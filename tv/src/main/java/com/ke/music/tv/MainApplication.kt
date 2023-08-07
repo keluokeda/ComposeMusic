@@ -23,3 +23,5 @@ class MainApplication : BaseApplication() {
             }
     }
 }
+
+const val IMAGE_SIZE = 300

@@ -173,7 +173,7 @@ private fun AlbumDetailContent(
     detail: AlbumDetailUiState,
     onMusicMoreButtonClick: (MusicEntity) -> Unit
 ) {
-    LazyColumn {
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
         item {
             Column(
                 modifier = Modifier

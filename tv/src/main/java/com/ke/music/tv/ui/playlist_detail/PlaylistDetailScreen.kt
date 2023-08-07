@@ -1,6 +1,5 @@
 package com.ke.music.tv.ui.playlist_detail
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +29,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.tv.foundation.lazy.list.TvLazyColumn
 import androidx.tv.foundation.lazy.list.items
+import androidx.tv.material3.Card
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
 import androidx.tv.material3.IconButton
@@ -39,7 +39,11 @@ import coil.compose.AsyncImage
 import com.ke.music.download.LocalDownloadManager
 import com.ke.music.room.db.entity.Playlist
 import com.ke.music.room.entity.MusicEntity
+import com.ke.music.tv.LocalAppViewModel
+import com.ke.music.tv.ui.components.LocalNavigationHandler
 import com.ke.music.tv.ui.components.MusicView
+import com.ke.music.tv.ui.components.NavigationAction
+import com.ke.music.tv.ui.components.ShareAction
 
 @Composable
 fun PlaylistDetailRoute(
@@ -99,15 +103,20 @@ private fun PlaylistDetailScreen(
                         .verticalScroll(rememberScrollState())
                 ) {
 
-                    AsyncImage(
-                        model = imageUrl,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(300.dp)
-                            .clickable {
-                                onCoverImageClick(uiState.playlist!!)
-                            }
-                    )
+
+                    Card(onClick = {
+                        onCoverImageClick(uiState.playlist!!)
+                    }) {
+                        AsyncImage(
+                            model = imageUrl,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(300.dp)
+
+                        )
+                    }
+
+
 
                     Row(
                         horizontalArrangement = Arrangement.SpaceAround,
@@ -117,7 +126,15 @@ private fun PlaylistDetailScreen(
                                 vertical = 8.dp
                             )
                     ) {
-                        IconButton(onClick = { }) {
+                        val appViewModel = LocalAppViewModel.current
+                        val navigationHandler = LocalNavigationHandler.current
+                        IconButton(onClick = {
+                            navigationHandler.navigate(
+                                NavigationAction.NavigateToShare(
+                                    ShareAction.Playlist(uiState.playlist!!)
+                                )
+                            )
+                        }) {
                             Icon(imageVector = Icons.Default.Share, contentDescription = null)
                         }
                         IconButton(onClick = {
@@ -127,7 +144,7 @@ private fun PlaylistDetailScreen(
                         }
                         IconButton(onClick = {
                             bookClick(uiState)
-                        }) {
+                        }, enabled = appViewModel.currentUserId != uiState.playlist!!.creatorId) {
                             Icon(
                                 imageVector = if (uiState.subscribed) Icons.Default.BookmarkAdded else Icons.Default.BookmarkAdd,
                                 contentDescription = null
@@ -135,7 +152,7 @@ private fun PlaylistDetailScreen(
                         }
                         val downloadManager = LocalDownloadManager.current
                         IconButton(onClick = {
-                            downloadManager.downloadPlaylist(uiState.playlist!!.id)
+                            downloadManager.downloadPlaylist(uiState.playlist.id)
                         }) {
                             Icon(imageVector = Icons.Default.Download, contentDescription = null)
                         }

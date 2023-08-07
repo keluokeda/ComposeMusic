@@ -146,27 +146,6 @@ private fun JpNewAlbumList() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NewAlbumList(list: LazyPagingItems<NewAlbum>) {
-//    LazyColumn(modifier = Modifier) {
-//
-//        items(
-//            count = list.itemCount,
-//            key = list.itemKey(key = {
-//                it.id
-//            }),
-//            contentType = list.itemContentType(
-//            )
-//        ) { index ->
-//            val item = list[index]!!
-//
-//            val navigationHandler = LocalNavigationHandler.current
-//
-//            ListItem(headlineText = { Text(text = item.name) }, supportingText = {
-//                Text(text = item.subtitle)
-//            }, modifier = Modifier.clickable {
-//                navigationHandler.navigate(NavigationAction.NavigateToAlbumDetail(item.albumId))
-//            })
-//        }
-//    }
 
     LazyVerticalGrid(columns = GridCells.Fixed(3)) {
         items(list, key = {
@@ -176,11 +155,16 @@ private fun NewAlbumList(list: LazyPagingItems<NewAlbum>) {
             val navigationHandler = LocalNavigationHandler.current
 
             Box(modifier = Modifier
+                .fillMaxSize()
                 .clickable {
                     navigationHandler.navigate(NavigationAction.NavigateToAlbumDetail(album.albumId))
                 }
                 .padding(2.dp), contentAlignment = Alignment.BottomEnd) {
-                AsyncImage(model = album.image, contentDescription = null)
+                AsyncImage(
+                    model = album.image,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize()
+                )
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -196,6 +180,8 @@ private fun NewAlbumList(list: LazyPagingItems<NewAlbum>) {
                 }
             }
         }
+
+
     }
 }
 

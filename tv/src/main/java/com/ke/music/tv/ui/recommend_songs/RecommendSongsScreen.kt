@@ -29,6 +29,7 @@ import androidx.tv.material3.Text
 import coil.compose.AsyncImage
 import com.ke.music.download.LocalDownloadManager
 import com.ke.music.room.entity.MusicEntity
+import com.ke.music.tv.IMAGE_SIZE
 import com.ke.music.tv.ui.components.MusicView
 
 /**
@@ -61,7 +62,7 @@ private fun RecommendSongsScreen(
 
         Column(
             modifier = Modifier
-                .width(300.dp)
+                .width(IMAGE_SIZE.dp)
                 .padding(vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -70,7 +71,7 @@ private fun RecommendSongsScreen(
                 model = imageUrl,
                 contentDescription = null,
                 modifier = Modifier
-                    .size(300.dp),
+                    .size(IMAGE_SIZE.dp),
                 contentScale = ContentScale.Crop
 
             )

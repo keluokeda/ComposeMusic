@@ -1,9 +1,11 @@
 package com.ke.music.tv.ui.downloading.music
 
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -27,14 +29,12 @@ import com.ke.music.room.entity.QueryDownloadingMusicResult
 
 @Composable
 fun DownloadingMusicRoute(
-    onBackButtonClick: () -> Unit,
-
-    ) {
+) {
 
     val viewModel: DownloadingMusicViewModel = hiltViewModel()
     val list by viewModel.all.collectAsStateWithLifecycle()
 
-    DownloadingMusicScreen(onBackButtonClick = onBackButtonClick, list = list, {
+    DownloadingMusicScreen(list = list, {
         viewModel.retry(it.id)
     }, {
         viewModel.delete(it)
@@ -43,7 +43,6 @@ fun DownloadingMusicRoute(
 
 @Composable
 private fun DownloadingMusicScreen(
-    onBackButtonClick: () -> Unit,
     list: List<QueryDownloadingMusicResult>,
     onRetryButtonClick: (QueryDownloadingMusicResult) -> Unit,
     deleteButtonClick: (QueryDownloadingMusicResult) -> Unit
@@ -101,6 +100,8 @@ private fun DownloadingMusicView(
                 Icon(imageVector = Icons.Default.Downloading, contentDescription = null)
             }
         }
+
+        Spacer(modifier = Modifier.width(8.dp))
 
         if (music.status != Download.STATUS_DOWNLOADING) {
             IconButton(onClick = deleteButtonClick) {

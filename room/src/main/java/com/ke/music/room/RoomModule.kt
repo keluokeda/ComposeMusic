@@ -11,6 +11,7 @@ import com.ke.music.room.db.dao.ArtistDao
 import com.ke.music.room.db.dao.ChildCommentDao
 import com.ke.music.room.db.dao.CommentDao
 import com.ke.music.room.db.dao.DownloadDao
+import com.ke.music.room.db.dao.HotArtistDao
 import com.ke.music.room.db.dao.MusicArtistCrossRefDao
 import com.ke.music.room.db.dao.MusicDao
 import com.ke.music.room.db.dao.NewAlbumDao
@@ -176,5 +177,11 @@ object RoomModule {
     @Singleton
     fun provideNewAlbumDao(appFileDatabase: AppFileDatabase): NewAlbumDao {
         return appFileDatabase.newAlbumDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideHotArtistDao(appFileDatabase: AppFileDatabase): HotArtistDao {
+        return appFileDatabase.hotArtistDao()
     }
 }

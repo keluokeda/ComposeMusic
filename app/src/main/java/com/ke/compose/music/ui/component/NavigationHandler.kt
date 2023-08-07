@@ -100,6 +100,12 @@ sealed interface NavigationAction {
             return Screen.AlbumSquare.route
         }
     }
+
+    object NavigateToArtistList : NavigationAction {
+        override fun createPath(): String {
+            return Screen.ArtistList.route
+        }
+    }
 }
 
 val LocalNavigationHandler = staticCompositionLocalOf { NavigationHandler { } }
