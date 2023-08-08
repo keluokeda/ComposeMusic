@@ -54,5 +54,12 @@ private fun MainScreen() {
                 navigationHandler.navigate(NavigationAction.NavigateToUserPlaylist)
             },
             headlineContent = { Text(text = "我的歌单") })
+
+        ListItem(
+            selected = false,
+            onClick = {
+                navigationHandler.navigate(NavigationAction.NavigateToArtistList)
+            },
+            headlineContent = { Text(text = "热门歌手") })
     }
 }

@@ -131,4 +131,10 @@ sealed class Screen(val route: String) {
      * 我的歌单
      */
     object UserPlaylist : Screen("/user/playlist")
+
+
+    /**
+     * 歌手列表
+     */
+    object ArtistList : Screen("/artist/list")
 }

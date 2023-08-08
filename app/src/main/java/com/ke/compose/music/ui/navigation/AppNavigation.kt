@@ -312,5 +312,7 @@ private fun NavigationTree(navController: NavHostController) {
         composable(Screen.ArtistList.route) {
             ArtistListRoute()
         }
+
+
     }
 }
