@@ -1,7 +1,9 @@
 package com.ke.compose.music.ui.artist_list
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -34,8 +36,13 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.component.LocalBackHandler
+import com.ke.compose.music.ui.component.LocalNavigationHandler
+import com.ke.compose.music.ui.component.NavigationAction
 import com.ke.compose.music.ui.component.items
 import com.ke.music.room.db.entity.HotArtist
+import com.ke.music.viewmodel.ArtistArea
+import com.ke.music.viewmodel.ArtistListViewModel
+import com.ke.music.viewmodel.ArtistType
 
 @Composable
 fun ArtistListRoute() {
@@ -134,13 +141,24 @@ private fun ArtistListScreen(
                 .padding(paddingValues)
         ) {
 
+            val navigationHandler = LocalNavigationHandler.current
+
             LazyVerticalGrid(columns = GridCells.Fixed(3)) {
                 items(list, key = {
                     it.id
                 }) {
                     val artist = it!!
                     Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .aspectRatio(1f)
+                            .clickable {
+                                navigationHandler.navigate(
+                                    NavigationAction.NavigateToArtistDetail(
+                                        artist.artistId
+                                    )
+                                )
+                            },
                         contentAlignment = Alignment.BottomCenter
                     ) {
                         AsyncImage(
@@ -209,18 +227,3 @@ private fun DropDownButton(
     }
 }
 
-internal enum class ArtistArea(val title: String, val value: Int) {
-    All("全部", -1),
-    China("华语", 7),
-    EA("欧美", 96),
-    Japan("日本", 8),
-    Korea("韩国", 16),
-    Other("其他", 0)
-}
-
-internal enum class ArtistType(val title: String, val value: Int) {
-    All("全部", -1),
-    Man("男歌手", 1),
-    Women("女歌手", 2),
-    Band("乐队", 3)
-}

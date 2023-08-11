@@ -1,4 +1,4 @@
-package com.ke.compose.music.ui.message
+package com.ke.music.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -22,14 +22,14 @@ class MessageViewModel @Inject constructor(
 
 
     private val _refreshing = MutableStateFlow(false)
-    internal val refreshing: StateFlow<Boolean>
+    val refreshing: StateFlow<Boolean>
         get() = _refreshing
 
     init {
         refresh()
     }
 
-    internal fun refresh() {
+    fun refresh() {
         viewModelScope.launch {
             _refreshing.value = true
             _list.value = getMessageListUseCase(Unit).successOr(emptyList())

@@ -44,7 +44,8 @@ fun MusicView(
     rightButton: @Composable (MusicEntity) -> Unit = {
     },
     onHasFocus: (MusicEntity) -> Unit = {
-    }
+    },
+    autoRequestFocus: Boolean = true
 ) {
     var hasFocus by remember {
         mutableStateOf(false)
@@ -57,7 +58,7 @@ fun MusicView(
     val focusRequester = FocusRequester()
 
     LaunchedEffect(key1 = Unit) {
-        if (index == 0) {
+        if (index == 0 && autoRequestFocus) {
             focusRequester.requestFocus()
         }
     }

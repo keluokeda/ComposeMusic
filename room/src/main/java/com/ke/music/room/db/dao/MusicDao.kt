@@ -105,6 +105,31 @@ interface MusicDao {
     )
     fun findRecommendSongs(userId: Long): Flow<List<QueryMusicResult>>
 
+
+    /**
+     * 查询某个歌手的热门歌曲
+     */
+    @Query(
+        "select music.music_id as musicId,\n" +
+                "music.name as name,\n" +
+                "music.mv,\n" +
+                "album.album_id as albumId,\n" +
+                "album.name as albumName,\n" +
+                "album.image_url as albumImage ,\n" +
+                "artist.artist_id as artistId,\n" +
+                "artist.name as artistName,\n" +
+                "download.status as downloadStatus\n" +
+                "from music \n" +
+                "inner join album on music.album_id = album.album_id\n" +
+                "inner join artist_music_cross_ref on music.music_id = artist_music_cross_ref.music_id\n" +
+                "inner join music_artist_cross_ref on music_artist_cross_ref.music_id = music.music_id\n" +
+                "inner join artist on artist.artist_id = music_artist_cross_ref.artist_id\n" +
+                "left join download on download.source_id = music.music_id and download.source_type = 0\n" +
+                "\n" +
+                "where artist_music_cross_ref.artist_id = :artistId\n"
+    )
+    fun getArtistHotSongs(artistId: Long): Flow<List<QueryMusicResult>>
+
     @Query(
         "select \n" +
                 "music.music_id as musicId,\n" +

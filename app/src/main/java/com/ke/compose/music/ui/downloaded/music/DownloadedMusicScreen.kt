@@ -20,6 +20,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.component.MusicView
 import com.ke.music.room.entity.MusicEntity
+import com.ke.music.viewmodel.DownloadedMusicViewModel
 
 @Composable
 fun DownloadedMusicRoute(
@@ -27,7 +28,7 @@ fun DownloadedMusicRoute(
 ) {
 
     val viewModel: DownloadedMusicViewModel = hiltViewModel()
-    val list by viewModel.downloadMusicList.collectAsStateWithLifecycle()
+    val list by viewModel.downloadedMusicList.collectAsStateWithLifecycle()
 
 
     DownloadedMusicScreen(onBackButtonClick = onBackButtonClick, musicList = list) {

@@ -53,6 +53,8 @@ import com.ke.music.download.LocalDownloadManager
 import com.ke.music.repository.entity.ShareType
 import com.ke.music.room.entity.CommentType
 import com.ke.music.room.entity.MusicEntity
+import com.ke.music.viewmodel.AlbumDetailUiState
+import com.ke.music.viewmodel.AlbumDetailViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -129,9 +131,9 @@ private fun AlbumDetailScreen(id: Long, uiState: AlbumDetailUiState, onCollectCl
                             NavigationAction.NavigateToShare(
                                 ShareType.Album,
                                 uiState.albumEntity!!.albumId,
-                                uiState.albumEntity.name,
-                                uiState.albumEntity.description ?: "",
-                                uiState.albumEntity.image
+                                uiState.albumEntity!!.name,
+                                uiState.albumEntity!!.description ?: "",
+                                uiState.albumEntity!!.image
                             )
                         )
                     }) {
@@ -189,15 +191,21 @@ private fun AlbumDetailContent(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Text(text = detail.albumEntity.name, style = MaterialTheme.typography.headlineSmall)
+                Text(
+                    text = detail.albumEntity!!.name,
+                    style = MaterialTheme.typography.headlineSmall
+                )
 
-                TextButton(onClick = { /*TODO*/ }) {
-                    Text(text = detail.albumEntity.artistName)
+                val navigationHandler = LocalNavigationHandler.current
+                TextButton(onClick = {
+                    navigationHandler.navigate(NavigationAction.NavigateToArtistDetail(detail.albumEntity!!.artistId))
+                }) {
+                    Text(text = detail.albumEntity!!.artistName)
                 }
 
-                if (detail.albumEntity.description != null)
+                if (detail.albumEntity!!.description != null)
                     Text(
-                        text = detail.albumEntity.description ?: "",
+                        text = detail.albumEntity!!.description ?: "",
                         style = MaterialTheme.typography.bodySmall
                     )
             }

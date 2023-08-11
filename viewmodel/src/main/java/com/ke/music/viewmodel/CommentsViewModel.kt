@@ -1,4 +1,4 @@
-package com.ke.compose.music.ui.comments
+package com.ke.music.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -32,7 +32,7 @@ import javax.inject.Inject
 
 @OptIn(ExperimentalPagingApi::class)
 @HiltViewModel
-internal class CommentsViewModel @Inject constructor(
+class CommentsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     httpService: HttpService,
     private val commentRepository: CommentRepository,
@@ -41,13 +41,13 @@ internal class CommentsViewModel @Inject constructor(
     private val deleteCommentUseCase: DeleteCommentUseCase,
     private val userIdRepository: UserIdRepository
 ) : ViewModel() {
-    internal val id = savedStateHandle.get<Long>("id")!!
+    val id = savedStateHandle.get<Long>("id")!!
 
-    internal val commentType: CommentType = savedStateHandle.get<CommentType>("type")!!
+    val commentType: CommentType = savedStateHandle.get<CommentType>("type")!!
 
 
     private val _sending = MutableStateFlow(false)
-    internal val sending: StateFlow<Boolean>
+    val sending: StateFlow<Boolean>
         get() = _sending
 
     private val _sendCommentResult = Channel<Boolean?>(capacity = Channel.CONFLATED)
@@ -56,7 +56,7 @@ internal class CommentsViewModel @Inject constructor(
      * 发送评论结果
      * true表示成功并且需要刷新列表 false表示成功不需要刷新列表 null表示失败
      */
-    internal val sendCommentResult: Flow<Boolean?>
+    val sendCommentResult: Flow<Boolean?>
         get() = _sendCommentResult.receiveAsFlow()
 
     private val remoteMediator = CommentsRemoteMediator(
@@ -78,7 +78,7 @@ internal class CommentsViewModel @Inject constructor(
     }.flow
         .cachedIn(viewModelScope)
 
-    internal fun toggleLiked(comment: QueryCommentResult) {
+    fun toggleLiked(comment: QueryCommentResult) {
         viewModelScope.launch {
             val request = LikeCommentRequest(id, commentType, comment.commentId, !comment.liked)
             likeCommentUseCase(request)
@@ -92,7 +92,7 @@ internal class CommentsViewModel @Inject constructor(
     /**
      * 发布评论
      */
-    internal fun sendComment(content: String, parentCommentId: Long?) {
+    fun sendComment(content: String, parentCommentId: Long?) {
         viewModelScope.launch {
             _sending.value = true
             val request = SendCommentRequest(commentType, id, parentCommentId, content)
@@ -102,7 +102,7 @@ internal class CommentsViewModel @Inject constructor(
         }
     }
 
-    internal fun deleteComment(commentId: Long) {
+    fun deleteComment(commentId: Long) {
         viewModelScope.launch {
             deleteCommentUseCase(
                 DeleteCommentRequest(

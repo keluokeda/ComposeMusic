@@ -1,4 +1,4 @@
-package com.ke.compose.music.ui.recommend_songs
+package com.ke.music.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

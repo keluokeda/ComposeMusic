@@ -31,4 +31,12 @@ interface AlbumDao {
                 "where album.album_id = :albumId"
     )
     fun findById(albumId: Long, userId: Long): Flow<AlbumEntity?>
+
+
+    @Query(
+        "select album.* from album \n" +
+                "inner join album_artist_cross_ref on album.album_id = album_artist_cross_ref.album_id\n" +
+                "where album_artist_cross_ref.artist_id = :artistId order by `index`"
+    )
+    fun findByArtistId(artistId: Long): Flow<List<Album>>
 }

@@ -90,4 +90,21 @@ class AlbumRepository @Inject constructor(
         }
     }
 
+    /**
+     * 保存歌手的所有专辑到数据库
+     */
+    suspend fun saveArtistAlbums(artistId: Long, list: List<Album>) {
+        albumDao.insertAll(list)
+        albumArtistCrossRefDao.insertAll(
+            list.mapIndexed { index, album ->
+                AlbumArtistCrossRef(album.albumId, artistId, index)
+            }
+        )
+    }
+
+    /**
+     * 查询歌手的所有专辑
+     */
+    fun getArtistAlbums(artistId: Long) = albumDao.findByArtistId(artistId)
+
 }

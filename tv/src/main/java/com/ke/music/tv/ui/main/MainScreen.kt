@@ -61,5 +61,12 @@ private fun MainScreen() {
                 navigationHandler.navigate(NavigationAction.NavigateToArtistList)
             },
             headlineContent = { Text(text = "热门歌手") })
+
+        ListItem(
+            selected = false,
+            onClick = {
+                navigationHandler.navigate(NavigationAction.NavigateToAlbumSquare)
+            },
+            headlineContent = { Text(text = "专辑广场") })
     }
 }

@@ -42,6 +42,7 @@ import com.ke.compose.music.ui.component.Avatar
 import com.ke.compose.music.ui.theme.ComposeMusicTheme
 import com.ke.music.api.response.User
 import com.ke.music.api.response.mockUser
+import com.ke.music.viewmodel.ShareViewModel
 
 
 @Composable

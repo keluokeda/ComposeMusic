@@ -36,6 +36,8 @@ import androidx.tv.material3.Tab
 import androidx.tv.material3.Text
 import coil.compose.AsyncImage
 import com.ke.music.room.db.entity.HotArtist
+import com.ke.music.tv.ui.components.LocalNavigationHandler
+import com.ke.music.tv.ui.components.NavigationAction
 import com.ke.music.tv.ui.components.items
 import com.ke.music.tv.ui.theme.ComposeMusicTheme
 
@@ -165,9 +167,10 @@ private fun ArtistListScreen(
                     contentAlignment = Alignment.BottomCenter
                 ) {
 
+                    val navigationHandler = LocalNavigationHandler.current
 
                     Card(onClick = {
-
+                        navigationHandler.navigate(NavigationAction.NavigateToArtistDetail(it.artistId))
                     }) {
                         Box {
                             AsyncImage(

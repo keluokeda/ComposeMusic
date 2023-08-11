@@ -175,4 +175,12 @@ class MusicRepository @Inject constructor(
         }
 
 
+    /**
+     * 歌手热门歌曲
+     */
+    fun artistHotSongs(artistId: Long) = musicDao.getArtistHotSongs(artistId)
+        .map {
+            queryResultToMusicEntityList(it)
+        }
+
 }

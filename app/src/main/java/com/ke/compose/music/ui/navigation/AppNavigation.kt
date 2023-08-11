@@ -16,6 +16,8 @@ import com.ke.compose.music.ui.LocalAppViewModel
 import com.ke.compose.music.ui.Screen
 import com.ke.compose.music.ui.album.detail.AlbumDetailRoute
 import com.ke.compose.music.ui.album_square.AlbumSquareRoute
+import com.ke.compose.music.ui.all_mv.AllMvRoute
+import com.ke.compose.music.ui.artist_detail.ArtistDetailRoute
 import com.ke.compose.music.ui.artist_list.ArtistListRoute
 import com.ke.compose.music.ui.child_comments.ChildCommentsRoute
 import com.ke.compose.music.ui.comments.CommentsRoute
@@ -313,6 +315,17 @@ private fun NavigationTree(navController: NavHostController) {
             ArtistListRoute()
         }
 
+        composable(Screen.ArtistDetail.route, arguments = listOf(
+            navArgument("id") {
+                type = NavType.LongType
+            }
+        )) {
+            ArtistDetailRoute()
+        }
+
+        composable(Screen.AllMv.route) {
+            AllMvRoute()
+        }
 
     }
 }

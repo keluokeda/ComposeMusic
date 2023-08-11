@@ -2,6 +2,7 @@ package com.ke.compose.music.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,32 +13,39 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DownloadDone
 import androidx.compose.material.icons.filled.Downloading
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.ke.compose.music.ui.theme.ComposeMusicTheme
+import com.ke.music.download.LocalDownloadManager
 import com.ke.music.player.service.LocalMusicPlayerController
 import com.ke.music.player.service.MusicPlayerController
-import com.ke.music.room.db.entity.Album
-import com.ke.music.room.db.entity.Artist
+import com.ke.music.repository.entity.ShareType
 import com.ke.music.room.db.entity.Download
+import com.ke.music.room.entity.CommentType
 import com.ke.music.room.entity.MusicEntity
 
 
 @Composable
 fun MusicView(
     musicEntity: MusicEntity,
-    rightButton: @Composable () -> Unit = {},
+    rightButton: @Composable () -> Unit = {
+    },
     onClick: (MusicEntity, MusicPlayerController) -> Unit = { entity, controller ->
         controller.playMusic(entity.musicId)
     }
@@ -88,55 +96,153 @@ fun MusicView(
             }
 
             if (musicEntity.mv != 0L) {
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = { }) {
                     Icon(imageVector = Icons.Default.PlayCircle, contentDescription = null)
 
                 }
             }
 
-            rightButton()
+            MusicDropDownMenu(false, musicEntity)
         }
         Divider(modifier = Modifier.height(0.2.dp))
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun MusicViewIdlePreview() {
-    ComposeMusicTheme {
-        MusicView(status = Download.STATUS_DOWNLOAD_IDLE)
+private fun MusicDropDownMenu(
+    initialExpanded: Boolean = false,
+    musicEntity: MusicEntity
+) {
+    var expanded by remember {
+        mutableStateOf(initialExpanded)
+    }
+    Box {
+        IconButton(onClick = {
+            expanded = true
+        }) {
+            Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
+        }
+
+        val navigationHandler = LocalNavigationHandler.current
+
+        val downloadManager = LocalDownloadManager.current
+
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            DropdownMenuItem(text = {
+                Text(text = "下一首播放")
+            }, onClick = {
+                expanded = false
+            })
+
+            DropdownMenuItem(text = {
+                Text(text = "收藏到歌单")
+            }, onClick = {
+                expanded = false
+            })
+
+            DropdownMenuItem(text = {
+                Text(text = "评论")
+            }, onClick = {
+                navigationHandler.navigate(
+                    NavigationAction.NavigateToComments(
+                        CommentType.Music,
+                        musicEntity.musicId
+                    )
+                )
+                expanded = false
+            })
+
+            if (musicEntity.downloadStatus != Download.STATUS_DOWNLOADED) {
+
+                DropdownMenuItem(text = {
+                    Text(text = "下载")
+                }, onClick = {
+                    expanded = false
+                    downloadManager.downloadMusic(musicEntity.musicId)
+                })
+            }
+
+            DropdownMenuItem(text = {
+                Text(text = "分享")
+            }, onClick = {
+                expanded = false
+                navigationHandler.navigate(
+                    NavigationAction.NavigateToShare(
+                        ShareType.Song,
+                        musicEntity.musicId,
+                        musicEntity.name,
+                        musicEntity.subTitle,
+                        musicEntity.album.imageUrl
+                    )
+                )
+            })
+
+            musicEntity.artists.forEach {
+                DropdownMenuItem(text = {
+                    Text(text = "歌手：${it.name}")
+                }, onClick = {
+                    expanded = false
+                    navigationHandler.navigate(NavigationAction.NavigateToArtistDetail(it.artistId))
+                })
+            }
+
+            DropdownMenuItem(text = {
+                Text(text = "专辑：${musicEntity.album.name}")
+            }, onClick = {
+                expanded = false
+                navigationHandler.navigate(NavigationAction.NavigateToAlbumDetail(musicEntity.album.albumId))
+            })
+        }
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun MusicViewDownloadingPreview() {
-    ComposeMusicTheme {
-        MusicView(status = Download.STATUS_DOWNLOADING)
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MusicViewDownloadedPreview() {
-    ComposeMusicTheme {
-        MusicView(status = Download.STATUS_DOWNLOADED, mv = 1L)
-    }
-}
-
-@Composable
-private fun MusicView(status: Int, mv: Long = 0) {
-    val musicEntity = MusicEntity(
-        musicId = 0L,
-        name = "漫步人生路",
-        mv = mv,
-        album = Album(0L, "最爱", ""),
-        artists = listOf(
-            Artist(0, "邓丽君")
-        ),
-        downloadStatus = status
-    )
-
-
-    MusicView(musicEntity = musicEntity, rightButton = {})
-}
+//
+//
+//@Preview
+//@Composable
+//private fun MusicDropDownMenuExpandedTrue() {
+//    ComposeMusicTheme {
+//        MusicDropDownMenu(true, musicEntity)
+//    }
+//}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun MusicViewIdlePreview() {
+//    ComposeMusicTheme {
+//        MusicView(status = Download.STATUS_DOWNLOAD_IDLE)
+//    }
+//}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun MusicViewDownloadingPreview() {
+//    ComposeMusicTheme {
+//        MusicView(status = Download.STATUS_DOWNLOADING)
+//    }
+//}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun MusicViewDownloadedPreview() {
+//    ComposeMusicTheme {
+//        MusicView(status = Download.STATUS_DOWNLOADED, mv = 1L)
+//    }
+//}
+//
+//@Composable
+//private fun MusicView(status: Int, mv: Long = 0) {
+//
+//
+//    MusicView(musicEntity = musicEntity, rightButton = {})
+//}
+//
+//private val musicEntity = MusicEntity(
+//    musicId = 0L,
+//    name = "漫步人生路",
+//    mv = 0,
+//    album = Album(0L, "最爱", ""),
+//    artists = listOf(
+//        Artist(0, "邓丽君")
+//    ),
+//    downloadStatus = 0
+//)

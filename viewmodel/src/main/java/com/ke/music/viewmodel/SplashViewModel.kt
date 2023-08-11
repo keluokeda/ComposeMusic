@@ -1,4 +1,4 @@
-package com.ke.compose.music.ui.slpash
+package com.ke.music.viewmodel
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
@@ -13,14 +13,14 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-internal class SplashViewModel @Inject constructor(
+class SplashViewModel @Inject constructor(
     @ApplicationContext context: Context
 ) :
     ViewModel() {
 
     private val _navigationActions = Channel<Boolean>(capacity = Channel.CONFLATED)
 
-    internal val navigationActions: Flow<Boolean>
+    val navigationActions: Flow<Boolean>
         get() = _navigationActions.receiveAsFlow()
 
     init {
@@ -29,6 +29,7 @@ internal class SplashViewModel @Inject constructor(
                 _navigationActions.send(it != 0L)
             }
         }
+
     }
 
 

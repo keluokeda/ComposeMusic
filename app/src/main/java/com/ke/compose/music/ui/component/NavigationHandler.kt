@@ -106,6 +106,18 @@ sealed interface NavigationAction {
             return Screen.ArtistList.route
         }
     }
+
+    object NavigateToAllMv : NavigationAction {
+        override fun createPath(): String {
+            return Screen.AllMv.route
+        }
+    }
+
+    data class NavigateToArtistDetail(private val artistId: Long) : NavigationAction {
+        override fun createPath(): String {
+            return Screen.ArtistDetail.createPath(artistId)
+        }
+    }
 }
 
 val LocalNavigationHandler = staticCompositionLocalOf { NavigationHandler { } }

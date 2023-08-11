@@ -17,6 +17,8 @@ import com.ke.music.tv.AppViewModel
 import com.ke.music.tv.LocalAppViewModel
 import com.ke.music.tv.ui.Screen
 import com.ke.music.tv.ui.album_detail.AlbumDetailRoute
+import com.ke.music.tv.ui.album_square.AlbumSquareRoute
+import com.ke.music.tv.ui.artist_detail.ArtistDetailRoute
 import com.ke.music.tv.ui.artist_list.ArtistListRoute
 import com.ke.music.tv.ui.components.LocalNavigationHandler
 import com.ke.music.tv.ui.downloaded.music.DownloadedMusicRoute
@@ -160,6 +162,18 @@ private fun NavigationTree(navController: NavHostController) {
 
         composable(Screen.ArtistList.route) {
             ArtistListRoute()
+        }
+
+        composable(Screen.AlbumSquare.route) {
+            AlbumSquareRoute()
+        }
+
+        composable(Screen.ArtistDetail.route, arguments = listOf(
+            navArgument("id") {
+                type = NavType.LongType
+            }
+        )) {
+            ArtistDetailRoute()
         }
     }
 }

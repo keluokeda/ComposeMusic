@@ -10,4 +10,5 @@ interface AlbumArtistCrossRefDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(list: List<AlbumArtistCrossRef>)
+
 }

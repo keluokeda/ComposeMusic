@@ -2,7 +2,11 @@ package com.ke.music.api
 
 import com.ke.music.api.response.AlbumDynamicResponse
 import com.ke.music.api.response.AlbumResponse
+import com.ke.music.api.response.ArtistAlbumResponse
+import com.ke.music.api.response.ArtistDescResponse
 import com.ke.music.api.response.ArtistListResponse
+import com.ke.music.api.response.ArtistMvResponse
+import com.ke.music.api.response.ArtistsResponse
 import com.ke.music.api.response.CodeResponse
 import com.ke.music.api.response.CommentsResponse
 import com.ke.music.api.response.HighQualityPlaylistsResponse
@@ -10,6 +14,7 @@ import com.ke.music.api.response.LoginQRCreateResponse
 import com.ke.music.api.response.LoginQRKeyResponse
 import com.ke.music.api.response.LoginStatusResponse
 import com.ke.music.api.response.MusicUrlResponse
+import com.ke.music.api.response.MvAllResponse
 import com.ke.music.api.response.NewAlbumListResponse
 import com.ke.music.api.response.PlaylistCategoryResponse
 import com.ke.music.api.response.PlaylistDetailResponse
@@ -376,4 +381,44 @@ interface HttpService {
         @Query("limit") limit: Int,
         @Query("offset") offset: Int
     ): ArtistListResponse
+
+    /**
+     * 歌手描述
+     */
+    @GET("artist/desc")
+    suspend fun getArtistDesc(@Query("id") id: Long): ArtistDescResponse
+
+    /**
+     * 获取歌手信息和热门歌曲
+     */
+    @GET("artists")
+    suspend fun getArtists(@Query("id") artistId: Long): ArtistsResponse
+
+    /**
+     * 获取歌手专辑
+     */
+    @GET("artist/album")
+    suspend fun getArtistAlbums(
+        @Query("id") artistId: Long,
+        @Query("limit") limit: Int = 1000
+    ): ArtistAlbumResponse
+
+    /**
+     * 歌手mv
+     */
+    @GET("/artist/mv")
+    suspend fun getArtistMv(
+        @Query("id") artistId: Long, @Query("limit") limit: Int = 1000
+    ): ArtistMvResponse
+
+    /**
+     * 获取全部mv
+     */
+    @GET("mv/all")
+    suspend fun getAllMv(
+        @Query("type") type: String?,
+        @Query("area") area: String?,
+        @Query("limit") limit: Int,
+        @Query("offset") offset: Int
+    ): MvAllResponse
 }

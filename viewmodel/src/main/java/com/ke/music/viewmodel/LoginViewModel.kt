@@ -1,4 +1,4 @@
-package com.ke.compose.music.ui.login
+package com.ke.music.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -28,12 +28,12 @@ class LoginViewModel @Inject constructor(
      * 空表示加载中
      * 其他表示成功
      */
-    internal val qrUrl: StateFlow<String?>
+    val qrUrl: StateFlow<String?>
         get() = _qrUrl
 
 
     private val _loading = MutableStateFlow(false)
-    internal val loading: StateFlow<Boolean>
+    val loading: StateFlow<Boolean>
         get() = _loading
 
 
@@ -49,7 +49,7 @@ class LoginViewModel @Inject constructor(
     }
 
 
-    internal fun refresh() {
+    fun refresh() {
         viewModelScope.launch {
             _qrUrl.value = ""
             when (val result = createQRUrlUseCase(Unit)) {
@@ -65,13 +65,11 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    internal fun startLogin() {
+    fun startLogin() {
         viewModelScope.launch {
             _loading.value = true
             _navigationActions.send(loginUseCase(key).successOr(false))
             _loading.value = false
-//            delay(5000)
-//            _navigationActions.send(false)
         }
     }
 }

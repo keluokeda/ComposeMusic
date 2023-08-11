@@ -25,14 +25,7 @@ android {
             useSupportLibrary true
         }
 
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments += [
-                        "room.schemaLocation":"$projectDir/schemas".toString(),
-                        "room.incremental":"true"
-                ]
-            }
-        }
+
     }
 
     buildTypes {
@@ -72,6 +65,7 @@ dependencies {
     implementation "androidx.compose.runtime:runtime-livedata"
     implementation project(path: ':api')
     implementation project(path: ':repository')
+    implementation project(path: ':viewmodel')
     implementation project(path: ':player')
     implementation project(path: ':download')
     testImplementation 'junit:junit:4.13.2'
@@ -108,7 +102,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.1"
 
     implementation "androidx.compose.material:material:1.4.3"
-    implementation("io.coil-kt:coil-compose:2.3.0")
+    implementation("io.coil-kt:coil-compose:2.4.0")
     implementation "androidx.paging:paging-compose:1.0.0-alpha20"
 
 
@@ -127,4 +121,5 @@ dependencies {
     kapt "com.github.bumptech.glide:compiler:4.15.1"
 
     implementation "androidx.datastore:datastore-preferences:1.0.0"
+
 }

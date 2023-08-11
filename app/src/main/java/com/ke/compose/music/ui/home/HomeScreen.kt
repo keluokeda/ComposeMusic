@@ -91,13 +91,11 @@ private fun HomeScreen(
                     Text(text = "网友精选碟")
                 }
 
-                ListItem(modifier = Modifier.clickable {
-                    navigationHandler.navigate(NavigationAction.NavigateToHighqualityPlaylist)
-                }) {
-                    Text(text = "精品歌单")
-                }
-
-
+//                ListItem(modifier = Modifier.clickable {
+//                    navigationHandler.navigate(NavigationAction.NavigateToHighqualityPlaylist)
+//                }) {
+//                    Text(text = "精品歌单")
+//                }
 
 
                 ListItem(modifier = Modifier.clickable {
@@ -110,6 +108,12 @@ private fun HomeScreen(
                     navigationHandler.navigate(NavigationAction.NavigateToArtistList)
                 }) {
                     Text(text = "歌手列表")
+                }
+
+                ListItem(modifier = Modifier.clickable {
+                    navigationHandler.navigate(NavigationAction.NavigateToAllMv)
+                }) {
+                    Text(text = "全部MV")
                 }
             }
 

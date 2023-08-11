@@ -1,4 +1,4 @@
-package com.ke.compose.music.ui.share
+package com.ke.music.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -27,27 +27,27 @@ class ShareViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-    internal val type = savedStateHandle.get<ShareType>("type")!!
-    internal val id = savedStateHandle.get<Long>("id")!!
-    internal val title = savedStateHandle.get<String>("title")!!
-    internal val subTitle = URLDecoder.decode(
+    val type = savedStateHandle.get<ShareType>("type")!!
+    val id = savedStateHandle.get<Long>("id")!!
+    val title = savedStateHandle.get<String>("title")!!
+    val subTitle = URLDecoder.decode(
         savedStateHandle.get<String>("subTitle")!!,
         Charsets.UTF_8.name()
     )
-    internal val cover = savedStateHandle.get<String>("cover")!!
+    val cover = savedStateHandle.get<String>("cover")!!
 
     private val _users = MutableStateFlow<List<User>>(emptyList())
 
-    internal val users: StateFlow<List<User>>
+    val users: StateFlow<List<User>>
         get() = _users
 
     private val _sending = MutableStateFlow(false)
-    internal val sending: StateFlow<Boolean>
+    val sending: StateFlow<Boolean>
         get() = _sending
 
     private val _sendResult = Channel<Boolean>(capacity = Channel.CONFLATED)
 
-    internal val sendResult: Flow<Boolean>
+    val sendResult: Flow<Boolean>
         get() = _sendResult.receiveAsFlow()
 
     init {
@@ -56,7 +56,7 @@ class ShareViewModel @Inject constructor(
         }
     }
 
-    internal fun share(users: List<User>, content: String) {
+    fun share(users: List<User>, content: String) {
         viewModelScope.launch {
             _sending.value = true
             val result = shareResourceUseCase(

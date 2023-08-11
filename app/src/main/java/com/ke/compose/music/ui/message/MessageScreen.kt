@@ -34,6 +34,7 @@ import com.ke.compose.music.ui.main.MainScreenFragment
 import com.ke.compose.music.ui.theme.ComposeMusicTheme
 import com.ke.music.api.response.PrivateMessage
 import com.ke.music.api.response.mockPrivateMessage
+import com.ke.music.viewmodel.MessageViewModel
 import org.json.JSONObject
 
 @Composable

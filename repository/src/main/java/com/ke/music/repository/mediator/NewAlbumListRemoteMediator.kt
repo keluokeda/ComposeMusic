@@ -12,7 +12,7 @@ import com.ke.music.room.db.entity.NewAlbum
 class NewAlbumListRemoteMediator constructor(
     private val httpService: HttpService,
     private val newAlbumDao: NewAlbumDao,
-    private val area: String
+    var area: String
 ) :
     RemoteMediator<Int, NewAlbum>() {
 

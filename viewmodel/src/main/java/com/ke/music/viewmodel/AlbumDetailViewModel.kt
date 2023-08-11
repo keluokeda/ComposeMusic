@@ -1,4 +1,4 @@
-package com.ke.compose.music.ui.album.detail
+package com.ke.music.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -7,6 +7,8 @@ import com.ke.music.repository.AlbumRepository
 import com.ke.music.repository.MusicRepository
 import com.ke.music.repository.domain.LoadAlbumDetailUseCase
 import com.ke.music.repository.domain.ToggleCollectAlbumUseCase
+import com.ke.music.room.entity.AlbumEntity
+import com.ke.music.room.entity.MusicEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -24,10 +26,10 @@ class AlbumDetailViewModel @Inject constructor(
 ) :
     ViewModel() {
 
-    internal val id = savedStateHandle.get<Long>("id")!!
+    val id = savedStateHandle.get<Long>("id")!!
 
 
-    internal val uiState = albumRepository.getAlbumEntity(id)
+    val uiState = albumRepository.getAlbumEntity(id)
         .combine(
             musicRepository.queryMusicListByAlbumId(id)
         ) { entity, list ->
@@ -43,7 +45,7 @@ class AlbumDetailViewModel @Inject constructor(
     /**
      * 切换收藏
      */
-    internal fun toggleCollect() {
+    fun toggleCollect() {
         val collected = uiState.value.albumEntity?.collected ?: return
 
         viewModelScope.launch {
@@ -57,4 +59,12 @@ class AlbumDetailViewModel @Inject constructor(
             loadAlbumDetailUseCase(id)
         }
     }
+}
+
+data class AlbumDetailUiState(
+    val albumEntity: AlbumEntity?,
+    val musicList: List<MusicEntity>
+) {
+    val hasData: Boolean
+        get() = albumEntity != null && musicList.isNotEmpty()
 }

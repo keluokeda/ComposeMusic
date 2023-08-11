@@ -117,6 +117,19 @@ sealed interface NavigationAction {
             return Screen.ArtistList.route
         }
     }
+
+    object NavigateToAlbumSquare : NavigationAction {
+        override fun createPath(): String {
+            return Screen.AlbumSquare.route
+        }
+    }
+
+    data class NavigateToArtistDetail(private val artistId: Long) : NavigationAction {
+
+        override fun createPath(): String {
+            return Screen.ArtistDetail.createPath(artistId)
+        }
+    }
 }
 
 val LocalNavigationHandler = staticCompositionLocalOf { NavigationHandler { } }

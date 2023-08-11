@@ -1,4 +1,4 @@
-package com.ke.compose.music.ui.artist_list
+package com.ke.music.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -26,20 +26,20 @@ class ArtistListViewModel @Inject constructor(
 
     private val _area = MutableStateFlow(ArtistArea.All)
 
-    internal val area: StateFlow<ArtistArea>
+    val area: StateFlow<ArtistArea>
         get() = _area
 
-    internal fun updateArea(artistArea: ArtistArea) {
+    fun updateArea(artistArea: ArtistArea) {
         _area.value = artistArea
         remoteMediator.area = artistArea.value
     }
 
     private val _type = MutableStateFlow(ArtistType.All)
 
-    internal val type: StateFlow<ArtistType>
+    val type: StateFlow<ArtistType>
         get() = _type
 
-    internal fun updateType(artistType: ArtistType) {
+    fun updateType(artistType: ArtistType) {
         _type.value = artistType
         remoteMediator.type = artistType.value
     }
@@ -62,4 +62,20 @@ class ArtistListViewModel @Inject constructor(
     }.flow
         .cachedIn(viewModelScope)
 
+}
+
+enum class ArtistArea(val title: String, val value: Int) {
+    All("全部", -1),
+    China("华语", 7),
+    EA("欧美", 96),
+    Japan("日本", 8),
+    Korea("韩国", 16),
+    Other("其他", 0)
+}
+
+enum class ArtistType(val title: String, val value: Int) {
+    All("全部", -1),
+    Man("男歌手", 1),
+    Women("女歌手", 2),
+    Band("乐队", 3)
 }

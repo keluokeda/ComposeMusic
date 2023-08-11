@@ -19,10 +19,29 @@ import java.util.Date
 
 abstract class BaseApplication : Application() {
 
+//    override fun newImageLoader(): ImageLoader {
+//        val loader =
+//            ImageLoader(this).newBuilder()
+//                .memoryCache {
+//                    MemoryCache.Builder(applicationContext)
+//                        .maxSizePercent(.4)
+//                        .build()
+//                }
+//                .diskCache {
+//
+//                    DiskCache.Builder()
+//                        .maxSizePercent(.2)
+//                        .build()
+//                }
+//
+//                .build()
+//
+//        return loader
+//    }
+
     override fun onCreate() {
         super.onCreate()
         initLogger()
-
     }
 
     private fun initLogger() {

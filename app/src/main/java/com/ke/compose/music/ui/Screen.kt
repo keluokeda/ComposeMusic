@@ -146,4 +146,14 @@ sealed class Screen(val route: String) {
      * 歌手列表
      */
     object ArtistList : Screen("/artist/list")
+
+    /**
+     * 歌手详情
+     */
+    object ArtistDetail : Screen("/artist/{id}") {
+
+        fun createPath(artistId: Long) = "/artist/$artistId"
+    }
+
+    object AllMv : Screen("/mv/all")
 }

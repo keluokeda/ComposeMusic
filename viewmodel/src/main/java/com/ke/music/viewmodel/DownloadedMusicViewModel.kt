@@ -1,4 +1,4 @@
-package com.ke.compose.music.ui.downloaded.music
+package com.ke.music.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,13 +18,13 @@ class DownloadedMusicViewModel @Inject constructor(
     ViewModel() {
 
 
-    val downloadMusicList = musicRepository.getDownloadedMusics().stateIn(
+    val downloadedMusicList = musicRepository.getDownloadedMusics().stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
         emptyList()
     )
 
-    internal fun deleteDownloadedMusic(id: Long) {
+    fun deleteDownloadedMusic(id: Long) {
         viewModelScope.launch {
             deleteDownloadedMusicUseCase(id)
         }

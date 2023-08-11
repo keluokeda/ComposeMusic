@@ -1,4 +1,4 @@
-package com.ke.compose.music.ui.downloading.music
+package com.ke.music.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

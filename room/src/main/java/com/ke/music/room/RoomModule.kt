@@ -7,13 +7,18 @@ import com.ke.music.room.db.AppMemoryDatabase
 import com.ke.music.room.db.dao.AlbumArtistCrossRefDao
 import com.ke.music.room.db.dao.AlbumDao
 import com.ke.music.room.db.dao.AlbumDetailDao
+import com.ke.music.room.db.dao.AllMvDao
 import com.ke.music.room.db.dao.ArtistDao
+import com.ke.music.room.db.dao.ArtistDescriptionDao
+import com.ke.music.room.db.dao.ArtistMusicCrossRefDao
 import com.ke.music.room.db.dao.ChildCommentDao
 import com.ke.music.room.db.dao.CommentDao
 import com.ke.music.room.db.dao.DownloadDao
 import com.ke.music.room.db.dao.HotArtistDao
 import com.ke.music.room.db.dao.MusicArtistCrossRefDao
 import com.ke.music.room.db.dao.MusicDao
+import com.ke.music.room.db.dao.MvArtistCrossRefDao
+import com.ke.music.room.db.dao.MvDao
 import com.ke.music.room.db.dao.NewAlbumDao
 import com.ke.music.room.db.dao.PlaylistDao
 import com.ke.music.room.db.dao.PlaylistMusicCrossRefDao
@@ -183,5 +188,35 @@ object RoomModule {
     @Singleton
     fun provideHotArtistDao(appFileDatabase: AppFileDatabase): HotArtistDao {
         return appFileDatabase.hotArtistDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideArtistDescriptionDao(appFileDatabase: AppFileDatabase): ArtistDescriptionDao {
+        return appFileDatabase.artistDescriptionDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideArtistMusicCrossRefDao(appFileDatabase: AppFileDatabase): ArtistMusicCrossRefDao {
+        return appFileDatabase.artistMusicCrossRefDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideMvDao(appFileDatabase: AppFileDatabase): MvDao {
+        return appFileDatabase.mvDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAllMvDao(appFileDatabase: AppFileDatabase): AllMvDao {
+        return appFileDatabase.allMvDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideMvArtistCrossRefDao(appFileDatabase: AppFileDatabase): MvArtistCrossRefDao {
+        return appFileDatabase.mvArtistCrossRedDao()
     }
 }

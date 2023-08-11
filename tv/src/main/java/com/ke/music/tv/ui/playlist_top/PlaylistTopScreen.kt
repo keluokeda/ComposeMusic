@@ -125,7 +125,7 @@ fun PlaylistTopScreen(
             items(list, key = {
                 it.id
             }) {
-                Box(modifier = Modifier.padding(8.dp)) {
+                Box(modifier = Modifier.padding(16.dp)) {
                     Card(
                         modifier = Modifier
                             .fillMaxSize()
