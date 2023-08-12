@@ -37,6 +37,7 @@ import com.ke.compose.music.ui.playlist_top.PlaylistTopRoute
 import com.ke.compose.music.ui.recommend_songs.RecommendSongsRoute
 import com.ke.compose.music.ui.share.ShareRoute
 import com.ke.compose.music.ui.slpash.SplashScreen
+import com.ke.compose.music.ui.test.TestRoute
 import com.ke.compose.music.ui.users.UsersRoute
 import com.ke.music.download.DownloadManagerImpl
 import com.ke.music.download.LocalDownloadManager
@@ -73,7 +74,18 @@ fun AppNavigation() {
 
 @Composable
 private fun NavigationTree(navController: NavHostController) {
-    NavHost(navController, startDestination = Screen.Splash.route) {
+    NavHost(
+        navController, startDestination =
+//    Screen.Splash.route
+        "test"
+    ) {
+
+
+        composable("test") {
+            TestRoute()
+        }
+
+
         composable(Screen.Login.route) {
             LoginScreen {
                 navController.navigate(Screen.Main.route) {
@@ -101,7 +113,11 @@ private fun NavigationTree(navController: NavHostController) {
 
         }
 
-        composable(Screen.PlaylistDetail.route) {
+        composable(Screen.PlaylistDetail.route, arguments = listOf(
+            navArgument("id") {
+                type = NavType.LongType
+            }
+        )) {
             PlaylistDetailRoute({
                 navController.popBackStack()
             }, {

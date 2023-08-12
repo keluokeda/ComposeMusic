@@ -4,9 +4,9 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.ke.compose.music.entity.QueryDownloadedMusicResult
 import com.ke.music.room.db.entity.Download
 import com.ke.music.room.db.entity.Music
+import com.ke.music.room.entity.QueryDownloadedMusicResult
 import com.ke.music.room.entity.QueryMusicResult
 import kotlinx.coroutines.flow.Flow
 

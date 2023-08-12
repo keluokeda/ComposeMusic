@@ -1,4 +1,4 @@
-package com.ke.compose.music.ui.playlist_detail
+package com.ke.music.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -10,6 +10,9 @@ import com.ke.music.repository.UserRepository
 import com.ke.music.repository.domain.LoadPlaylistDetailUseCase
 import com.ke.music.repository.domain.Result
 import com.ke.music.repository.domain.TogglePlaylistSubscribedUseCase
+import com.ke.music.room.db.entity.Playlist
+import com.ke.music.room.db.entity.User
+import com.ke.music.room.entity.MusicEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
@@ -31,10 +34,10 @@ class PlaylistDetailViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-    internal val id = savedStateHandle.get<String>("id")!!.toLong()
+    val id = savedStateHandle.get<Long>("id")!!
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    internal val uiState =
+    val uiState =
         userIdRepository.userIdFlow.flatMapLatest { userId ->
             musicRepository.queryMusicListByPlaylistId(id)
                 .combine(playlistRepository.findById(id)) { list, playlist -> list to playlist }
@@ -63,7 +66,7 @@ class PlaylistDetailViewModel @Inject constructor(
         loadData()
     }
 
-    private fun loadData() {
+    fun loadData() {
         viewModelScope.launch {
             when (val result = loadPlaylistDetailUseCase(id)) {
                 is Result.Error -> {
@@ -77,18 +80,21 @@ class PlaylistDetailViewModel @Inject constructor(
         }
     }
 
-    internal fun toggleBooked(detail: PlaylistDetailUiState) {
-//        _uiState.value = detail.copy(
-//            subscribed = !detail.subscribed,
-//            bookedCount = detail.bookedCount + if (detail.subscribed) -1 else 1
-//        )
-//        viewModelScope.launch {
-//            togglePlaylistSubscribedUseCase(detail.playlist.id to !detail.subscribed)
-//        }
+    fun toggleBooked(detail: PlaylistDetailUiState) {
         viewModelScope.launch {
             togglePlaylistSubscribedUseCase(id to !detail.subscribed)
         }
     }
 
 
+}
+
+data class PlaylistDetailUiState(
+    val playlist: Playlist?,
+    val songs: List<MusicEntity>,
+    val subscribed: Boolean,
+    val creator: User?
+) {
+    val hasData: Boolean
+        get() = playlist != null && creator != null
 }

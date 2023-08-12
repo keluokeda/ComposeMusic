@@ -1,4 +1,4 @@
-package com.ke.compose.music.ui.playlist
+package com.ke.music.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -36,7 +36,7 @@ class PlaylistViewModel @Inject constructor(
 
 
     private val _refreshing = MutableStateFlow(false)
-    internal val refreshing: StateFlow<Boolean>
+    val refreshing: StateFlow<Boolean>
         get() = _refreshing
 
     init {
@@ -45,7 +45,7 @@ class PlaylistViewModel @Inject constructor(
     }
 
 
-    internal fun refresh() {
+    fun refresh() {
         viewModelScope.launch {
             _refreshing.value = true
             val userId = userIdRepository.userId()
@@ -54,7 +54,7 @@ class PlaylistViewModel @Inject constructor(
         }
     }
 
-    internal fun deletePlaylist(playlistId: Long) {
+    fun deletePlaylist(playlistId: Long) {
 
         viewModelScope.launch {
             deletePlaylistUseCase(playlistId)

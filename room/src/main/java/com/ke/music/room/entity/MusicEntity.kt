@@ -18,4 +18,6 @@ data class MusicEntity(
 ) {
     val subTitle: String
         get() = "${artists.joinToString("/") { it.name }} ${album.name}"
+
+
 }

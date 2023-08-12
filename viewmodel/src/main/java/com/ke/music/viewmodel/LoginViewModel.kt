@@ -8,6 +8,7 @@ import com.ke.music.repository.domain.Result
 import com.ke.music.repository.domain.successOr
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -61,6 +62,23 @@ class LoginViewModel @Inject constructor(
                     _qrUrl.value = result.data.second
                     key = result.data.first
                 }
+            }
+        }
+    }
+
+
+    /**
+     * 开启自动登录
+     */
+    fun startAutoLogin(
+        interval: Long = 2000
+    ) {
+        viewModelScope.launch {
+            while (true) {
+                delay(interval)
+                _loading.value = true
+                _navigationActions.send(loginUseCase(key).successOr(false))
+                _loading.value = false
             }
         }
     }

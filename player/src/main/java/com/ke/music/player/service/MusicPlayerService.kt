@@ -7,24 +7,29 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
+import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
+import android.support.v4.media.session.PlaybackStateCompat
+import androidx.core.os.bundleOf
 import androidx.media.MediaBrowserServiceCompat
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
+import androidx.media3.common.Tracks
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerNotificationManager
 import com.bumptech.glide.Glide
-import com.ke.compose.music.entity.QueryDownloadedMusicResult
 import com.ke.music.player.R
 import com.ke.music.repository.MusicRepository
 import com.ke.music.repository.domain.GetMusicUrlUseCase
+import com.ke.music.room.entity.QueryDownloadedMusicResult
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -33,6 +38,86 @@ import javax.inject.Inject
 class MusicPlayerService : MediaBrowserServiceCompat(), Player.Listener,
     PlayerNotificationManager.NotificationListener {
 
+
+    private fun updatePlaylist() {
+        val list = exoPlayer.mediaItems.map {
+            QueryDownloadedMusicResult(
+                musicId = it.mediaId.toLong(),
+                name = it.mediaMetadata.title.toString(),
+                albumName = it.mediaMetadata.subtitle.toString(),
+                albumImage = it.mediaMetadata.artworkUri?.toString() ?: "",
+                path = null
+            )
+        }
+
+        mediaSession.setExtras(
+            bundleOf("playlist" to list)
+        )
+    }
+
+
+    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+        //只要是当前播放的音乐变了 都会走这个回调
+        super.onMediaItemTransition(mediaItem, reason)
+    }
+
+    override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
+        super.onMediaMetadataChanged(mediaMetadata)
+//        mediaSession.setMetadata(
+//            MediaMetadataCompat.fromMediaMetadata(mediaMetadata)
+//        )
+
+        //当前正在播放的音乐
+
+        mediaSession.setMetadata(
+            MediaMetadataCompat.Builder()
+                .putText(MediaMetadataCompat.METADATA_KEY_TITLE, mediaMetadata.title)
+                .putText(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE, mediaMetadata.subtitle)
+                .putString(
+                    MediaMetadataCompat.METADATA_KEY_MEDIA_ID,
+                    mediaMetadata.description?.toString() ?: ""
+                )
+                .putString(
+                    MediaMetadataCompat.METADATA_KEY_ART_URI,
+                    mediaMetadata.artworkUri?.toString() ?: ""
+                )
+                .build()
+        )
+    }
+
+
+    override fun onTracksChanged(tracks: Tracks) {
+        super.onTracksChanged(tracks)
+
+        updatePlaylist()
+
+        Logger.d("onTracksChanged $tracks")
+    }
+
+
+    override fun onIsPlayingChanged(isPlaying: Boolean) {
+        //播放暂停变化
+        super.onIsPlayingChanged(isPlaying)
+        mediaSession.setPlaybackState(
+            PlaybackStateCompat.Builder()
+                .setState(
+                    if (isPlaying) PlaybackStateCompat.STATE_PLAYING else PlaybackStateCompat.STATE_PAUSED,
+                    0,
+                    1f
+                )
+                .setExtras(
+                    bundleOf(
+                        "duration" to exoPlayer.duration
+                    )
+                )
+                .build()
+        )
+    }
+
+
+    override fun onPlaylistMetadataChanged(mediaMetadata: MediaMetadata) {
+        super.onPlaylistMetadataChanged(mediaMetadata)
+    }
 
     private val serviceJob = SupervisorJob()
     private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
@@ -81,13 +166,16 @@ class MusicPlayerService : MediaBrowserServiceCompat(), Player.Listener,
 
             override fun onSkipToNext() {
                 super.onSkipToNext()
-                exoPlayer.seekToNext()
+//                exoPlayer.seekToNext()
+                exoPlayer.seekToNextMediaItem()
             }
 
             override fun onSkipToPrevious() {
                 super.onSkipToPrevious()
-                exoPlayer.seekToPrevious()
+//                exoPlayer.seekToPrevious()
+                exoPlayer.seekToPreviousMediaItem()
             }
+
 
             override fun onPlayFromMediaId(mediaId: String, extras: Bundle) {
                 Logger.d("播放id位 $mediaId 的歌曲")
@@ -109,6 +197,27 @@ class MusicPlayerService : MediaBrowserServiceCompat(), Player.Listener,
             MyNotificationManager(this, serviceScope, mediaSession.sessionToken, this)
 
         myNotificationManager.showNotificationForPlayer(exoPlayer)
+
+        serviceScope.launch {
+            while (true) {
+                if (exoPlayer.isPlaying) {
+                    val duration = exoPlayer.duration
+                    val currentPosition = exoPlayer.currentPosition
+//                    Logger.d("duration = $duration , currentPosition = $currentPosition")
+                    mediaSession.setPlaybackState(
+                        PlaybackStateCompat.Builder()
+                            .setState(PlaybackStateCompat.STATE_PLAYING, currentPosition, 1f)
+                            .setExtras(
+                                bundleOf("duration" to duration)
+                            )
+                            .build()
+
+                    )
+                }
+                delay(1000)
+
+            }
+        }
     }
 
     override fun onDestroy() {
@@ -135,6 +244,7 @@ class MusicPlayerService : MediaBrowserServiceCompat(), Player.Listener,
                 MediaMetadata
                     .Builder()
                     .setTitle(music.name)
+                    .setDescription(music.musicId.toString())
                     .setSubtitle(music.albumName)
                     .setArtworkUri(Uri.parse(music.albumImage))
                     .build()

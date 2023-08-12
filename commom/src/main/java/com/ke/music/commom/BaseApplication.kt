@@ -85,3 +85,4 @@ fun Int.niceCount(): String {
     }
     return "${this / 10000}万"
 }
+
