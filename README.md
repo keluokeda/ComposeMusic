@@ -1,5 +1,5 @@
 # ComposeMusic
-网易云音乐Compose版app，包含app手机、tablet平板、tv电视三个版本。
+网易云音乐Compose版app，包含app手机、tablet平板、tv电视、watch手表4个版本。
 目前还在施工中
 
 ### 手机版本截图
@@ -20,6 +20,12 @@
 ![phone14 pic](https://github.com/keluokeda/ComposeMusic/assets/16809185/fc06bcbe-a1b2-4ef8-b064-b1d994ddd913)
 ![phone15 pic](https://github.com/keluokeda/ComposeMusic/assets/16809185/6bb77d7a-519d-45a3-ac15-5221b83e2bff)
 
+### 手表版本截图
+![watch01](https://github.com/keluokeda/ComposeMusic/assets/16809185/178ed07d-da63-44a1-9861-6748e5449d86)
+![watch02](https://github.com/keluokeda/ComposeMusic/assets/16809185/028ae1c6-9337-4597-a6fb-4081ecd69b9a)
+![watch03](https://github.com/keluokeda/ComposeMusic/assets/16809185/3982f617-e4b8-4c34-a157-03317041139c)
+
+
 ### tv版本截图
 
 ![tv01](https://github.com/keluokeda/ComposeMusic/assets/16809185/92eaef08-fff6-4690-a126-4d71334b6087)
@@ -28,3 +34,5 @@
 ![tv04](https://github.com/keluokeda/ComposeMusic/assets/16809185/02a4c9a5-85c2-42b4-aaec-8c823d25f4cc)
 ![tv05](https://github.com/keluokeda/ComposeMusic/assets/16809185/3606d2ba-b8ec-492a-938f-a03a1288fad9)
 ![tv06](https://github.com/keluokeda/ComposeMusic/assets/16809185/4e61d139-f4c1-4754-b9a8-5d9603bba193)
+
+
