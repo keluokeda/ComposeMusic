@@ -57,39 +57,39 @@ fun TestRoute() {
 
             )
 
-            ListItem(headlineText = {
+            ListItem(headlineContent = {
                 Text(text = "当前正在播放 $isPlaying , $playingSong")
-            }, supportingText = {
+            }, supportingContent = {
                 Text(text = "当前进度 ${progress.first} / ${progress.second}")
             })
 
-            ListItem(headlineText = {
+            ListItem(headlineContent = {
                 Text(text = "播放音乐")
             }, modifier = Modifier.clickable {
                 musicPlayerController.playMusic(329925)
             })
 
-            ListItem(headlineText = {
+            ListItem(headlineContent = {
                 Text(text = "播放")
             }, modifier = Modifier.clickable {
                 musicPlayerController.play()
             })
 
-            ListItem(headlineText = {
+            ListItem(headlineContent = {
                 Text(text = "暂停")
             }, modifier = Modifier.clickable {
                 musicPlayerController.pause()
             })
 
 
-            ListItem(headlineText = {
+            ListItem(headlineContent = {
                 Text(text = "上一首")
             }, modifier = Modifier.clickable {
                 musicPlayerController.skipToPrevious()
             })
 
 
-            ListItem(headlineText = {
+            ListItem(headlineContent = {
                 Text(text = "下一首")
             }, modifier = Modifier.clickable {
                 musicPlayerController.skipToNext()

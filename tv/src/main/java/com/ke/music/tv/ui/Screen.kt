@@ -151,4 +151,6 @@ sealed class Screen(val route: String) {
 
         fun createPath(artistId: Long) = "/artist/$artistId"
     }
+
+    object Play : Screen("/play")
 }

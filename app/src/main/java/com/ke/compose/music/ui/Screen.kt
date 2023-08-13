@@ -156,4 +156,6 @@ sealed class Screen(val route: String) {
     }
 
     object AllMv : Screen("/mv/all")
+
+    object Play : Screen("/play")
 }

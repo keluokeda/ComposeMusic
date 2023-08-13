@@ -33,7 +33,10 @@ import androidx.wear.compose.material.Text
 import com.ke.music.player.service.LocalMusicPlayerController
 
 @Composable
-fun PlayRoute() {
+fun PlayRoute(
+    toLocalPlaylist: () -> Unit,
+    toMain: () -> Unit
+) {
     val musicPlayerController = LocalMusicPlayerController.current
 
     val playing by musicPlayerController.isPlaying.collectAsStateWithLifecycle()
@@ -130,12 +133,12 @@ fun PlayRoute() {
                     horizontalArrangement = Arrangement.Center
                 ) {
 
-                    OutlinedButton(onClick = { }) {
+                    OutlinedButton(onClick = toMain) {
                         Icon(imageVector = Icons.Default.Home, contentDescription = null)
                     }
 
                     Spacer(modifier = Modifier.width(8.dp))
-                    OutlinedButton(onClick = { }) {
+                    OutlinedButton(onClick = toLocalPlaylist) {
                         Icon(imageVector = Icons.Default.List, contentDescription = null)
                     }
                 }

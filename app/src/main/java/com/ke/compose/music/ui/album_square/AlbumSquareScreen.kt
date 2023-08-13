@@ -55,7 +55,12 @@ fun AlbumSquareScreen() {
         }
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
-            val pagerState = rememberPagerState()
+            val pagerState = rememberPagerState(
+                initialPage = 0,
+                initialPageOffsetFraction = 0f
+            ) {
+                5
+            }
             val scope = rememberCoroutineScope()
 
             TabRow(selectedTabIndex = pagerState.currentPage) {
@@ -70,7 +75,7 @@ fun AlbumSquareScreen() {
                 }
             }
 
-            HorizontalPager(pageCount = TabRowItem.values().size, state = pagerState) {
+            HorizontalPager(state = pagerState) {
                 Box(modifier = Modifier.fillMaxSize()) {
 //                    Text(text = TabRowItem.values()[it].title)
 

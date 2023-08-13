@@ -118,6 +118,12 @@ sealed interface NavigationAction {
             return Screen.ArtistDetail.createPath(artistId)
         }
     }
+
+    object NavigateTpPlay : NavigationAction {
+        override fun createPath(): String {
+            return Screen.Play.route
+        }
+    }
 }
 
 val LocalNavigationHandler = staticCompositionLocalOf { NavigationHandler { } }

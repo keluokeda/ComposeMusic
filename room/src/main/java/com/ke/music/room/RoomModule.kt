@@ -15,6 +15,7 @@ import com.ke.music.room.db.dao.ChildCommentDao
 import com.ke.music.room.db.dao.CommentDao
 import com.ke.music.room.db.dao.DownloadDao
 import com.ke.music.room.db.dao.HotArtistDao
+import com.ke.music.room.db.dao.LocalPlaylistSongDao
 import com.ke.music.room.db.dao.MusicArtistCrossRefDao
 import com.ke.music.room.db.dao.MusicDao
 import com.ke.music.room.db.dao.MvArtistCrossRefDao
@@ -25,6 +26,7 @@ import com.ke.music.room.db.dao.PlaylistMusicCrossRefDao
 import com.ke.music.room.db.dao.PlaylistSubscriberCrossRefDao
 import com.ke.music.room.db.dao.PlaylistTagDao
 import com.ke.music.room.db.dao.RecommendSongDao
+import com.ke.music.room.db.dao.SongPlayRecordDao
 import com.ke.music.room.db.dao.TopPlaylistDao
 import com.ke.music.room.db.dao.UserAlbumCrossRefDao
 import com.ke.music.room.db.dao.UserDao
@@ -218,5 +220,18 @@ object RoomModule {
     @Singleton
     fun provideMvArtistCrossRefDao(appFileDatabase: AppFileDatabase): MvArtistCrossRefDao {
         return appFileDatabase.mvArtistCrossRedDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideSongPlayRecordDao(appFileDatabase: AppFileDatabase): SongPlayRecordDao {
+        return appFileDatabase.songPlaylistRecordDao()
+    }
+
+
+    @Singleton
+    @Provides
+    fun provideLocalPlaylistSongDao(appFileDatabase: AppFileDatabase): LocalPlaylistSongDao {
+        return appFileDatabase.localPlaylistSongDao()
     }
 }

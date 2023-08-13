@@ -21,6 +21,12 @@ interface DownloadDao {
 
 
     /**
+     * 查询是否存在
+     */
+    @Query("select * from download where source_id = :songId and source_type = ${Download.SOURCE_TYPE_MUSIC}")
+    suspend fun findBySongId(songId: Long): Download?
+
+    /**
      * 查询所有
      */
     @Query("select * from download where source_type = :sourceType")

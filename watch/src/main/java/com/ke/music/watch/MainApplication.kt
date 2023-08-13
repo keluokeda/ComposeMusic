@@ -12,6 +12,9 @@ class MainApplication : BaseApplication() {
     override fun onCreate() {
         super.onCreate()
 
+
+
+
         startService(Intent(this, MusicDownloadService::class.java))
 
         Aria.get(this)
@@ -19,6 +22,9 @@ class MainApplication : BaseApplication() {
                 isUseBlock = false
                 threadNum = 1
                 maxTaskNum = 1
+                reTryNum = 1
             }
+
+
     }
 }

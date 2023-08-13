@@ -27,6 +27,7 @@ import com.ke.compose.music.ui.downloaded.music.DownloadedMusicRoute
 import com.ke.compose.music.ui.downloading.music.DownloadingMusicRoute
 import com.ke.compose.music.ui.login.LoginScreen
 import com.ke.compose.music.ui.main.MainRoute
+import com.ke.compose.music.ui.play.PlayRoute
 import com.ke.compose.music.ui.playlist_category.PlaylistCategoryRoute
 import com.ke.compose.music.ui.playlist_detail.PlaylistDetailRoute
 import com.ke.compose.music.ui.playlist_highquality.PlaylistHighqualityRoute
@@ -76,8 +77,8 @@ fun AppNavigation() {
 private fun NavigationTree(navController: NavHostController) {
     NavHost(
         navController, startDestination =
-//    Screen.Splash.route
-        "test"
+        Screen.Splash.route
+//        "test"
     ) {
 
 
@@ -341,6 +342,10 @@ private fun NavigationTree(navController: NavHostController) {
 
         composable(Screen.AllMv.route) {
             AllMvRoute()
+        }
+
+        composable(Screen.Play.route) {
+            PlayRoute()
         }
 
     }

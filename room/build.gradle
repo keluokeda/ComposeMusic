@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace 'com.ke.music.room'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         minSdk 21
@@ -50,7 +50,7 @@ dependencies {
     implementation "com.google.dagger:hilt-android:2.45"
     kapt "com.google.dagger:hilt-compiler:2.45"
 
-    def room_version = "2.5.1"
+    def room_version = "2.5.2"
     api "androidx.room:room-runtime:$room_version"
     api "androidx.room:room-ktx:$room_version"
     // To use Kotlin annotation processing tool (kapt)

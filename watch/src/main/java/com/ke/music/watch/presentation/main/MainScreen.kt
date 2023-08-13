@@ -13,7 +13,7 @@ import androidx.wear.compose.material.Text
 fun MainRoute(
     toUserPlaylist: () -> Unit,
     toDownloaded: () -> Unit,
-    toPlay: () -> Unit
+    toDownloading: () -> Unit
 ) {
     Scaffold {
 
@@ -37,19 +37,14 @@ fun MainRoute(
             }
 
             item {
-                Chip(label = {
-                    Text(text = "正在下载")
-                }, onClick = { }, modifier = Modifier.fillMaxWidth()
+                Chip(
+                    label = {
+                        Text(text = "正在下载")
+                    }, onClick = toDownloading, modifier = Modifier.fillMaxWidth()
                 )
             }
 
-            item {
-                Chip(
-                    label = {
-                        Text(text = "播放")
-                    }, onClick = toPlay, modifier = Modifier.fillMaxWidth()
-                )
-            }
+
         }
     }
 }

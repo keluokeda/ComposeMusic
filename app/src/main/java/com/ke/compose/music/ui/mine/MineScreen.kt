@@ -73,7 +73,9 @@ private fun MineScreen(
     Scaffold(
         topBar = {
             AppTopBar(title = { Text(text = "我的") }, actions = {
-                IconButton(onClick = { }) {
+                IconButton(onClick = {
+                    navigationHandler.navigate(NavigationAction.NavigateTpPlay)
+                }) {
                     Icon(imageVector = Icons.Default.Settings, contentDescription = null)
                 }
             })

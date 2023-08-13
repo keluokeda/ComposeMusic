@@ -2,6 +2,8 @@ package com.ke.music.tv.ui.main
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.ListItem
 import androidx.tv.material3.Text
@@ -14,6 +16,7 @@ fun MainRoute() {
 }
 
 @OptIn(ExperimentalTvMaterial3Api::class)
+@Preview(device = Devices.TV_1080p)
 @Composable
 private fun MainScreen() {
     Column {
@@ -68,5 +71,12 @@ private fun MainScreen() {
                 navigationHandler.navigate(NavigationAction.NavigateToAlbumSquare)
             },
             headlineContent = { Text(text = "专辑广场") })
+
+        ListItem(
+            selected = false,
+            onClick = {
+                navigationHandler.navigate(NavigationAction.NavigateToPlay)
+            },
+            headlineContent = { Text(text = "正在播放") })
     }
 }

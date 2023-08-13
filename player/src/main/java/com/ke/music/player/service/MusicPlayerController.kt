@@ -2,7 +2,6 @@ package com.ke.music.player.service
 
 import android.content.ComponentName
 import android.content.Context
-import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
@@ -124,14 +123,16 @@ internal class MusicPlayerControllerImpl(private val context: Context) : MusicPl
     private val mediaControllerCallback = object : MediaControllerCompat.Callback() {
 
 
-        override fun onExtrasChanged(extras: Bundle?) {
-            super.onExtrasChanged(extras)
-            val playlist = extras?.getParcelableArrayList<QueryDownloadedMusicResult>("playlist")
-
-            Logger.d("正在播放的音乐列表发生了变化 $playlist")
-        }
+//        override fun onExtrasChanged(extras: Bundle?) {
+//            super.onExtrasChanged(extras)
+//            val playlist = extras?.getParcelableArrayList<QueryDownloadedMusicResult>("playlist")
+//
+//            Logger.d("正在播放的音乐列表发生了变化 $playlist")
+//        }
 
         override fun onMetadataChanged(metadata: MediaMetadataCompat) {
+
+
             val title = metadata.getText(MediaMetadataCompat.METADATA_KEY_TITLE).toString()
             val albumName =
                 metadata.getText(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE).toString()

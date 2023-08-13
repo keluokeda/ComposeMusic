@@ -11,7 +11,7 @@ kapt {
 
 android {
     namespace 'com.ke.music.repository'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         minSdk 21

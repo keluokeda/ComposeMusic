@@ -8,6 +8,8 @@ import androidx.wear.compose.navigation.SwipeDismissableNavHost
 import androidx.wear.compose.navigation.composable
 import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
 import com.ke.music.watch.presentation.downloaded.DownloadedRoute
+import com.ke.music.watch.presentation.downloading.DownloadingRoute
+import com.ke.music.watch.presentation.local_playlist_songs.LocalPlaylistSongsRoute
 import com.ke.music.watch.presentation.login.LoginRoute
 import com.ke.music.watch.presentation.main.MainRoute
 import com.ke.music.watch.presentation.my_playlist.MyPlaylistRoute
@@ -22,7 +24,7 @@ fun AppNavigation() {
     SwipeDismissableNavHost(navController = controller, startDestination = Screen.Splash.route) {
         composable(Screen.Splash.route) {
             SplashRoute { isLogin ->
-                controller.navigate(if (isLogin) Screen.Main.route else Screen.Login.route) {
+                controller.navigate(if (isLogin) Screen.Play.route else Screen.Login.route) {
                     popUpTo(Screen.Splash.route) {
                         inclusive = true
                     }
@@ -36,7 +38,7 @@ fun AppNavigation() {
             LoginRoute {
 
                 if (it) {
-                    controller.navigate(Screen.Main.route) {
+                    controller.navigate(Screen.Play.route) {
                         popUpTo(Screen.Login.route) {
                             inclusive = true
                         }
@@ -53,7 +55,7 @@ fun AppNavigation() {
             }, {
                 controller.navigate(Screen.Downloaded.route)
             }, {
-                controller.navigate(Screen.Play.route)
+                controller.navigate(Screen.Downloading.route)
             })
         }
 
@@ -76,7 +78,19 @@ fun AppNavigation() {
         }
 
         composable(Screen.Play.route) {
-            PlayRoute()
+            PlayRoute({
+                controller.navigate(Screen.LocalPlaylistSongs.route)
+            }) {
+                controller.navigate(Screen.Main.route)
+            }
+        }
+
+        composable(Screen.LocalPlaylistSongs.route) {
+            LocalPlaylistSongsRoute()
+        }
+
+        composable(Screen.Downloading.route) {
+            DownloadingRoute()
         }
     }
 }
@@ -97,5 +111,9 @@ sealed class Screen(val route: String) {
 
     object Downloaded : Screen("/downloaded")
 
+    object Downloading : Screen("/downloading")
+
     object Play : Screen("/play")
+
+    object LocalPlaylistSongs : Screen("/localPlaylistSongs")
 }

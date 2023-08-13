@@ -23,13 +23,14 @@ import com.bumptech.glide.Glide
 import com.ke.music.player.R
 import com.ke.music.repository.MusicRepository
 import com.ke.music.repository.domain.GetMusicUrlUseCase
-import com.ke.music.room.entity.QueryDownloadedMusicResult
+import com.ke.music.room.entity.DownloadedMusicEntity
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -39,21 +40,27 @@ class MusicPlayerService : MediaBrowserServiceCompat(), Player.Listener,
     PlayerNotificationManager.NotificationListener {
 
 
-    private fun updatePlaylist() {
-        val list = exoPlayer.mediaItems.map {
-            QueryDownloadedMusicResult(
-                musicId = it.mediaId.toLong(),
-                name = it.mediaMetadata.title.toString(),
-                albumName = it.mediaMetadata.subtitle.toString(),
-                albumImage = it.mediaMetadata.artworkUri?.toString() ?: "",
-                path = null
-            )
-        }
+//    private fun updatePlaylist() {
+//        val list = exoPlayer.mediaItems.map {
+//            QueryDownloadedMusicResult(
+//                musicId = it.mediaId.toLong(),
+//                name = it.mediaMetadata.title.toString(),
+//                albumName = it.mediaMetadata.subtitle.toString(),
+//                albumImage = it.mediaMetadata.artworkUri?.toString() ?: "",
+//                path = null
+//            )
+//        }
 
-        mediaSession.setExtras(
-            bundleOf("playlist" to list)
-        )
-    }
+//        mediaSession.setExtras(
+//            bundleOf("playlist" to list)
+//        )
+
+//        serviceScope.launch {
+//            musicRepository.insertSongsToLocalPlaylist(
+//                list.map { it.musicId }
+//            )
+//        }
+//    }
 
 
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
@@ -67,7 +74,22 @@ class MusicPlayerService : MediaBrowserServiceCompat(), Player.Listener,
 //            MediaMetadataCompat.fromMediaMetadata(mediaMetadata)
 //        )
 
+        val songId = mediaMetadata.description?.toString()?.toLongOrNull()
+
+        Logger.d("onMediaMetadataChanged $songId $mediaMetadata")
+
+
+        if (songId == null) {
+            return
+        }
+
+
+        serviceScope.launch {
+            musicRepository.onSongPlayed(songId)
+        }
+
         //当前正在播放的音乐
+
 
         mediaSession.setMetadata(
             MediaMetadataCompat.Builder()
@@ -88,10 +110,7 @@ class MusicPlayerService : MediaBrowserServiceCompat(), Player.Listener,
 
     override fun onTracksChanged(tracks: Tracks) {
         super.onTracksChanged(tracks)
-
-        updatePlaylist()
-
-        Logger.d("onTracksChanged $tracks")
+//        updatePlaylist()
     }
 
 
@@ -115,10 +134,6 @@ class MusicPlayerService : MediaBrowserServiceCompat(), Player.Listener,
     }
 
 
-    override fun onPlaylistMetadataChanged(mediaMetadata: MediaMetadata) {
-        super.onPlaylistMetadataChanged(mediaMetadata)
-    }
-
     private val serviceJob = SupervisorJob()
     private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
 
@@ -140,6 +155,7 @@ class MusicPlayerService : MediaBrowserServiceCompat(), Player.Listener,
         exoPlayer.playWhenReady = true
 
         exoPlayer.addListener(this)
+        exoPlayer.repeatMode = ExoPlayer.REPEAT_MODE_ALL
 
         // Build a PendingIntent that can be used to launch the UI.
         val sessionActivityPendingIntent =
@@ -178,14 +194,42 @@ class MusicPlayerService : MediaBrowserServiceCompat(), Player.Listener,
 
 
             override fun onPlayFromMediaId(mediaId: String, extras: Bundle) {
-                Logger.d("播放id位 $mediaId 的歌曲")
 
                 serviceScope.launch {
                     val musicId = mediaId.toLongOrNull() ?: return@launch
-                    val downloadedMusic = musicRepository.findDownloadedMusic(musicId)
+                    val result = musicRepository.findDownloadedMusic(musicId)
+                    if (result != null) {
+                        //已经下载了
+                        if (exoPlayer.mediaItems.map { it.mediaId }.contains(musicId.toString())) {
+                            //已经在列表中了
+                            val index = exoPlayer.mediaItems.indexOfFirst {
+                                it.mediaId == musicId.toString()
+                            }
+                            //播放选中的
+                            exoPlayer.seekTo(index, 0)
+                        } else {
+                            //不在列表中 就插入进去
 
-                    if (downloadedMusic != null) {
-                        playDownloadedMusic(downloadedMusic)
+                            musicRepository.insertSongIntoLocalPlaylist(
+                                result.musicId
+                            )
+
+//                            exoPlayer.addMediaItem(
+//                                MediaItem.Builder()
+//                                    .setMediaId(mediaId)
+//                                    .setMediaMetadata(
+//                                        MediaMetadata.Builder()
+//                                            .setTitle(result.name)
+//                                            .setSubtitle(result.albumName)
+//                                            .setDescription(mediaId)
+//                                            .setArtworkUri(Uri.parse(result.albumImage))
+//                                            .build()
+//                                    )
+//                                    .setUri(Uri.parse(result.path))
+//                                    .build()
+//                            )
+                        }
+
                     }
                 }
             }
@@ -198,12 +242,13 @@ class MusicPlayerService : MediaBrowserServiceCompat(), Player.Listener,
 
         myNotificationManager.showNotificationForPlayer(exoPlayer)
 
+
+        //更新播放进度
         serviceScope.launch {
             while (true) {
                 if (exoPlayer.isPlaying) {
                     val duration = exoPlayer.duration
                     val currentPosition = exoPlayer.currentPosition
-//                    Logger.d("duration = $duration , currentPosition = $currentPosition")
                     mediaSession.setPlaybackState(
                         PlaybackStateCompat.Builder()
                             .setState(PlaybackStateCompat.STATE_PLAYING, currentPosition, 1f)
@@ -218,7 +263,71 @@ class MusicPlayerService : MediaBrowserServiceCompat(), Player.Listener,
 
             }
         }
+
+        serviceScope.launch {
+//            val list = musicRepository.getLocalPlaylistSongs()
+
+//            musicRepository.getLocalPlaylistSongs()
+
+            delay(1000)//经常是先调用后连上 会收不到第一次的回调
+            musicRepository
+                .getLocalPlaylistSongList()
+                .distinctUntilChanged()
+                .collect { list ->
+                    //本地播放列表发生了变化
+
+                    exoPlayer.updateMediaItems(list)
+//                    val currentMediaItem = exoPlayer.currentMediaItem
+//                    val newList = list.map {
+//                        entityToMediaItem(it)
+//                    }
+//
+//                    if (currentMediaItem != null) {
+//                        //当前有播放的
+//                        val index = list.indexOfFirst {
+//                            it.musicId.toString() == currentMediaItem.mediaId
+//                        }
+//                        if (index != -1) {
+//                            //可能删除的就是当前正在播放的
+//                            val currentPosition = exoPlayer.currentPosition
+//                            //会卡顿一下
+//                            exoPlayer.setMediaItems(
+//                                newList, index, currentPosition
+//                            )
+//                        } else {
+//                            exoPlayer.setMediaItems(
+//                                newList
+//                            )
+//                        }
+//
+//                    } else {
+//                        //没有播放
+//
+//                        exoPlayer.setMediaItems(
+//                            newList
+//                        )
+//                    }
+//
+//
+//
+//                    exoPlayer.prepare()
+                }
+        }
     }
+
+//    private fun entityToMediaItem(entity: DownloadedMusicEntity) = MediaItem.Builder()
+//        .setUri(Uri.parse(entity.path))
+//        .setMediaId(entity.musicId.toString())
+//        .setMediaMetadata(
+//            MediaMetadata
+//                .Builder()
+//                .setTitle(entity.name)
+//                .setDescription(entity.musicId.toString())
+//                .setSubtitle(entity.albumName)
+//                .setArtworkUri(Uri.parse(entity.albumImage))
+//                .build()
+//        )
+//        .build()
 
     override fun onDestroy() {
         super.onDestroy()
@@ -230,38 +339,6 @@ class MusicPlayerService : MediaBrowserServiceCompat(), Player.Listener,
         exoPlayer.release()
 
         Logger.d("MusicPlayerService 挂掉了")
-    }
-
-
-    /**
-     * 播放下载的音乐
-     */
-    private fun playDownloadedMusic(music: QueryDownloadedMusicResult) {
-        val item = MediaItem.Builder()
-            .setUri(Uri.parse(music.path))
-            .setMediaId(music.musicId.toString())
-            .setMediaMetadata(
-                MediaMetadata
-                    .Builder()
-                    .setTitle(music.name)
-                    .setDescription(music.musicId.toString())
-                    .setSubtitle(music.albumName)
-                    .setArtworkUri(Uri.parse(music.albumImage))
-                    .build()
-            )
-            .build()
-        exoPlayer.addMediaItem(
-            item
-        )
-
-
-        Logger.d("media list = ${exoPlayer.mediaItems.map { "${it.mediaMetadata.title} ${it.mediaMetadata.subtitle}" }}")
-
-
-        exoPlayer.seekToDefaultPosition(exoPlayer.mediaItemCount - 1)
-
-
-        exoPlayer.prepare()
     }
 
 
@@ -298,6 +375,90 @@ private val ExoPlayer.mediaItems: List<MediaItem>
         }
         return mediaList
     }
+
+private fun ExoPlayer.updateMediaItems(list: List<DownloadedMusicEntity>) {
+
+
+    if (mediaItemCount == 0) {
+        //播放列表为空
+        setMediaItems(list.map {
+            it.toMediaItem()
+        })
+        prepare()
+        return
+    }
+
+    if (list.isEmpty()) {
+        setMediaItems(emptyList())
+        prepare()
+        return
+    }
+
+    if (currentMediaItem == null) {
+        //没有在播放
+        setMediaItems(list.map {
+            it.toMediaItem()
+        })
+        prepare()
+        return
+    }
+
+    //旧的播放列表
+    val mediaItemList = mediaItems
+
+
+    //当前播放的歌曲在新列表中的位置
+    val currentPlayingInNewListIndex = list.indexOfFirst {
+        it.musicId.toString() == currentMediaItem?.mediaId
+    }
+    if (currentPlayingInNewListIndex == -1) {
+        //表示把当前正在播放的给删除了
+        setMediaItems(list.map {
+            it.toMediaItem()
+        })
+        prepare()
+        return
+    }
+
+    if (list.size - mediaItemList.size == 1) {
+        //新增加了一个
+        addMediaItem(list.last().toMediaItem())
+        return
+    }
+
+    if (mediaItemList.size - list.size == 1) {
+        //删除了一个 但删除的不是当前正在播放的 但删除的哪一个不知道
+        val target =
+            (mediaItemList.map { it.mediaId } - list.map { it.musicId.toString() }.toSet()).first()
+
+        val index = mediaItemList.indexOfFirst {
+            it.mediaId == target
+        }
+
+        removeMediaItem(index)
+        return
+    }
+
+
+}
+
+private fun DownloadedMusicEntity.toMediaItem(): MediaItem {
+    return MediaItem.Builder()
+        .setMediaId(musicId.toString())
+        .setMediaMetadata(
+            MediaMetadata
+                .Builder()
+                .setTitle(name)
+                .setSubtitle(albumName)
+                .setDescription(musicId.toString())
+                .setArtworkUri(
+                    Uri.parse(albumImage)
+                )
+                .build()
+        )
+        .setUri(Uri.parse(path))
+        .build()
+}
 
 const val NOW_PLAYING_CHANNEL_ID = "com.example.android.uamp.media.NOW_PLAYING"
 const val NOW_PLAYING_NOTIFICATION_ID = 0xb339 // Arbitrary number used to identify our notification

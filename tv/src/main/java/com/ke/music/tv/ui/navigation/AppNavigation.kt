@@ -12,6 +12,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.ke.music.download.DownloadManagerImpl
 import com.ke.music.download.LocalDownloadManager
+import com.ke.music.player.service.LocalMusicPlayerController
+import com.ke.music.player.service.MusicPlayerController
 import com.ke.music.repository.entity.ShareType
 import com.ke.music.tv.AppViewModel
 import com.ke.music.tv.LocalAppViewModel
@@ -26,6 +28,7 @@ import com.ke.music.tv.ui.downloading.music.DownloadingMusicRoute
 import com.ke.music.tv.ui.login.LoginScreen
 import com.ke.music.tv.ui.main.MainRoute
 import com.ke.music.tv.ui.my_playlist.MyPlaylistRoute
+import com.ke.music.tv.ui.play.PlayRoute
 import com.ke.music.tv.ui.playlist_detail.PlaylistDetailRoute
 import com.ke.music.tv.ui.playlist_info.PlaylistInfoScreen
 import com.ke.music.tv.ui.playlist_top.PlaylistTopRoute
@@ -46,6 +49,9 @@ fun AppNavigation() {
         LocalNavigationHandler provides {
             navController.navigate(it.createPath())
         },
+        LocalMusicPlayerController provides MusicPlayerController.createMusicPlayerController(
+            context
+        ),
         LocalAppViewModel provides appViewModel,
         LocalDownloadManager provides DownloadManagerImpl(context)
     ) {
@@ -174,6 +180,10 @@ private fun NavigationTree(navController: NavHostController) {
             }
         )) {
             ArtistDetailRoute()
+        }
+
+        composable(Screen.Play.route) {
+            PlayRoute()
         }
     }
 }

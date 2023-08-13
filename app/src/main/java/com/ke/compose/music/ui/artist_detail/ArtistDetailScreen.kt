@@ -206,7 +206,13 @@ fun ArtistDetailRoute() {
         }
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
-            val pagerState = rememberPagerState()
+            val pagerState = rememberPagerState(
+                initialPage = 0,
+                initialPageOffsetFraction = 0f
+            ) {
+                // provide pageCount
+                ArtistTabRowItem.values().size
+            }
             val scope = rememberCoroutineScope()
 
             TabRow(selectedTabIndex = pagerState.currentPage) {
@@ -222,7 +228,6 @@ fun ArtistDetailRoute() {
             }
 
             HorizontalPager(
-                pageCount = ArtistTabRowItem.values().size,
                 state = pagerState,
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {

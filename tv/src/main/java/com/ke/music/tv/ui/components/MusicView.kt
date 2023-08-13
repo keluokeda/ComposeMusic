@@ -31,9 +31,9 @@ import androidx.tv.material3.IconButton
 import androidx.tv.material3.ListItem
 import androidx.tv.material3.Text
 import com.ke.music.download.LocalDownloadManager
+import com.ke.music.player.service.LocalMusicPlayerController
 import com.ke.music.room.db.entity.Download
 import com.ke.music.room.entity.MusicEntity
-import com.ke.music.tv.LocalAppViewModel
 
 
 @OptIn(ExperimentalTvMaterial3Api::class)
@@ -51,9 +51,10 @@ fun MusicView(
         mutableStateOf(false)
     }
 
-    val appViewModel = LocalAppViewModel.current
 
     val downloadManager = LocalDownloadManager.current
+
+    val musicPlayerController = LocalMusicPlayerController.current
 
     val focusRequester = FocusRequester()
 
@@ -81,8 +82,7 @@ fun MusicView(
                 Download.STATUS_DOWNLOADED -> {
                     //已经下载 直接播放
                     {
-                        appViewModel.playMusic(musicEntity.musicId)
-
+                        musicPlayerController.playMusic(musicEntity.musicId)
                     }
 
                 }

@@ -4,14 +4,19 @@ import android.content.Context
 import com.ke.music.api.response.Song
 import com.ke.music.room.db.dao.AlbumDao
 import com.ke.music.room.db.dao.ArtistDao
+import com.ke.music.room.db.dao.DownloadDao
+import com.ke.music.room.db.dao.LocalPlaylistSongDao
 import com.ke.music.room.db.dao.MusicArtistCrossRefDao
 import com.ke.music.room.db.dao.MusicDao
 import com.ke.music.room.db.dao.RecommendSongDao
+import com.ke.music.room.db.dao.SongPlayRecordDao
 import com.ke.music.room.db.entity.Album
 import com.ke.music.room.db.entity.Artist
 import com.ke.music.room.db.entity.Download
+import com.ke.music.room.db.entity.LocalPlaylistSong
 import com.ke.music.room.db.entity.Music
 import com.ke.music.room.db.entity.MusicArtistCrossRef
+import com.ke.music.room.db.entity.SongPlayRecord
 import com.ke.music.room.entity.MusicEntity
 import com.ke.music.room.entity.QueryMusicResult
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -28,6 +33,9 @@ class MusicRepository @Inject constructor(
     private val artistDao: ArtistDao,
     private val recommendSongDao: RecommendSongDao,
     private val musicArtistCrossRefDao: MusicArtistCrossRefDao,
+    private val downloadDao: DownloadDao,
+    private val localPlaylistSongDao: LocalPlaylistSongDao,
+    private val songPlayRecordDao: SongPlayRecordDao,
     @ApplicationContext private val context: Context
 ) {
 
@@ -157,9 +165,14 @@ class MusicRepository @Inject constructor(
 
     suspend fun findDownloadedMusic(id: Long) = musicDao.findDownloadedMusicById(id)
 
+    /**
+     * 获取下载的音乐
+     */
     fun getDownloadedMusics() = musicDao.getDownloadMusics(Download.STATUS_DOWNLOADED).map {
         queryResultToMusicEntityList(it)
     }
+
+    suspend fun getDownloadedSong(songId: Long) = downloadDao.findBySongId(songId)
 
 
     /**
@@ -183,4 +196,43 @@ class MusicRepository @Inject constructor(
             queryResultToMusicEntityList(it)
         }
 
+
+    /**
+     * 音乐被播放的时候调用下这个方法
+     */
+    suspend fun onSongPlayed(songId: Long) {
+        songPlayRecordDao.insert(
+            SongPlayRecord(
+                songId = songId
+            )
+        )
+    }
+
+    /**
+     * 插入一条歌曲到本地播放列表
+     */
+    suspend fun insertSongIntoLocalPlaylist(songId: Long) {
+        localPlaylistSongDao.insert(LocalPlaylistSong(songId))
+    }
+
+    suspend fun insertSongsToLocalPlaylist(list: List<Long>) {
+        localPlaylistSongDao.insertAll(
+            list.map {
+                LocalPlaylistSong(it)
+            }
+        )
+    }
+
+    suspend fun getLocalPlaylistSongs() = localPlaylistSongDao.getLocalPlaylistSongs()
+
+    fun getLocalPlaylistSongList() = localPlaylistSongDao.getLocalPlaylistSongList()
+
+    /**
+     * 清空本地播放列表
+     */
+    suspend fun clearLocalPlaylist() {
+        localPlaylistSongDao.clear()
+    }
+
+    suspend fun deleteLocalPlaylistSong(songId: Long) = localPlaylistSongDao.delete(songId)
 }

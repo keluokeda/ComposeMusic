@@ -64,7 +64,7 @@ suspend fun Context.saveBitmapToGallery(bitmap: Bitmap) = withContext(Dispatcher
         contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
     if (uri != null) {
         contentResolver.openOutputStream(uri).use {
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it!!)
         }
     }
 }
