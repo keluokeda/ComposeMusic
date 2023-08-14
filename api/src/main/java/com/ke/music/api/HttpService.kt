@@ -13,6 +13,7 @@ import com.ke.music.api.response.HighQualityPlaylistsResponse
 import com.ke.music.api.response.LoginQRCreateResponse
 import com.ke.music.api.response.LoginQRKeyResponse
 import com.ke.music.api.response.LoginStatusResponse
+import com.ke.music.api.response.LrcResponse
 import com.ke.music.api.response.MusicUrlResponse
 import com.ke.music.api.response.MvAllResponse
 import com.ke.music.api.response.NewAlbumListResponse
@@ -421,4 +422,12 @@ interface HttpService {
         @Query("limit") limit: Int,
         @Query("offset") offset: Int
     ): MvAllResponse
+
+    /**
+     * 获取歌曲歌词
+     */
+    @GET("lyric")
+    suspend fun getSongLrc(
+        @Query("id") songId: Long
+    ): LrcResponse
 }

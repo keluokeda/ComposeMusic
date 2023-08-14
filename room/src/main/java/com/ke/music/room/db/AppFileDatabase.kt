@@ -25,6 +25,7 @@ import com.ke.music.room.db.dao.PlaylistDao
 import com.ke.music.room.db.dao.PlaylistMusicCrossRefDao
 import com.ke.music.room.db.dao.PlaylistSubscriberCrossRefDao
 import com.ke.music.room.db.dao.RecommendSongDao
+import com.ke.music.room.db.dao.SongLrcDao
 import com.ke.music.room.db.dao.SongPlayRecordDao
 import com.ke.music.room.db.dao.TopPlaylistDao
 import com.ke.music.room.db.dao.UserAlbumCrossRefDao
@@ -52,6 +53,7 @@ import com.ke.music.room.db.entity.Playlist
 import com.ke.music.room.db.entity.PlaylistMusicCrossRef
 import com.ke.music.room.db.entity.PlaylistSubscriberCrossRef
 import com.ke.music.room.db.entity.RecommendSong
+import com.ke.music.room.db.entity.SongLrc
 import com.ke.music.room.db.entity.SongPlayRecord
 import com.ke.music.room.db.entity.TopPlaylist
 import com.ke.music.room.db.entity.User
@@ -88,15 +90,17 @@ import com.ke.music.room.db.entity.UserPlaylistCrossRef
         MvArtistCrossRef::class,
         AllMv::class,
         LocalPlaylistSong::class,
-        SongPlayRecord::class
+        SongPlayRecord::class,
+        SongLrc::class
     ],
-    version = 9,
+    version = 10,
     autoMigrations = [
         AutoMigration(from = 4, to = 5),
         AutoMigration(from = 5, to = 6),
         AutoMigration(from = 6, to = 7),
         AutoMigration(from = 7, to = 8),
         AutoMigration(from = 8, to = 9),
+        AutoMigration(from = 9, to = 10),
     ],
 
     exportSchema = true
@@ -159,4 +163,6 @@ abstract class AppFileDatabase : RoomDatabase() {
     abstract fun songPlaylistRecordDao(): SongPlayRecordDao
 
     abstract fun localPlaylistSongDao(): LocalPlaylistSongDao
+
+    abstract fun songLrcDao(): SongLrcDao
 }

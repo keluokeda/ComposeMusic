@@ -99,7 +99,7 @@ internal class MusicPlayerControllerImpl(private val context: Context) : MusicPl
     private lateinit var mediaBrowser: MediaBrowserCompat
     private var controller: MediaControllerCompat? = null
 
-    private val _isPlaying = MutableStateFlow(false)
+    private val _isPlaying = MutableStateFlow(true)
 
     private val _progress = MutableStateFlow<Pair<Long, Long>>(0L to 0L)
 

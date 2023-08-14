@@ -1,6 +1,6 @@
 package com.ke.compose.music.ui.main
 
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
@@ -70,11 +70,11 @@ fun MainRoute(
 
             }
         }
-    }) {
+    }) { padding ->
 
         NavHost(
             navController = navHostController,
-            modifier = Modifier.padding(it),
+            modifier = Modifier.statusBarsPadding(),
             startDestination = MainScreenFragment.Home.route
         ) {
             composable(MainScreenFragment.Home.route) {

@@ -9,6 +9,7 @@ import com.ke.music.room.db.dao.LocalPlaylistSongDao
 import com.ke.music.room.db.dao.MusicArtistCrossRefDao
 import com.ke.music.room.db.dao.MusicDao
 import com.ke.music.room.db.dao.RecommendSongDao
+import com.ke.music.room.db.dao.SongLrcDao
 import com.ke.music.room.db.dao.SongPlayRecordDao
 import com.ke.music.room.db.entity.Album
 import com.ke.music.room.db.entity.Artist
@@ -16,6 +17,7 @@ import com.ke.music.room.db.entity.Download
 import com.ke.music.room.db.entity.LocalPlaylistSong
 import com.ke.music.room.db.entity.Music
 import com.ke.music.room.db.entity.MusicArtistCrossRef
+import com.ke.music.room.db.entity.SongLrc
 import com.ke.music.room.db.entity.SongPlayRecord
 import com.ke.music.room.entity.MusicEntity
 import com.ke.music.room.entity.QueryMusicResult
@@ -36,7 +38,8 @@ class MusicRepository @Inject constructor(
     private val downloadDao: DownloadDao,
     private val localPlaylistSongDao: LocalPlaylistSongDao,
     private val songPlayRecordDao: SongPlayRecordDao,
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val songLrcDao: SongLrcDao,
 ) {
 
     suspend fun findById(musicId: Long): Music? = musicDao.findById(musicId)
@@ -235,4 +238,17 @@ class MusicRepository @Inject constructor(
     }
 
     suspend fun deleteLocalPlaylistSong(songId: Long) = localPlaylistSongDao.delete(songId)
+
+
+    /**
+     * 保存歌曲歌词
+     */
+    suspend fun saveSongLrc(songId: Long, lrc: String) {
+        songLrcDao.insert(SongLrc(songId, lrc))
+    }
+
+    /**
+     * 获取歌曲歌词
+     */
+    suspend fun getSongLrc(songId: Long) = songLrcDao.findById(songId)?.lrc
 }

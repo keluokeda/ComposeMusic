@@ -26,6 +26,7 @@ import com.ke.music.room.db.dao.PlaylistMusicCrossRefDao
 import com.ke.music.room.db.dao.PlaylistSubscriberCrossRefDao
 import com.ke.music.room.db.dao.PlaylistTagDao
 import com.ke.music.room.db.dao.RecommendSongDao
+import com.ke.music.room.db.dao.SongLrcDao
 import com.ke.music.room.db.dao.SongPlayRecordDao
 import com.ke.music.room.db.dao.TopPlaylistDao
 import com.ke.music.room.db.dao.UserAlbumCrossRefDao
@@ -233,5 +234,11 @@ object RoomModule {
     @Provides
     fun provideLocalPlaylistSongDao(appFileDatabase: AppFileDatabase): LocalPlaylistSongDao {
         return appFileDatabase.localPlaylistSongDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideSongLrcDao(appFileDatabase: AppFileDatabase): SongLrcDao {
+        return appFileDatabase.songLrcDao()
     }
 }
