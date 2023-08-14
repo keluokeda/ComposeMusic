@@ -68,6 +68,7 @@ import com.ke.music.room.entity.DownloadedMusicEntity
 import com.ke.music.room.entity.QueryDownloadedMusicResult
 import com.ke.music.viewmodel.LocalPlaylistSongsViewModel
 import com.ke.music.viewmodel.SongLrcViewModel
+import com.orhanobut.logger.Logger
 
 
 @Composable
@@ -256,9 +257,18 @@ private fun PlayScreen(
                             )
                         }
 
-                        LaunchedEffect(key1 = state) {
+//                        LaunchedEffect(key1 = state) {
+//
+//                            state?.play(progress.first)
+//                        }
 
-                            state?.play(progress.first)
+                        LaunchedEffect(key1 = playing, key2 = state) {
+                            Logger.d("播放状态发生变化 $playing , $progress ,$state")
+                            if (playing) {
+                                state?.play(progress.first)
+                            } else {
+                                state?.pause()
+                            }
                         }
 
                         if (state != null) {

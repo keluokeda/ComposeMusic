@@ -249,6 +249,7 @@ class MusicPlayerService : MediaBrowserServiceCompat(), Player.Listener,
                 if (exoPlayer.isPlaying) {
                     val duration = exoPlayer.duration
                     val currentPosition = exoPlayer.currentPosition
+//                    Logger.d("进度变化 $currentPosition , $duration")
                     mediaSession.setPlaybackState(
                         PlaybackStateCompat.Builder()
                             .setState(PlaybackStateCompat.STATE_PLAYING, currentPosition, 1f)

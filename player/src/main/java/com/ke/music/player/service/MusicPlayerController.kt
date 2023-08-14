@@ -143,6 +143,7 @@ internal class MusicPlayerControllerImpl(private val context: Context) : MusicPl
             _currentPlaying.value = QueryDownloadedMusicResult(
                 id, title, albumName, image, null
             )
+            _progress.value = 0L to 0
 
         }
 
@@ -157,8 +158,13 @@ internal class MusicPlayerControllerImpl(private val context: Context) : MusicPl
             when (state.state) {
                 PlaybackStateCompat.STATE_PLAYING -> {
                     _isPlaying.value = true
-                    _progress.value = state.position to (state.extras?.getLong("duration") ?: 0L)
+                    if (state.position != 0L) {
+                        //暂停播放会出现0进度
+                        _progress.value =
+                            state.position to (state.extras?.getLong("duration") ?: 0L)
+                    }
 
+//                    Logger.d("进度发生变化 ${progress.value}")
                 }
 
                 PlaybackStateCompat.STATE_PAUSED -> {
