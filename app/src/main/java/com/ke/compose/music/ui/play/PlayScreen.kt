@@ -1,9 +1,8 @@
 package com.ke.compose.music.ui.play
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
-import androidx.compose.foundation.Image
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,7 +26,6 @@ import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.outlined.CommentBank
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -50,7 +48,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -100,11 +97,12 @@ fun PlayRoute() {
     }, getSongLrc =
     {
         songLrcViewModel.getSongLrc(it)
+    }, seekTo = {
+        musicPlayerController.seekTo(it)
     }
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PlayScreen(
     currentPlayingSong: QueryDownloadedMusicResult?,
@@ -119,6 +117,9 @@ private fun PlayScreen(
     initialType: PlayType = PlayType.Album,
     getSongLrc: suspend (Long) -> String = {
         ""
+    },
+    seekTo: (Long) -> Unit = {
+
     }
 ) {
 
@@ -152,13 +153,11 @@ private fun PlayScreen(
         mutableStateOf(initialType)
     }
 
-    Scaffold(
-//        modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars),
-    ) { padding ->
+    Scaffold { padding ->
 
-        var albumBitmap by remember {
-            mutableStateOf<Bitmap?>(null)
-        }
+//        var albumBitmap by remember {
+//            mutableStateOf<Bitmap?>(null)
+//        }
 
         Box(
             modifier = Modifier
@@ -168,18 +167,25 @@ private fun PlayScreen(
         ) {
 
 
-            if (albumBitmap != null) {
-                Image(
-                    bitmap = albumBitmap!!.asImageBitmap(),
+//            if (albumBitmap != null) {
+
+            Crossfade(
+                targetState = currentPlayingSong?.albumImage,
+                label = "background",
+                animationSpec = tween(durationMillis = 1000)
+            ) { imageUrl ->
+                AsyncImage(
+                    model = imageUrl,
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxSize()
-//                        .windowInsetsPadding(WindowInsets.systemBars)
                         .blur(1000.dp),
-                    contentScale = ContentScale.Crop
-
+                    contentScale = ContentScale.Crop,
                 )
             }
+
+
+//            }
 
 
             Column(
@@ -208,10 +214,10 @@ private fun PlayScreen(
                                     modifier = Modifier
                                         .fillMaxWidth(0.8f)
                                         .aspectRatio(1f),
-                                    onSuccess = {
-                                        albumBitmap =
-                                            (it.result.drawable as? BitmapDrawable)?.bitmap
-                                    }
+//                                    onSuccess = {
+//                                        albumBitmap =
+//                                            (it.result.drawable as? BitmapDrawable)?.bitmap
+//                                    }
                                 )
                             }
 
@@ -279,6 +285,9 @@ private fun PlayScreen(
                                     .fillMaxWidth()
                                     .weight(1f),
                                 darkTheme = true,
+                                onLineClick = { s, i ->
+//                                    seekTo(s.seekToLine(i))
+                                },
                             ) { text, modifier, color, fontSize, fontWeight, lineHeight ->
                                 Text(
                                     text = text,
@@ -289,6 +298,14 @@ private fun PlayScreen(
                                     lineHeight = lineHeight,
                                 )
                             }
+                        } else {
+                            Text(
+                                text = "歌词加载中",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f),
+                                textAlign = TextAlign.Center
+                            )
                         }
 
 
@@ -319,7 +336,7 @@ private fun PlayScreen(
                                         Text(
                                             text = it.name, maxLines = 1,
                                             style = if (isCurrent) LocalTextStyle.current.copy(
-                                                androidx.compose.ui.graphics.Color.Red
+                                                Color.Red
                                             ) else LocalTextStyle.current
                                         )
                                     }, supportingContent = {
@@ -327,7 +344,7 @@ private fun PlayScreen(
                                             text = it.albumName,
                                             maxLines = 1,
                                             style = if (isCurrent) LocalTextStyle.current.copy(
-                                                androidx.compose.ui.graphics.Color.Red
+                                                Color.Red
                                             ) else LocalTextStyle.current
                                         )
                                     }, leadingContent = {

@@ -74,6 +74,9 @@ fun LyricsView(
     fontSize: TextUnit = 32.sp,
     fontWeight: FontWeight = FontWeight.Bold,
     lineHeight: TextUnit = 1.2.em,
+    onLineClick: (LyricsViewState, Int) -> Unit = { s, i ->
+        s.seekToLine(i)
+    },
     textBuilder: @Composable (
         text: String, modifier: Modifier,
         color: Color,
@@ -201,7 +204,10 @@ fun LyricsView(
                     fontSize = fontSize,
                     fontWeight = fontWeight,
                     lineHeight = lineHeight,
-                    onClick = { state.seekToLine(index) },
+                    onClick = {
+//                        state.seekToLine(index)
+                        onLineClick(state, index)
+                    },
                     offsetYProvider = { getItemOffsetY(index) },
                     modifier = Modifier.onGloballyPositioned { updateItemInfo(index, it) },
                     textBuilder = textBuilder

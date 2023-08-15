@@ -25,7 +25,7 @@ import androidx.tv.material3.Button
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.OutlinedButton
 import androidx.tv.material3.Text
-import com.ke.music.commom.observeWithLifecycle
+import com.ke.music.common.observeWithLifecycle
 import com.ke.music.tv.ui.theme.ComposeMusicTheme
 import com.lightspark.composeqr.QrCodeView
 

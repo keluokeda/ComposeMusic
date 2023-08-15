@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.ke.music.commom.observeWithLifecycle
+import com.ke.music.common.observeWithLifecycle
 
 @Composable
 fun SplashScreen(next: (Boolean) -> Unit) {

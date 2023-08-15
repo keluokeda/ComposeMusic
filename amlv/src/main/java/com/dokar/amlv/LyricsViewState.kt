@@ -189,11 +189,12 @@ class LyricsViewState(
         playbackJob?.cancel()
     }
 
-    fun seekToLine(index: Int) {
-        val lines = lyrics?.lines ?: return
+    fun seekToLine(index: Int): Long {
+        val lines = lyrics?.lines ?: return -1
         val idx = index.coerceIn(-1, lineCount - 1)
         val position = if (idx >= 0) lines[idx].startAt else 0L
         seekTo(position)
+        return position
     }
 
     fun seekTo(position: Long) {

@@ -27,7 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ke.music.commom.observeWithLifecycle
+import com.ke.music.common.observeWithLifecycle
 import com.ke.music.pad.ui.theme.ComposeMusicTheme
 import com.ke.music.repository.toast
 import com.lightspark.composeqr.QrCodeView

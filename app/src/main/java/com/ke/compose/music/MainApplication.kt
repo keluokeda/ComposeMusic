@@ -8,7 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalView
 import com.arialyy.aria.core.Aria
-import com.ke.music.commom.BaseApplication
+import com.ke.music.common.BaseApplication
 import com.ke.music.download.MusicDownloadService
 import dagger.hilt.android.HiltAndroidApp
 import java.text.SimpleDateFormat

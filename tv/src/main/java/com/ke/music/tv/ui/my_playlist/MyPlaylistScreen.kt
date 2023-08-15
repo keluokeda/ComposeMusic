@@ -25,7 +25,7 @@ import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import coil.compose.AsyncImage
-import com.ke.music.commom.observeWithLifecycle
+import com.ke.music.common.observeWithLifecycle
 import com.ke.music.repository.toast
 import com.ke.music.room.db.entity.Playlist
 

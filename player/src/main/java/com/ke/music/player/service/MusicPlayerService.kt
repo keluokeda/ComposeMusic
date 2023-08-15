@@ -175,6 +175,11 @@ class MusicPlayerService : MediaBrowserServiceCompat(), Player.Listener,
                 exoPlayer.pause()
             }
 
+            override fun onSeekTo(pos: Long) {
+                super.onSeekTo(pos)
+                exoPlayer.seekTo(pos)
+            }
+
             override fun onPlay() {
                 super.onPlay()
                 exoPlayer.play()

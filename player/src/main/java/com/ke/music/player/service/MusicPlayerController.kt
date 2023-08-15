@@ -43,6 +43,12 @@ interface MusicPlayerController {
 
 
     /**
+     * 跳转
+     */
+    fun seekTo(position: Long)
+
+
+    /**
      * 是否正在播放
      */
     val isPlaying: StateFlow<Boolean>
@@ -87,6 +93,10 @@ private object EmptyMusicPlayerController : MusicPlayerController {
 
     override val currentPlaying: StateFlow<QueryDownloadedMusicResult?>
         get() = MutableStateFlow(null)
+
+    override fun seekTo(position: Long) {
+
+    }
 
 }
 
@@ -241,7 +251,10 @@ internal class MusicPlayerControllerImpl(private val context: Context) : MusicPl
     }
 
     override fun skipToPrevious() {
-
         controller?.transportControls?.skipToPrevious()
+    }
+
+    override fun seekTo(position: Long) {
+        controller?.transportControls?.seekTo(position)
     }
 }

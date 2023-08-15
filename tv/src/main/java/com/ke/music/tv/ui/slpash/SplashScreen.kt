@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
-import com.ke.music.commom.observeWithLifecycle
+import com.ke.music.common.observeWithLifecycle
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable

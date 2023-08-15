@@ -1,6 +1,6 @@
 package com.ke.compose.music.ui.main
 
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
@@ -10,7 +10,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -18,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -37,44 +37,16 @@ fun MainRoute(
     ) {
     val navHostController = rememberNavController()
 
-    Scaffold(bottomBar = {
-        NavigationBar {
-            val navBackStackEntry by navHostController.currentBackStackEntryAsState()
-            val currentDestination = navBackStackEntry?.destination
-            listOf(
-                MainScreenFragment.Home,
-                MainScreenFragment.Message,
-                MainScreenFragment.Playlist,
-                MainScreenFragment.Mine
-            ).forEach { item ->
-                NavigationBarItem(selected = currentDestination?.hierarchy?.any { it.route == item.route } == true,
-                    onClick = {
-                        navHostController.navigate(item.route) {
-                            // Pop up to the start destination of the graph to
-                            // avoid building up a large stack of destinations
-                            // on the back stack as users select items
-                            popUpTo(navHostController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            // Avoid multiple copies of the same destination when
-                            // reselecting the same item
-                            launchSingleTop = true
-                            // Restore state when reselecting a previously selected item
-                            restoreState = true
-                        }
-                    }, label = {
-                        Text(text = item.label)
-                    }, icon = {
-                        Icon(imageVector = item.icon, contentDescription = null)
-                    })
+    Column {
 
-            }
-        }
-    }) { padding ->
+
+//    Scaffold(bottomBar = {
+
+//    }) { padding ->
 
         NavHost(
             navController = navHostController,
-            modifier = Modifier.statusBarsPadding(),
+            modifier = Modifier.weight(1f),
             startDestination = MainScreenFragment.Home.route
         ) {
             composable(MainScreenFragment.Home.route) {
@@ -92,9 +64,48 @@ fun MainRoute(
                 MineRoute()
             }
         }
-    }
 
+        NavigationBar(navHostController)
+    }
 }
+
+@Composable
+private fun NavigationBar(navHostController: NavHostController) {
+    NavigationBar {
+        val navBackStackEntry by navHostController.currentBackStackEntryAsState()
+        val currentDestination = navBackStackEntry?.destination
+        listOf(
+            MainScreenFragment.Home,
+            MainScreenFragment.Message,
+            MainScreenFragment.Playlist,
+            MainScreenFragment.Mine
+        ).forEach { item ->
+            NavigationBarItem(selected = currentDestination?.hierarchy?.any { it.route == item.route } == true,
+                onClick = {
+                    navHostController.navigate(item.route) {
+                        // Pop up to the start destination of the graph to
+                        // avoid building up a large stack of destinations
+                        // on the back stack as users select items
+                        popUpTo(navHostController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        // Avoid multiple copies of the same destination when
+                        // reselecting the same item
+                        launchSingleTop = true
+                        // Restore state when reselecting a previously selected item
+                        restoreState = true
+                    }
+                }, label = {
+                    Text(text = item.label)
+                }, icon = {
+                    Icon(imageVector = item.icon, contentDescription = null)
+                })
+
+        }
+    }
+}
+
+//}
 
 sealed class MainScreenFragment(val route: String, val label: String, val icon: ImageVector) {
 

@@ -1,4 +1,4 @@
-package com.ke.music.commom
+package com.ke.music.common
 
 import android.annotation.SuppressLint
 import android.app.Application

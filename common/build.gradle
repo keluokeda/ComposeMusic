@@ -52,6 +52,7 @@ dependencies {
 
     api 'com.orhanobut:logger:2.2.0'
     api("io.coil-kt:coil-compose:2.4.0")
+    implementation project(path: ':api')
 
 
     implementation platform("androidx.compose:compose-bom:$compose_bom")

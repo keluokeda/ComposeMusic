@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.wear.compose.material.Scaffold
-import com.ke.music.commom.observeWithLifecycle
+import com.ke.music.common.observeWithLifecycle
 import com.ke.music.viewmodel.LoginViewModel
 import com.lightspark.composeqr.QrCodeView
 

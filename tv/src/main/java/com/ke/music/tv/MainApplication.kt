@@ -2,7 +2,7 @@ package com.ke.music.tv
 
 import android.content.Intent
 import com.arialyy.aria.core.Aria
-import com.ke.music.commom.BaseApplication
+import com.ke.music.common.BaseApplication
 import com.ke.music.download.MusicDownloadService
 import dagger.hilt.android.HiltAndroidApp
 

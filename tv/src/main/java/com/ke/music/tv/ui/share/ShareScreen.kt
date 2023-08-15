@@ -47,7 +47,7 @@ import androidx.tv.material3.Text
 import coil.compose.AsyncImage
 import com.ke.music.api.response.User
 import com.ke.music.api.response.mockUser
-import com.ke.music.commom.observeWithLifecycle
+import com.ke.music.common.observeWithLifecycle
 import com.ke.music.repository.toast
 import com.ke.music.tv.IMAGE_SIZE
 import com.ke.music.tv.ui.components.Avatar

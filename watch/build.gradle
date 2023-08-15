@@ -74,7 +74,7 @@ dependencies {
     implementation project(path: ':viewmodel')
     implementation project(path: ':player')
     implementation project(path: ':download')
-    implementation project(path: ':commom')
+    implementation project(path: ':common')
 
 
     implementation "com.google.dagger:hilt-android:2.45"
