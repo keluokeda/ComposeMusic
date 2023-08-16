@@ -1,14 +1,14 @@
 package com.ke.music.repository.domain
 
 import com.ke.music.api.HttpService
+import com.ke.music.common.entity.SendCommentRequest
 import com.ke.music.repository.CommentRepository
-import com.ke.music.room.entity.CommentType
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 
 class SendCommentUseCase @Inject constructor(
     private val httpService: HttpService,
-    private val commentRepository: CommentRepository
+    private val commentRepository: CommentRepository,
 ) :
     UseCase<SendCommentRequest, Boolean>(Dispatchers.IO) {
 
@@ -22,7 +22,7 @@ class SendCommentUseCase @Inject constructor(
         )
 
         if (parameters.commentId != null) {
-            val target = commentRepository.queryByCommentId(parameters.commentId)
+            val target = commentRepository.queryByCommentId(parameters.commentId!!)
             if (target != null) {
                 commentRepository.update(
                     target.copy(
@@ -37,9 +37,3 @@ class SendCommentUseCase @Inject constructor(
     }
 }
 
-class SendCommentRequest(
-    val type: CommentType,
-    val id: Long,
-    val commentId: Long?,
-    val content: String
-)

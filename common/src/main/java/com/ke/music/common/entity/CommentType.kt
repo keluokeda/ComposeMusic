@@ -1,4 +1,4 @@
-package com.ke.music.room.entity
+package com.ke.music.common.entity
 
 /**
  * 评论类型

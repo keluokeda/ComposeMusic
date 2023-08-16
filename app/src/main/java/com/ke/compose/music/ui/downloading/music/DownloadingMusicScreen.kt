@@ -20,28 +20,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.ke.compose.music.ui.component.AppTopBar
-import com.ke.compose.music.ui.theme.ComposeMusicTheme
-import com.ke.music.room.db.entity.Download
-import com.ke.music.room.entity.QueryDownloadingMusicResult
+import com.ke.music.common.entity.DownloadStatus
+import com.ke.music.common.entity.ISongEntity
 import com.ke.music.viewmodel.DownloadingMusicViewModel
 
 @Composable
 fun DownloadingMusicRoute(
     onBackButtonClick: () -> Unit,
-
-    ) {
+) {
 
     val viewModel: DownloadingMusicViewModel = hiltViewModel()
     val list by viewModel.all.collectAsStateWithLifecycle()
 
     DownloadingMusicScreen(onBackButtonClick = onBackButtonClick, list = list, {
-        viewModel.retry(it.id)
+        viewModel.retry(it)
     }, {
         viewModel.delete(it)
     })
@@ -51,9 +48,9 @@ fun DownloadingMusicRoute(
 @Composable
 private fun DownloadingMusicScreen(
     onBackButtonClick: () -> Unit,
-    list: List<QueryDownloadingMusicResult>,
-    onRetryButtonClick: (QueryDownloadingMusicResult) -> Unit,
-    deleteButtonClick: (QueryDownloadingMusicResult) -> Unit
+    list: List<Pair<ISongEntity, Long>>,
+    onRetryButtonClick: (Long) -> Unit,
+    deleteButtonClick: (Long) -> Unit,
 ) {
 
     Scaffold(
@@ -73,12 +70,12 @@ private fun DownloadingMusicScreen(
                 .padding(padding)
         ) {
             items(list, key = {
-                it.id
+                it.second
             }) {
-                DownloadingMusicView(music = it, retryButtonClick = {
-                    onRetryButtonClick(it)
+                DownloadingMusicView(entity = it.first, retryButtonClick = {
+                    onRetryButtonClick(it.second)
                 }, deleteButtonClick = {
-                    deleteButtonClick(it)
+                    deleteButtonClick(it.second)
                 })
             }
         }
@@ -88,9 +85,9 @@ private fun DownloadingMusicScreen(
 
 @Composable
 private fun DownloadingMusicView(
-    music: QueryDownloadingMusicResult,
+    entity: ISongEntity,
     retryButtonClick: () -> Unit = {},
-    deleteButtonClick: () -> Unit = {}
+    deleteButtonClick: () -> Unit = {},
 ) {
     Row(
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
@@ -98,18 +95,18 @@ private fun DownloadingMusicView(
     ) {
 
         AsyncImage(
-            model = music.albumImage,
+            model = entity.album.image,
             contentDescription = null,
             modifier = Modifier.size(40.dp)
         )
         Text(
-            text = music.displayName, modifier = Modifier
+            text = entity.song.name, modifier = Modifier
                 .weight(1f)
                 .padding(horizontal = 8.dp),
             maxLines = 1
         )
 
-        if (music.status == Download.STATUS_DOWNLOAD_ERROR) {
+        if (entity.status == DownloadStatus.Error) {
             IconButton(onClick = retryButtonClick) {
                 Icon(imageVector = Icons.Default.Refresh, contentDescription = null)
             }
@@ -119,35 +116,35 @@ private fun DownloadingMusicView(
             }
         }
 
-        if (music.status != Download.STATUS_DOWNLOADING) {
+        if (entity.status != DownloadStatus.Downloading) {
             IconButton(onClick = deleteButtonClick) {
                 Icon(imageVector = Icons.Default.Clear, contentDescription = null)
             }
         }
     }
 }
-
-@Composable
-@Preview(showBackground = true)
-private fun DownloadingErrorMusicViewPreview() {
-
-    DownloadingMusicViewPreview(queryDownloadingMusicResult = getDownloadingMusic(Download.STATUS_DOWNLOAD_ERROR))
-}
-
-@Composable
-@Preview(showBackground = true)
-private fun DownloadingDownloadingMusicViewPreview() {
-
-    DownloadingMusicViewPreview(queryDownloadingMusicResult = getDownloadingMusic(Download.STATUS_DOWNLOADING))
-}
-
-private fun getDownloadingMusic(status: Int) = QueryDownloadingMusicResult(
-    0, 0, "漫步人生了", "最爱邓丽君", "", status
-)
-
-@Composable
-private fun DownloadingMusicViewPreview(queryDownloadingMusicResult: QueryDownloadingMusicResult) {
-    ComposeMusicTheme {
-        DownloadingMusicView(music = queryDownloadingMusicResult)
-    }
-}
+//
+//@Composable
+//@Preview(showBackground = true)
+//private fun DownloadingErrorMusicViewPreview() {
+//
+//    DownloadingMusicViewPreview(queryDownloadingMusicResult = getDownloadingMusic(Download.STATUS_DOWNLOAD_ERROR))
+//}
+//
+//@Composable
+//@Preview(showBackground = true)
+//private fun DownloadingDownloadingMusicViewPreview() {
+//
+//    DownloadingMusicViewPreview(queryDownloadingMusicResult = getDownloadingMusic(Download.STATUS_DOWNLOADING))
+//}
+//
+//private fun getDownloadingMusic(status: Int) = QueryDownloadingMusicResult(
+//    0, 0, "漫步人生了", 0, "最爱邓丽君", "", status
+//)
+//
+//@Composable
+//private fun DownloadingMusicViewPreview(queryDownloadingMusicResult: QueryDownloadingMusicResult) {
+//    ComposeMusicTheme {
+//        DownloadingMusicView(entity = queryDownloadingMusicResult)
+//    }
+//}

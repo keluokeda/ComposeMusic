@@ -2,37 +2,28 @@ package com.ke.music.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ke.music.repository.UserIdRepository
-import com.ke.music.repository.domain.DeletePlaylistUseCase
-import com.ke.music.repository.domain.LoadUserPlaylistUseCase
-import com.ke.music.room.db.dao.PlaylistDao
+import com.ke.music.common.domain.DeletePlaylistUseCase
+import com.ke.music.common.domain.LoadCurrentUserPlaylistUseCase
+import com.ke.music.common.repository.PlaylistRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class PlaylistViewModel @Inject constructor(
-    private val loadUserPlaylistUseCase: LoadUserPlaylistUseCase,
+    private val loadUserPlaylistUseCase: LoadCurrentUserPlaylistUseCase,
     private val deletePlaylistUseCase: DeletePlaylistUseCase,
-    private val playlistDao: PlaylistDao,
-    private val userIdRepository: UserIdRepository
+    playlistRepository: PlaylistRepository,
 ) : ViewModel() {
 
 
     val playlistList =
-        userIdRepository.userIdFlow.flatMapLatest { userId ->
-            playlistDao.getUserCreatedPlaylist(userId).combine(
-                playlistDao.getUserFollowingPlaylist(userId)
-            ) { list1, list2 ->
-                (list1 + list2)
-            }
-        }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+        playlistRepository.getCurrentUserPlaylist(true)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
 
     private val _refreshing = MutableStateFlow(false)
@@ -48,8 +39,7 @@ class PlaylistViewModel @Inject constructor(
     fun refresh() {
         viewModelScope.launch {
             _refreshing.value = true
-            val userId = userIdRepository.userId()
-            loadUserPlaylistUseCase(userId)
+            loadUserPlaylistUseCase(Unit)
             _refreshing.value = false
         }
     }

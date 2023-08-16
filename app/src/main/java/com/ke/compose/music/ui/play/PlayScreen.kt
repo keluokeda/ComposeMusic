@@ -37,7 +37,6 @@ import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -58,7 +57,6 @@ import coil.compose.AsyncImage
 import com.dokar.amlv.LyricsView
 import com.dokar.amlv.LyricsViewState
 import com.dokar.amlv.parser.LrcLyricsParser
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ke.compose.music.ui.theme.ComposeMusicTheme
 import com.ke.music.player.service.LocalMusicPlayerController
 import com.ke.music.room.entity.DownloadedMusicEntity
@@ -80,7 +78,7 @@ fun PlayRoute() {
     val songs by viewModel.songs.collectAsStateWithLifecycle()
     val songLrcViewModel: SongLrcViewModel = hiltViewModel()
 
-    PlayScreen(currentPlayingSong, progress, playing, songs, {
+    PlayScreen(currentPlayingSong as QueryDownloadedMusicResult?, progress, playing, songs, {
         musicPlayerController.skipToNext()
     }, {
         musicPlayerController.skipToPrevious()
@@ -123,52 +121,16 @@ private fun PlayScreen(
     }
 ) {
 
-    val systemUiController = rememberSystemUiController()
-//    val window = (LocalContext.current as? Activity)?.window
-//    val view = LocalView.current
-    DisposableEffect(key1 = Unit) {
-
-//        systemUiController.isStatusBarVisible = false
-//        val color = window?.statusBarColor
-//        window?.statusBarColor = Color.Transparent.toArgb()
-        systemUiController.setStatusBarColor(Color.Transparent)
-//        window?.setDecorFitsSystemWindows(false)
-
-//        view.fitsSystemWindows = false
-        //会隐藏状态栏的内容，但不会隐藏状态栏
-//        val controller = window?.let { WindowCompat.getInsetsController(it, view) }
-//        controller?.hide(WindowInsetsCompat.Type.statusBars())
-
-        onDispose {
-//            systemUiController.isStatusBarVisible = true
-//            if (color != null) {
-//                window.statusBarColor = color
-//            }
-
-        }
-    }
-
 
     var playType by remember {
         mutableStateOf(initialType)
     }
 
     Scaffold { padding ->
-
-//        var albumBitmap by remember {
-//            mutableStateOf<Bitmap?>(null)
-//        }
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
-//                .padding(padding)
-//                .windowInsetsPadding(WindowInsets.systemBars),
         ) {
-
-
-//            if (albumBitmap != null) {
-
             Crossfade(
                 targetState = currentPlayingSong?.albumImage,
                 label = "background",
@@ -532,7 +494,12 @@ private fun PlayScreenAlbumPreview() {
     ComposeMusicTheme {
         PlayScreen(
             currentPlayingSong = QueryDownloadedMusicResult(
-                musicId = 0L, name = "暧昧", albumName = "杨丞琳", albumImage = "", path = null
+                musicId = 0L,
+                name = "暧昧",
+                albumId = 0,
+                albumName = "杨丞琳",
+                albumImage = "",
+                path = null
             ), progress = 10000L to 20000, playing = true, emptyList(), {}, {}, {}, {}, {})
     }
 }

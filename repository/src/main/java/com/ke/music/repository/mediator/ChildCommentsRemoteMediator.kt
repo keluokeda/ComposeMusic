@@ -3,30 +3,35 @@ package com.ke.music.repository.mediator
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
-import androidx.paging.RemoteMediator
 import com.ke.music.api.HttpService
-import com.ke.music.repository.ChildCommentRepository
-import com.ke.music.room.entity.CommentType
-import com.ke.music.room.entity.QueryChildCommentResult
+import com.ke.music.common.entity.CommentType
+import com.ke.music.common.entity.IChildComment
+import com.ke.music.common.mediator.ChildCommentsRemoteMediator
+import com.ke.music.common.repository.CommentRepository
 import com.orhanobut.logger.Logger
+import javax.inject.Inject
 
-@OptIn(ExperimentalPagingApi::class)
-class ChildCommentsRemoteMediator constructor(
+class ChildCommentsRemoteMediator @Inject constructor(
     private val httpService: HttpService,
-    private val commentType: CommentType,
-    private val sourceId: Long,
-    private val commentId: Long,
-    private val childCommentRepository: ChildCommentRepository
-) : RemoteMediator<Int, QueryChildCommentResult>() {
+    private val commentRepository: CommentRepository,
+) : ChildCommentsRemoteMediator() {
+
+    override var commentType: CommentType = CommentType.Music
+    override var sourceId: Long = 0
+    override var commentId: Long = 0
+
+
+    @ExperimentalPagingApi
     override suspend fun initialize(): InitializeAction {
         return InitializeAction.LAUNCH_INITIAL_REFRESH
     }
 
     private var cursor: Long = 0
 
+    @ExperimentalPagingApi
     override suspend fun load(
         loadType: LoadType,
-        state: PagingState<Int, QueryChildCommentResult>
+        state: PagingState<Int, IChildComment>,
     ): MediatorResult {
 
 
@@ -61,7 +66,7 @@ class ChildCommentsRemoteMediator constructor(
 
 
 
-            childCommentRepository.saveChildCommentToRoom(
+            commentRepository.saveChildComments(
                 response.comments ?: emptyList(),
                 commentId,
                 cursor == 0L

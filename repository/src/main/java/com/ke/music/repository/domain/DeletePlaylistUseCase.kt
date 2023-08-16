@@ -29,7 +29,7 @@ class DeletePlaylistUseCase @Inject constructor(
             httpService.deletePlaylist(parameters)
         } else {
             //取消关注已关注的歌单
-            playlistRepository.currentUserDeleteFollowingPlaylist(parameters)
+            playlistRepository.currentUserCancelFollowingPlaylist(parameters)
             httpService.subscribePlaylist(parameters, 2)
         }
 

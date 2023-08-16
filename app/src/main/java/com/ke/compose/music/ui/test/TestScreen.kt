@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ke.compose.music.ui.component.MusicView
+import com.ke.compose.music.ui.component.SongView
 import com.ke.music.player.service.LocalMusicPlayerController
 import com.ke.music.viewmodel.DownloadedMusicViewModel
 
@@ -100,9 +100,9 @@ fun TestRoute() {
 
             LazyColumn(modifier = Modifier.fillMaxHeight()) {
                 items(downloadedSongs, key = {
-                    it.musicId
+                    it.song.id
                 }) {
-                    MusicView(musicEntity = it)
+                    SongView(it)
                 }
             }
         }

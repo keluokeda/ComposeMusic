@@ -3,27 +3,30 @@ package com.ke.music.repository.mediator
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
-import androidx.paging.RemoteMediator
 import com.ke.music.api.HttpService
-import com.ke.music.repository.CommentRepository
-import com.ke.music.room.entity.CommentType
-import com.ke.music.room.entity.QueryCommentResult
+import com.ke.music.common.entity.CommentType
+import com.ke.music.common.entity.IComment
+import com.ke.music.common.mediator.CommentsRemoteMediator
+import com.ke.music.common.repository.CommentRepository
 import com.orhanobut.logger.Logger
+import javax.inject.Inject
 
-@OptIn(ExperimentalPagingApi::class)
-class CommentsRemoteMediator(
+class CommentsRemoteMediator @Inject constructor(
     private val httpService: HttpService,
-    private val sourceId: Long,
-    private val commentType: CommentType,
+    private val commentRepository: CommentRepository,
+) : CommentsRemoteMediator() {
 
-    private val commentRepository: CommentRepository
-) : RemoteMediator<Int, QueryCommentResult>() {
+    override var commentType: CommentType = CommentType.Music
+
+
+    override var sourceId: Long = 0L
 
     /**
      * 排序方式, 1:按推荐排序, 2:按热度排序, 3:按时间排序
      */
     private val sortType: Int = 3
 
+    @OptIn(ExperimentalPagingApi::class)
     override suspend fun initialize(): InitializeAction {
         return InitializeAction.LAUNCH_INITIAL_REFRESH
     }
@@ -33,9 +36,10 @@ class CommentsRemoteMediator(
     private var cursor: Long = 0
 
 
+    @ExperimentalPagingApi
     override suspend fun load(
         loadType: LoadType,
-        state: PagingState<Int, QueryCommentResult>
+        state: PagingState<Int, IComment>,
     ): MediatorResult {
 
         Logger.d("开始加载数据 $loadType $index")
@@ -69,7 +73,7 @@ class CommentsRemoteMediator(
             if (sortType == 3)
                 cursor = response.nextPageCursor
 
-            commentRepository.insertIntoRoom(
+            commentRepository.saveComments(
                 response.comments ?: emptyList(),
                 commentType,
                 sourceId,

@@ -16,17 +16,6 @@ class LoadAlbumDetailUseCase @Inject constructor(
 
         val isSub = httpService.getAlbumDynamic(parameters).isSub
 
-        albumRepository.saveAlbumResponseToRoom(response, isSub)
-
-//        return AlbumDetailUiState.Detail(
-//            id = response.album.id,
-//            name = response.album.name,
-//            description = response.album.description,
-//            artistName = response.album.artist.name,
-//            artistId = response.album.id,
-//            image = response.album.picUrl,
-//            publishTime = simpleDateFormat.format(Date(response.album.publishTime)),
-//            songs = response.songs
-//        )
+        albumRepository.saveAlbumResponseToDatabase(response, isSub)
     }
 }

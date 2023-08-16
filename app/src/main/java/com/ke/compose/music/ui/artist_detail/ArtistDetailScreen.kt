@@ -9,10 +9,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -22,6 +25,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -53,12 +57,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import coil.request.ImageRequest
 import com.ke.compose.music.ui.component.AlbumView
-import com.ke.compose.music.ui.component.MusicView
 import com.ke.compose.music.ui.component.MvView
-import com.ke.music.room.db.entity.Album
-import com.ke.music.room.db.entity.ArtistDescription
-import com.ke.music.room.db.entity.Mv
-import com.ke.music.room.entity.MusicEntity
+import com.ke.compose.music.ui.component.SongView
+import com.ke.music.common.entity.IAlbum
+import com.ke.music.common.entity.IArtistDescription
+import com.ke.music.common.entity.IMv
+import com.ke.music.common.entity.ISongEntity
 import com.ke.music.viewmodel.ArtistDetailViewModel
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
@@ -68,7 +72,7 @@ import kotlin.math.absoluteValue
 fun ArtistDetailRoute() {
     val viewModel: ArtistDetailViewModel = hiltViewModel()
 
-    val nameAvatar by viewModel.nameAvatar.collectAsStateWithLifecycle()
+    val artistAndFollowed by viewModel.artistAndFollowed.collectAsStateWithLifecycle()
     val hotSongs by viewModel.artistHotSongs.collectAsStateWithLifecycle()
     val descriptions by viewModel.artistDescriptions.collectAsStateWithLifecycle()
     val albums by viewModel.artistAlbums.collectAsStateWithLifecycle()
@@ -86,23 +90,13 @@ fun ArtistDetailRoute() {
         (scrollBehavior.state.heightOffsetLimit - scrollBehavior.state.heightOffset).absoluteValue
 
 
-    val toolbarHeight
-//    by remember {
-//        mutableStateOf(0.dp)
-//    }
-            = with(density) {
+    val statusBarHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+
+    val toolbarHeight = with(density) {
         height.toDp()
-    } + 64.dp
+    } + 64.dp + statusBarHeight
 
-
-//    val heightOffset = scrollBehavior.state.heightOffset
-
-//    Logger.d("heightOffset = $heightOffset ,height = $height , toolbar height = ${toolbarHeight} , ${density.density}")
-
-//    val painter =
-//        if (nameAvatar.second.isEmpty()) rememberAsyncImagePainter(model = R.drawable.bg) else rememberAsyncImagePainter(
-//            model = nameAvatar.second
-//        )
+    val artistAvatar = artistAndFollowed.first?.avatar ?: ""
 
     var bitmap by remember {
 
@@ -112,14 +106,14 @@ fun ArtistDetailRoute() {
 
 
 
-    LaunchedEffect(key1 = nameAvatar.second) {
-        if (nameAvatar.second.isNotEmpty()) {
+    LaunchedEffect(key1 = artistAvatar) {
+        if (artistAvatar.isNotEmpty()) {
             val loader = ImageLoader(context)
             val result =
                 loader.execute(
                     ImageRequest
                         .Builder(context)
-                        .data(nameAvatar.second)
+                        .data(artistAvatar)
                         .build()
                 )
 
@@ -127,29 +121,15 @@ fun ArtistDetailRoute() {
         }
     }
 
-
-
     Scaffold(
 
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-
-
             Box(
                 modifier = Modifier
-
             ) {
 
                 if (height > 0 && bitmap != null) {
-//                    AsyncImage(
-//                        model = nameAvatar.second,
-//                        contentDescription = null,
-//                        contentScale = ContentScale.Crop,
-//
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .height(toolbarHeight)
-//                    )
                     Image(
                         bitmap = bitmap!!.asImageBitmap(),
                         contentDescription = null,
@@ -159,50 +139,30 @@ fun ArtistDetailRoute() {
                             .height(toolbarHeight)
                     )
                 }
-
-
-
-
                 LargeTopAppBar(
-                    title = { Text(text = nameAvatar.first) },
+                    title = { Text(text = artistAndFollowed.first?.name ?: "歌手详情") },
                     navigationIcon = {
                         IconButton(onClick = { dispatcher?.onBackPressed() }) {
                             Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
                         }
                     },
                     actions = {
-                        IconButton(onClick = { }) {
-                            Icon(imageVector = Icons.Default.StarBorder, contentDescription = null)
+                        IconButton(onClick = {
+                            viewModel.followArtist(!artistAndFollowed.second)
+                        }) {
+                            Icon(
+                                imageVector = if (artistAndFollowed.second) Icons.Default.Star else Icons.Default.StarBorder,
+                                contentDescription = null
+                            )
                         }
                     },
                     colors = TopAppBarDefaults.largeTopAppBarColors(
                         containerColor = Color.Black.copy(alpha = 0.3f),
-//                        titleContentColor = Color.White,
-//                        actionIconContentColor = Color.White
                     ),
                     scrollBehavior = scrollBehavior,
                     modifier = Modifier
-//                        .onSizeChanged {//有延迟
-//                            val toolbarHeightDp = with(density) {
-//                                it.height.toDp()
-//                            }
-//                            Logger.d("onSizeChanged $toolbarHeightDp")
-//                        }
-
-//                        .background(
-//                            Color.Black.copy(alpha = 0.3f)
-//                        )
-                    //                    .paint(
-                    //                        painterResource(id = R.drawable.bg),
-                    //                        contentScale = ContentScale.Crop,
-                    //                    )
-                    //                    .height(toolbarHeight), scrollBehavior = scrollBehavior
                 )
-
-
             }
-
-
         }
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
@@ -260,20 +220,20 @@ fun ArtistDetailRoute() {
 }
 
 @Composable
-private fun ArtistHotSongs(list: List<MusicEntity>) {
+private fun ArtistHotSongs(list: List<ISongEntity>) {
 
 
     LazyColumn {
         items(list, key = {
-            it.musicId
+            it.song.id
         }) {
-            MusicView(musicEntity = it)
+            SongView(iSongEntity = it)
         }
     }
 }
 
 @Composable
-private fun ArtistDescription(list: List<ArtistDescription>) {
+private fun ArtistDescription(list: List<IArtistDescription>) {
 
 
     LazyColumn(contentPadding = PaddingValues(16.dp)) {
@@ -293,11 +253,11 @@ private fun ArtistDescription(list: List<ArtistDescription>) {
 
 @Composable
 private fun ArtistAlbums(
-    list: List<Album>
+    list: List<IAlbum>,
 ) {
     LazyVerticalGrid(columns = GridCells.Fixed(3)) {
         items(list, key = {
-            it.albumId
+            it.key
         }) {
             AlbumView(album = it)
         }
@@ -305,7 +265,7 @@ private fun ArtistAlbums(
 }
 
 @Composable
-private fun ArtistMv(list: List<Mv>) {
+private fun ArtistMv(list: List<IMv>) {
     LazyVerticalGrid(columns = GridCells.Fixed(2), contentPadding = PaddingValues(4.dp)) {
         items(list, key = {
             it.id

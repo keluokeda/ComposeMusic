@@ -24,7 +24,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.component.LocalBackHandler
-import com.ke.music.room.db.entity.Playlist
+import com.ke.music.common.entity.IPlaylist
 
 @Composable
 fun PlaylistListRoute(
@@ -45,9 +45,9 @@ fun PlaylistListRoute(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 private fun PlaylistListScreen(
-    list: List<Playlist>,
-    onSelected: (Playlist) -> Unit,
-    onNewButtonClick: () -> Unit
+    list: List<IPlaylist>,
+    onSelected: (IPlaylist) -> Unit,
+    onNewButtonClick: () -> Unit,
 ) {
     Scaffold(topBar = {
         AppTopBar(

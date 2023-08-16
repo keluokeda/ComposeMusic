@@ -3,72 +3,79 @@ package com.ke.music.room.db.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.ke.music.common.entity.IPlaylist
+import kotlinx.parcelize.Parcelize
 
 /**
  * 歌单
  */
+@Parcelize
 @Entity(tableName = "playlist")
 data class Playlist(
     @PrimaryKey
-    val id: Long,
+    override val id: Long,
 
     /**
      * 创建者id
      */
     @ColumnInfo("creator_id")
-    val creatorId: Long,
+    override val creatorId: Long,
 
     /**
      * 封面图片地址
      */
     @ColumnInfo(name = "cover_image_url")
-    val coverImgUrl: String,
+    override val coverImgUrl: String,
     /**
      * 名字
      */
-    val name: String,
+    override val name: String,
     /**
      * 标签
      */
-    val tags: List<String>,
+    override val tags: List<String>,
     /**
      * 描述
      */
-    val description: String?,
+    override val description: String?,
     /**
      * 歌曲数量
      */
     @ColumnInfo("track_count")
-    val trackCount: Int,
+    override val trackCount: Int,
 
     /**
      * 总播放次数
      */
     @ColumnInfo("play_count")
-    val playCount: Int,
+    override val playCount: Int,
 
     /**
      * 更新时间
      */
     @ColumnInfo(name = "update_time")
-    val updateTime: Long,
+    override val updateTime: Long,
 
 
     /**
      * 分享次数
      */
     @ColumnInfo("share_count")
-    val shareCount: Int,
+    override val shareCount: Int,
 
     /**
      * 订阅数量
      */
     @ColumnInfo("booked_count")
-    val bookedCount: Int,
+    override val bookedCount: Int,
 
     /**
      * 评论数量
      */
     @ColumnInfo("comment_count")
-    val commentCount: Int
-)
+    override val commentCount: Int,
+) : IPlaylist {
+
+    val hasPayload: Boolean
+        get() = shareCount != 0 || bookedCount != 0 || commentCount != 0
+}

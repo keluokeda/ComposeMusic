@@ -42,6 +42,7 @@ dependencies {
     kapt "com.google.dagger:hilt-compiler:2.45"
 
     implementation project(path: ':repository')
+    implementation project(path: ':domain')
     implementation project(path: ':api')
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1"

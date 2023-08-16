@@ -37,13 +37,15 @@ import com.ke.compose.music.niceCount
 import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.component.Avatar
 import com.ke.compose.music.ui.theme.ComposeMusicTheme
+import com.ke.music.common.entity.IChildComment
+import com.ke.music.common.entity.IComment
 import com.ke.music.room.entity.QueryChildCommentResult
-import com.ke.music.room.entity.QueryCommentAndUserResult
+import com.ke.music.viewmodel.ChildCommentsViewModel
 import com.orhanobut.logger.Logger
 
 @Composable
 fun ChildCommentsRoute(
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
 ) {
     val viewModel: ChildCommentsViewModel = hiltViewModel()
     val comments = viewModel.comments.collectAsLazyPagingItems()
@@ -52,7 +54,6 @@ fun ChildCommentsRoute(
 
     Logger.d("child comment size = ${comments.itemCount}")
     ChildCommentsScreen(comments, rootComment, onBackClick) {
-//        viewModel.toggleLiked(it)
         viewModel.toggleLiked(it)
     }
 }
@@ -61,10 +62,10 @@ fun ChildCommentsRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ChildCommentsScreen(
-    comments: LazyPagingItems<QueryChildCommentResult>,
-    rootComment: QueryCommentAndUserResult?,
+    comments: LazyPagingItems<IChildComment>,
+    rootComment: IComment?,
     onBackClick: () -> Unit,
-    onThumbClick: (QueryChildCommentResult) -> Unit
+    onThumbClick: (IChildComment) -> Unit,
 ) {
     Scaffold(topBar = {
         AppTopBar(title = { Text(text = "回复") }, navigationIcon = {
@@ -76,9 +77,9 @@ private fun ChildCommentsScreen(
 
         LazyColumn(modifier = Modifier.padding(padding)) {
             if (rootComment != null) {
-                val name = rootComment.username
-                val avatar = rootComment.userAvatar
-                val time = rootComment.time
+                val name = rootComment.user.name
+                val avatar = rootComment.user.avatar
+                val time = rootComment.timeString
                 val content = rootComment.content
                 item {
                     Header(avatar, name, time, content)
@@ -108,7 +109,7 @@ private fun Header(
     avatar: String,
     name: String,
     time: String,
-    content: String
+    content: String,
 ) {
     Column {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
@@ -142,7 +143,7 @@ private fun HeaderPreview() {
 private fun CommentItem(
     comment: QueryChildCommentResult,
     modifier: Modifier = Modifier,
-    onThumbClick: (QueryChildCommentResult) -> Unit
+    onThumbClick: (QueryChildCommentResult) -> Unit,
 ) {
     Column(modifier = modifier) {
         Row(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
@@ -151,6 +152,69 @@ private fun CommentItem(
             Column {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = comment.username, style = MaterialTheme.typography.bodySmall)
+                    if (comment.beRepliedUsername != null) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowRight,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Text(
+                            text = comment.beRepliedUsername ?: "",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+
+                    }
+                }
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(text = comment.content ?: "")
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "${comment.timeString} ${comment.ip}",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    IconButton(onClick = {
+                        onThumbClick(comment)
+                    }) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            if (comment.likedCount > 0)
+                                Text(
+                                    text = comment.likedCount.niceCount(),
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            Icon(
+                                imageVector = if (comment.liked) Icons.Default.ThumbUp else Icons.Outlined.ThumbUp,
+                                contentDescription = null,
+                                tint = Color.Gray,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+
+
+                    }
+                }
+
+
+            }
+        }
+        Divider(modifier = Modifier.height(0.2.dp))
+    }
+}
+
+
+@Composable
+private fun CommentItem(
+    comment: IChildComment,
+    modifier: Modifier = Modifier,
+    onThumbClick: (IChildComment) -> Unit,
+) {
+    Column(modifier = modifier) {
+        Row(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+            Avatar(url = comment.user.avatar, size = 40)
+            Spacer(modifier = Modifier.width(8.dp))
+            Column {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = comment.user.name, style = MaterialTheme.typography.bodySmall)
                     if (comment.beRepliedUsername != null) {
                         Icon(
                             imageVector = Icons.Default.ArrowRight,

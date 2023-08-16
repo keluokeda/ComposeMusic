@@ -30,7 +30,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.component.MvView
 import com.ke.compose.music.ui.component.items
-import com.ke.music.room.db.entity.Mv
+import com.ke.music.common.entity.IMv
 import com.ke.music.viewmodel.AllMvViewModel
 
 
@@ -58,11 +58,11 @@ fun AllMvRoute() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AllMvScreen(
-    list: LazyPagingItems<Mv>,
+    list: LazyPagingItems<IMv>,
     area: String,
     type: String,
     onAreaUpdate: (String) -> Unit,
-    onTypeUpdate: (String) -> Unit
+    onTypeUpdate: (String) -> Unit,
 ) {
 
     val dispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher

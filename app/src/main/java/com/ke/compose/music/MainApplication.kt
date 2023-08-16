@@ -2,11 +2,12 @@ package com.ke.compose.music
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.ime
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalView
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.platform.LocalDensity
 import com.arialyy.aria.core.Aria
 import com.ke.music.common.BaseApplication
 import com.ke.music.download.MusicDownloadService
@@ -52,32 +53,9 @@ fun Int.niceCount(): String {
 }
 
 
-enum class Keyboard {
-    Opened, Closed
-}
-
 @Composable
-fun keyboardAsState(): State<Keyboard> {
-    val keyboardState = remember { mutableStateOf(Keyboard.Closed) }
-    val view = LocalView.current
-//    DisposableEffect(view) {
-//        val onGlobalListener = ViewTreeObserver.OnGlobalLayoutListener {
-//            val rect = Rect()
-//            view.getWindowVisibleDisplayFrame(rect)
-//            val screenHeight = view.rootView.height
-//            val keypadHeight = screenHeight - rect.bottom
-//            keyboardState.value = if (keypadHeight > screenHeight * 0.15) {
-//                Keyboard.Opened
-//            } else {
-//                Keyboard.Closed
-//            }
-//        }
-//        view.viewTreeObserver.addOnGlobalLayoutListener(onGlobalListener)
-//
-//        onDispose {
-//            view.viewTreeObserver.removeOnGlobalLayoutListener(onGlobalListener)
-//        }
-//    }
+fun keyboardAsState(): State<Boolean> {
+    val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+    return rememberUpdatedState(isImeVisible)
 
-    return keyboardState
 }

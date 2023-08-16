@@ -6,11 +6,11 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.PagingSource
 import androidx.paging.cachedIn
-import com.ke.music.api.HttpService
-import com.ke.music.repository.mediator.HotArtistListRemoteMediator
-import com.ke.music.room.db.dao.HotArtistDao
-import com.ke.music.room.db.entity.HotArtist
+import com.ke.music.common.entity.IArtist
+import com.ke.music.common.mediator.HotArtistRemoteMediator
+import com.ke.music.common.repository.ArtistRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,8 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ArtistListViewModel @Inject constructor(
-    httpService: HttpService,
-    private val hotArtistDao: HotArtistDao
+    private val artistRepository: ArtistRepository,
+    private val hotArtistRemoteMediator: HotArtistRemoteMediator,
 ) : ViewModel() {
 
 
@@ -31,7 +31,7 @@ class ArtistListViewModel @Inject constructor(
 
     fun updateArea(artistArea: ArtistArea) {
         _area.value = artistArea
-        remoteMediator.area = artistArea.value
+        hotArtistRemoteMediator.area = artistArea.value
     }
 
     private val _type = MutableStateFlow(ArtistType.All)
@@ -41,24 +41,24 @@ class ArtistListViewModel @Inject constructor(
 
     fun updateType(artistType: ArtistType) {
         _type.value = artistType
-        remoteMediator.type = artistType.value
+        hotArtistRemoteMediator.type = artistType.value
     }
 
 
-    private val remoteMediator =
-        HotArtistListRemoteMediator(httpService, hotArtistDao, area.value.value, type.value.value)
+//    private val remoteMediator =
+//        HotArtistListRemoteMediator(httpService, hotArtistDao, area.value.value, type.value.value)
 
 
     @OptIn(ExperimentalPagingApi::class)
-    val artistList: Flow<PagingData<HotArtist>> = Pager(
+    val artistList: Flow<PagingData<IArtist>> = Pager(
         config = PagingConfig(
             pageSize = 30,
             enablePlaceholders = false,
             initialLoadSize = 30
         ),
-        remoteMediator = remoteMediator
+        remoteMediator = hotArtistRemoteMediator
     ) {
-        hotArtistDao.getAll()
+        artistRepository.hotArtist(type.value.value, area.value.value) as PagingSource<Int, IArtist>
     }.flow
         .cachedIn(viewModelScope)
 

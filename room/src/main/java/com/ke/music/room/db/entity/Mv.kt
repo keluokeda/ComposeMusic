@@ -1,20 +1,24 @@
 package com.ke.music.room.db.entity
 
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.ke.music.common.entity.IMv
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 @Entity(tableName = "mv")
 data class Mv(
     @PrimaryKey
-    val id: Long,
-    val name: String,
-    val image: String,
+    override val id: Long,
+    override val name: String,
+    override val image: String,
     @ColumnInfo("play_count")
-    val playCount: Int,
-    val duration: Int,
+    override val playCount: Int,
+    override val duration: Int,
     @ColumnInfo("publish_time")
-    val publishTime: String,
+    override val publishTime: String,
     @ColumnInfo("artist_name")
-    val artistName: String
-)
+    override val artistName: String,
+) : Parcelable, IMv

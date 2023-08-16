@@ -32,12 +32,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.ke.music.common.entity.CommentType
 import com.ke.music.download.LocalDownloadManager
 import com.ke.music.player.service.LocalMusicPlayerController
 import com.ke.music.player.service.MusicPlayerController
 import com.ke.music.repository.entity.ShareType
 import com.ke.music.room.db.entity.Download
-import com.ke.music.room.entity.CommentType
 import com.ke.music.room.entity.MusicEntity
 
 

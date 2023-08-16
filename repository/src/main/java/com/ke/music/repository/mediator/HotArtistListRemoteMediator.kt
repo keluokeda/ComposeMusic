@@ -3,25 +3,24 @@ package com.ke.music.repository.mediator
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
-import androidx.paging.RemoteMediator
 import com.ke.music.api.HttpService
-import com.ke.music.room.db.dao.HotArtistDao
-import com.ke.music.room.db.entity.HotArtist
+import com.ke.music.common.entity.IArtist
+import com.ke.music.common.mediator.HotArtistRemoteMediator
+import com.ke.music.common.repository.ArtistRepository
+import javax.inject.Inject
 
-@OptIn(ExperimentalPagingApi::class)
-class HotArtistListRemoteMediator constructor(
+class HotArtistListRemoteMediator @Inject constructor(
     private val httpService: HttpService,
-    private val hotArtistDao: HotArtistDao,
-    var area: Int = -1,
-    var type: Int = -1
+    private val artistRepository: ArtistRepository,
 ) :
-    RemoteMediator<Int, HotArtist>() {
+    HotArtistRemoteMediator() {
 
     private var offset = 0
 
+    @ExperimentalPagingApi
     override suspend fun load(
         loadType: LoadType,
-        state: PagingState<Int, HotArtist>
+        state: PagingState<Int, IArtist>,
     ): MediatorResult {
         try {
 
@@ -41,21 +40,25 @@ class HotArtistListRemoteMediator constructor(
 
             val response = httpService.getArtistList(type, area, 30, offset)
 
-            if (offset == 0) {
-//                newAlbumDao.deleteAllByArea(area)
-                hotArtistDao.deleteAll()
-            }
-
-            hotArtistDao.insertAll(
-                response.artists.map {
-                    HotArtist(
-                        id = 0,
-                        artistId = it.id,
-                        name = it.name,
-                        avatar = it.avatar
-                    )
-                }
+            artistRepository.saveHotArtist(
+                area, type, response.artists, offset == 0
             )
+
+//            if (offset == 0) {
+//                newAlbumDao.deleteAllByArea(area)
+//                hotArtistDao.deleteAll()
+//            }
+
+//            hotArtistDao.insertAll(
+//                response.artists.map {
+//                    HotArtist(
+//                        id = 0,
+//                        artistId = it.id,
+//                        name = it.name,
+//                        avatar = it.avatar
+//                    )
+//                }
+//            )
 
             return MediatorResult.Success(
                 endOfPaginationReached = !response.more

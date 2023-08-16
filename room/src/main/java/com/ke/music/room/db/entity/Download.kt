@@ -3,6 +3,9 @@ package com.ke.music.room.db.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.ke.music.common.entity.DownloadSourceType
+import com.ke.music.common.entity.DownloadStatus
+import com.ke.music.common.entity.IDownload
 
 @Entity(tableName = "download")
 data class Download(
@@ -10,20 +13,20 @@ data class Download(
      * 主键
      */
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    override val id: Long = 0,
 
     /**
      * 资源id
      */
     @ColumnInfo("source_id")
-    val sourceId: Long,
+    override val sourceId: Long,
 
 
     /**
      * 下载器返回的id
      */
     @ColumnInfo(name = "download_id")
-    val downloadId: Long? = null,
+    override val downloadId: Long? = null,
 
     /**
      * 资源类型
@@ -33,14 +36,14 @@ data class Download(
 
     var status: Int,
 
-    var path: String?,
+    override var path: String?,
 
     /**
      * 创建时间
      */
     @ColumnInfo(name = "created_time")
-    val createdTime: Long = System.currentTimeMillis(),
-) {
+    override val createdTime: Long = System.currentTimeMillis(),
+) : IDownload {
     companion object {
         /**
          * 未下载
@@ -65,4 +68,19 @@ data class Download(
 
         const val SOURCE_TYPE_MUSIC = 0
     }
+
+    override val downloadStatus: DownloadStatus
+        get() = when (status) {
+            Download.STATUS_DOWNLOADED -> DownloadStatus.Downloaded
+            Download.STATUS_DOWNLOADING -> DownloadStatus.Downloading
+            Download.STATUS_DOWNLOAD_ERROR -> DownloadStatus.Error
+            STATUS_DOWNLOAD_IDLE -> DownloadStatus.Idle
+            else -> throw IllegalArgumentException("错误的status $status")
+
+        }
+    override val downloadSourceType: DownloadSourceType
+        get() = when (sourceType) {
+            SOURCE_TYPE_MUSIC -> DownloadSourceType.Song
+            else -> DownloadSourceType.Mv
+        }
 }

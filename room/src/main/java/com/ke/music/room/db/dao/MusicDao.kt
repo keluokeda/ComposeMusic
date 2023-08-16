@@ -134,6 +134,7 @@ interface MusicDao {
         "select \n" +
                 "music.music_id as musicId,\n" +
                 "music.name as name,\n" +
+                "music.album_id as albumId," +
                 "album.name as albumName,\n" +
                 "album.image_url as albumImage,\n" +
                 "download.path as path\n" +

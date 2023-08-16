@@ -3,16 +3,15 @@ package com.ke.music.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ke.music.repository.MusicRepository
-import com.ke.music.repository.PlaylistRepository
-import com.ke.music.repository.UserIdRepository
-import com.ke.music.repository.UserRepository
-import com.ke.music.repository.domain.LoadPlaylistDetailUseCase
-import com.ke.music.repository.domain.Result
-import com.ke.music.repository.domain.TogglePlaylistSubscribedUseCase
-import com.ke.music.room.db.entity.Playlist
-import com.ke.music.room.db.entity.User
-import com.ke.music.room.entity.MusicEntity
+import com.ke.music.common.domain.FollowPlaylistUseCase
+import com.ke.music.common.domain.LoadPlaylistDetailUseCase
+import com.ke.music.common.entity.IPlaylist
+import com.ke.music.common.entity.ISongEntity
+import com.ke.music.common.entity.IUser
+import com.ke.music.common.repository.CurrentUserRepository
+import com.ke.music.common.repository.PlaylistRepository
+import com.ke.music.common.repository.SongRepository
+import com.ke.music.common.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,13 +24,15 @@ import javax.inject.Inject
 @HiltViewModel
 class PlaylistDetailViewModel @Inject constructor(
     private val loadPlaylistDetailUseCase: LoadPlaylistDetailUseCase,
-    private val togglePlaylistSubscribedUseCase: TogglePlaylistSubscribedUseCase,
+    private val followPlaylistUseCase: FollowPlaylistUseCase,
     savedStateHandle: SavedStateHandle,
-    private val musicRepository: MusicRepository,
+    private val songRepository: SongRepository,
     private val playlistRepository: PlaylistRepository,
-    userIdRepository: UserIdRepository,
-    private val userRepository: UserRepository
+    userIdRepository: CurrentUserRepository,
+    private val userRepository: UserRepository,
 ) : ViewModel() {
+
+    val userId = userIdRepository.userIdFlow.stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
 
     val id = savedStateHandle.get<Long>("id")!!
@@ -39,7 +40,7 @@ class PlaylistDetailViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val uiState =
         userIdRepository.userIdFlow.flatMapLatest { userId ->
-            musicRepository.queryMusicListByPlaylistId(id)
+            songRepository.querySongsByPlaylistId(id)
                 .combine(playlistRepository.findById(id)) { list, playlist -> list to playlist }
                 .combine(
                     playlistRepository.checkUserHasSubscribePlaylist(
@@ -66,23 +67,24 @@ class PlaylistDetailViewModel @Inject constructor(
         loadData()
     }
 
-    fun loadData() {
+    private fun loadData() {
         viewModelScope.launch {
-            when (val result = loadPlaylistDetailUseCase(id)) {
-                is Result.Error -> {
-                    result.exception.printStackTrace()
-                }
-
-                is Result.Success -> {
-
-                }
-            }
+            loadPlaylistDetailUseCase(id)
+//            when (val result = loadPlaylistDetailUseCase(id)) {
+//                is Result.Error -> {
+//                    result.exception.printStackTrace()
+//                }
+//
+//                is Result.Success -> {
+//
+//                }
+//            }
         }
     }
 
-    fun toggleBooked(detail: PlaylistDetailUiState) {
+    fun toggleBooked(playlistId: Long) {
         viewModelScope.launch {
-            togglePlaylistSubscribedUseCase(id to !detail.subscribed)
+            followPlaylistUseCase(playlistId)
         }
     }
 
@@ -90,10 +92,10 @@ class PlaylistDetailViewModel @Inject constructor(
 }
 
 data class PlaylistDetailUiState(
-    val playlist: Playlist?,
-    val songs: List<MusicEntity>,
+    val playlist: IPlaylist?,
+    val songs: List<ISongEntity>,
     val subscribed: Boolean,
-    val creator: User?
+    val creator: IUser?,
 ) {
     val hasData: Boolean
         get() = playlist != null && creator != null

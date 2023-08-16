@@ -15,5 +15,9 @@ data class Artist(
     val id: Long,
     val name: String,
     @Json(name = "img1v1Url")
-    val avatar: String
+    val avatar: String,
+    /**
+     * 是否关注
+     */
+    val followed: Boolean = false,
 )

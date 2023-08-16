@@ -22,17 +22,17 @@ interface LocalPlaylistSongDao {
     suspend fun clear()
 
 
-    @Query(
-        "select music.music_id as musicId,music.name as name,download.path as path,download.created_time as createdTime,music.mv as mv,album.name as albumName,album.image_url as albumImage\n" +
-                "from local_playlist_song inner join music on local_playlist_song.song_id = music.music_id\n" +
-                "inner join album on album.album_id = music.album_id\n" +
-                "inner join download on download.source_type = ${Download.SOURCE_TYPE_MUSIC} and download.source_id = music.music_id\n" +
-                "order by added_time asc"
-    )
-    suspend fun getLocalPlaylistSongs(): List<DownloadedMusicEntity>
+//    @Query(
+//        "select music.music_id as musicId,music.name as name,album_id as albumId,download.path as path,download.created_time as createdTime,music.mv as mv,album.name as albumName,album.image_url as albumImage\n" +
+//                "from local_playlist_song inner join music on local_playlist_song.song_id = music.music_id\n" +
+//                "inner join album on album.album_id = music.album_id\n" +
+//                "inner join download on download.source_type = ${Download.SOURCE_TYPE_MUSIC} and download.source_id = music.music_id\n" +
+//                "order by added_time asc"
+//    )
+//    suspend fun getLocalPlaylistSongs(): List<DownloadedMusicEntity>
 
     @Query(
-        "select music.music_id as musicId,music.name as name,download.path as path,download.created_time as createdTime,music.mv as mv,album.name as albumName,album.image_url as albumImage\n" +
+        "select music.music_id as musicId,music.name as name,music.album_id as albumId,download.path as path,download.created_time as createdTime,music.mv as mv,album.name as albumName,album.image_url as albumImage\n" +
                 "from local_playlist_song inner join music on local_playlist_song.song_id = music.music_id\n" +
                 "inner join album on album.album_id = music.album_id\n" +
                 "inner join download on download.source_type = ${Download.SOURCE_TYPE_MUSIC} and download.source_id = music.music_id\n" +

@@ -40,13 +40,13 @@ import com.ke.compose.music.ui.share.ShareRoute
 import com.ke.compose.music.ui.slpash.SplashScreen
 import com.ke.compose.music.ui.test.TestRoute
 import com.ke.compose.music.ui.users.UsersRoute
+import com.ke.music.common.entity.CommentType
 import com.ke.music.download.DownloadManagerImpl
 import com.ke.music.download.LocalDownloadManager
 import com.ke.music.player.service.LocalMusicPlayerController
 import com.ke.music.player.service.MusicPlayerController
 import com.ke.music.repository.entity.ShareType
 import com.ke.music.repository.entity.UsersType
-import com.ke.music.room.entity.CommentType
 import java.net.URLDecoder
 
 

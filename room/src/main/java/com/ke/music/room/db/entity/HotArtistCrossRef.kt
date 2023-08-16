@@ -4,15 +4,12 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-/**
- * 热门歌手
- */
-@Entity("hot_artist")
-data class HotArtist(
+@Entity(tableName = "hot_artist_cross_ref")
+data class HotArtistCrossRef(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0L,
+    val id: Long = 0,
     @ColumnInfo("artist_id")
     val artistId: Long,
-    val name: String,
-    val avatar: String
+    val area: Int,
+    val type: Int,
 )

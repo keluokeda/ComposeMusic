@@ -22,13 +22,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.ke.compose.music.ui.LocalAppViewModel
+import com.ke.music.common.entity.CommentType
 import com.ke.music.download.LocalDownloadManager
 import com.ke.music.repository.entity.ShareType
-import com.ke.music.room.entity.CommentType
 import com.ke.music.room.entity.MusicEntity
 import kotlinx.coroutines.launch
 
 
+@Deprecated("弃用了")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MusicBottomSheetLayout(

@@ -75,7 +75,7 @@ interface DownloadDao {
      * 查询下载中的音乐
      */
     @Query(
-        "select download.id,music.music_id as musicId,music.name ,album.name as albumName,album.image_url as albumImage,download.status \n" +
+        "select download.id,music.music_id as musicId,music.name,music.album_id as albumId ,album.name as albumName,album.image_url as albumImage,download.status \n" +
                 "from download \n" +
                 "inner join music on download.source_id = music.music_id \n" +
                 "inner join album on music.album_id = album.album_id \n" +

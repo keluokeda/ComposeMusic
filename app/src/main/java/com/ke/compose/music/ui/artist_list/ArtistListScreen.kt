@@ -39,7 +39,7 @@ import com.ke.compose.music.ui.component.LocalBackHandler
 import com.ke.compose.music.ui.component.LocalNavigationHandler
 import com.ke.compose.music.ui.component.NavigationAction
 import com.ke.compose.music.ui.component.items
-import com.ke.music.room.db.entity.HotArtist
+import com.ke.music.common.entity.IArtist
 import com.ke.music.viewmodel.ArtistArea
 import com.ke.music.viewmodel.ArtistListViewModel
 import com.ke.music.viewmodel.ArtistType
@@ -65,7 +65,7 @@ fun ArtistListRoute() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ArtistListScreen(
-    list: LazyPagingItems<HotArtist>,
+    list: LazyPagingItems<IArtist>,
     area: ArtistArea,
     type: ArtistType,
     onUpdateType: (ArtistType) -> Unit,
@@ -145,7 +145,7 @@ private fun ArtistListScreen(
 
             LazyVerticalGrid(columns = GridCells.Fixed(3)) {
                 items(list, key = {
-                    it.id
+                    it.artistId
                 }) {
                     val artist = it!!
                     Box(
@@ -209,7 +209,7 @@ private fun DropDownButton(
     isContextMenuVisible: Boolean,
     onDismissRequest: () -> Unit,
     actions: List<String>,
-    onItemClick: (Int) -> Unit
+    onItemClick: (Int) -> Unit,
 ) {
 
 

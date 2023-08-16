@@ -3,12 +3,12 @@ package com.ke.music.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ke.music.repository.AlbumRepository
-import com.ke.music.repository.MusicRepository
+import com.ke.music.common.domain.CollectAlbumUseCase
+import com.ke.music.common.entity.IAlbumEntity
+import com.ke.music.common.entity.ISongEntity
+import com.ke.music.common.repository.AlbumRepository
+import com.ke.music.common.repository.SongRepository
 import com.ke.music.repository.domain.LoadAlbumDetailUseCase
-import com.ke.music.repository.domain.ToggleCollectAlbumUseCase
-import com.ke.music.room.entity.AlbumEntity
-import com.ke.music.room.entity.MusicEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -19,10 +19,10 @@ import javax.inject.Inject
 @HiltViewModel
 class AlbumDetailViewModel @Inject constructor(
     private val loadAlbumDetailUseCase: LoadAlbumDetailUseCase,
-    private val toggleCollectAlbumUseCase: ToggleCollectAlbumUseCase,
+    private val collectAlbumUseCase: CollectAlbumUseCase,
     savedStateHandle: SavedStateHandle,
-    musicRepository: MusicRepository,
-    albumRepository: AlbumRepository
+    songRepository: SongRepository,
+    albumRepository: AlbumRepository,
 ) :
     ViewModel() {
 
@@ -31,7 +31,7 @@ class AlbumDetailViewModel @Inject constructor(
 
     val uiState = albumRepository.getAlbumEntity(id)
         .combine(
-            musicRepository.queryMusicListByAlbumId(id)
+            songRepository.querySongsByAlbumId(id)
         ) { entity, list ->
             AlbumDetailUiState(entity, list)
         }.stateIn(viewModelScope, SharingStarted.Eagerly, AlbumDetailUiState(null, emptyList()))
@@ -49,7 +49,7 @@ class AlbumDetailViewModel @Inject constructor(
         val collected = uiState.value.albumEntity?.collected ?: return
 
         viewModelScope.launch {
-            toggleCollectAlbumUseCase(id to !collected)
+            collectAlbumUseCase(id to !collected)
         }
 
     }
@@ -62,9 +62,9 @@ class AlbumDetailViewModel @Inject constructor(
 }
 
 data class AlbumDetailUiState(
-    val albumEntity: AlbumEntity?,
-    val musicList: List<MusicEntity>
+    val albumEntity: IAlbumEntity?,
+    val songs: List<ISongEntity>,
 ) {
     val hasData: Boolean
-        get() = albumEntity != null && musicList.isNotEmpty()
+        get() = albumEntity != null && songs.isNotEmpty()
 }

@@ -1,9 +1,9 @@
 package com.ke.music.repository.domain
 
 import com.ke.music.api.HttpService
+import com.ke.music.common.entity.DeleteCommentRequest
 import com.ke.music.repository.ChildCommentRepository
 import com.ke.music.repository.CommentRepository
-import com.ke.music.room.entity.CommentType
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 
@@ -31,9 +31,3 @@ class DeleteCommentUseCase @Inject constructor(
     }
 }
 
-data class DeleteCommentRequest(
-    val commentType: CommentType,
-    val resourceId: Long,
-    val commentId: Long,
-    val isChildComment: Boolean
-)

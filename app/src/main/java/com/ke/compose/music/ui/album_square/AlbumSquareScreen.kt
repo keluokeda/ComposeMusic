@@ -28,8 +28,13 @@ import com.ke.compose.music.ui.component.AlbumView
 import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.component.LocalBackHandler
 import com.ke.compose.music.ui.component.items
+import com.ke.music.common.entity.IAlbum
 import com.ke.music.room.db.entity.Album
-import com.ke.music.room.db.entity.NewAlbum
+import com.ke.music.viewmodel.AllAlbumSquareViewModel
+import com.ke.music.viewmodel.EaAlbumSquareViewModel
+import com.ke.music.viewmodel.JpAlbumSquareViewModel
+import com.ke.music.viewmodel.KrAlbumSquareViewModel
+import com.ke.music.viewmodel.ZhAlbumSquareViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -141,11 +146,11 @@ private fun JpNewAlbumList() {
 
 
 @Composable
-private fun NewAlbumList(list: LazyPagingItems<NewAlbum>) {
+private fun NewAlbumList(list: LazyPagingItems<IAlbum>) {
 
     LazyVerticalGrid(columns = GridCells.Fixed(3)) {
         items(list, key = {
-            it.id
+            it.key
         }) {
             val album = it!!
 

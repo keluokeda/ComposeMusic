@@ -1,13 +1,16 @@
 package com.ke.music.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.ke.music.repository.domain.GetSongLrcUseCase
-import com.ke.music.repository.domain.successOr
+import com.ke.music.common.domain.GetSongLrcUseCase
+import com.ke.music.common.domain.successOr
+
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class SongLrcViewModel @Inject constructor(private val getSongLrcUseCase: GetSongLrcUseCase) :
+class SongLrcViewModel @Inject constructor(
+    private val getSongLrcUseCase: GetSongLrcUseCase,
+) :
     ViewModel() {
 
     /**

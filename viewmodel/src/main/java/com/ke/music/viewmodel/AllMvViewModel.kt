@@ -6,29 +6,30 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.PagingSource
 import androidx.paging.cachedIn
-import com.ke.music.api.HttpService
-import com.ke.music.repository.MvRepository
-import com.ke.music.repository.mediator.AllMvRemoteMediator
-import com.ke.music.room.db.entity.Mv
+import androidx.paging.map
+import com.ke.music.common.entity.IMv
+import com.ke.music.common.repository.MvRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 @HiltViewModel
 class AllMvViewModel @Inject constructor(
-    private val httpService: HttpService,
-    private val mvRepository: MvRepository
+    private val mvRepository: MvRepository,
+    private val remoteMediator: com.ke.music.common.mediator.AllMvRemoteMediator,
 ) : ViewModel() {
 
-    private val _area = MutableStateFlow<String>("全部")
+    private val _area = MutableStateFlow("全部")
 
     val area: StateFlow<String>
         get() = _area
 
-    private val _type = MutableStateFlow<String>("全部")
+    private val _type = MutableStateFlow("全部")
 
     val type: StateFlow<String>
         get() = _type
@@ -44,12 +45,12 @@ class AllMvViewModel @Inject constructor(
         remoteMediator.type = value
     }
 
-    private val remoteMediator = AllMvRemoteMediator(
-        httpService, mvRepository, area.value, type.value
-    )
+//    private val remoteMediator = AllMvRemoteMediator(
+//        httpService, mvRepository, area.value, type.value
+//    )
 
     @OptIn(ExperimentalPagingApi::class)
-    val allMv: Flow<PagingData<Mv>> = Pager(
+    val allMv: Flow<PagingData<IMv>> = Pager(
         config = PagingConfig(
             pageSize = 30,
             enablePlaceholders = false,
@@ -57,7 +58,11 @@ class AllMvViewModel @Inject constructor(
         ),
         remoteMediator = remoteMediator
     ) {
-        mvRepository.getAllMv(area.value, type.value)
-    }.flow
+        mvRepository.getAllMv(area.value, type.value) as PagingSource<Int, IMv>
+    }.flow.map { data ->
+        data.map {
+            it
+        }
+    }
         .cachedIn(viewModelScope)
 }

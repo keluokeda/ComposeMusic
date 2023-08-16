@@ -2,6 +2,9 @@ package com.ke.music.repository
 
 import android.content.Context
 import com.ke.music.api.response.Song
+import com.ke.music.common.entity.ISongEntity
+import com.ke.music.common.repository.CurrentUserRepository
+import com.ke.music.common.repository.SongRepository
 import com.ke.music.room.db.dao.AlbumDao
 import com.ke.music.room.db.dao.ArtistDao
 import com.ke.music.room.db.dao.DownloadDao
@@ -17,11 +20,13 @@ import com.ke.music.room.db.entity.Download
 import com.ke.music.room.db.entity.LocalPlaylistSong
 import com.ke.music.room.db.entity.Music
 import com.ke.music.room.db.entity.MusicArtistCrossRef
+import com.ke.music.room.db.entity.RecommendSong
 import com.ke.music.room.db.entity.SongLrc
 import com.ke.music.room.db.entity.SongPlayRecord
 import com.ke.music.room.entity.MusicEntity
 import com.ke.music.room.entity.QueryMusicResult
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -40,7 +45,8 @@ class MusicRepository @Inject constructor(
     private val songPlayRecordDao: SongPlayRecordDao,
     @ApplicationContext private val context: Context,
     private val songLrcDao: SongLrcDao,
-) {
+    private val currentUserRepository: CurrentUserRepository,
+) : SongRepository {
 
     suspend fun findById(musicId: Long): Music? = musicDao.findById(musicId)
 
@@ -166,7 +172,7 @@ class MusicRepository @Inject constructor(
         }
 
 
-    suspend fun findDownloadedMusic(id: Long) = musicDao.findDownloadedMusicById(id)
+    private suspend fun findDownloadedMusic(id: Long) = musicDao.findDownloadedMusicById(id)
 
     /**
      * 获取下载的音乐
@@ -176,12 +182,32 @@ class MusicRepository @Inject constructor(
     }
 
     suspend fun getDownloadedSong(songId: Long) = downloadDao.findBySongId(songId)
+    override suspend fun saveSongs(list: List<Song>) {
+        saveMusicListToRoom(list)
+    }
+
+    override fun querySongsByPlaylistId(playlistId: Long): Flow<List<ISongEntity>> {
+        return queryMusicListByPlaylistId(playlistId)
+    }
+
+    override fun querySongsByAlbumId(albumId: Long): Flow<List<ISongEntity>> {
+        return queryMusicListByAlbumId(albumId)
+    }
+
+    override suspend fun findDownloadedSong(songId: Long): ISongEntity? {
+        return findDownloadedMusic(songId)
+    }
+
+    override fun getDownloadedSongs(): Flow<List<ISongEntity>> {
+        return getDownloadedMusics()
+    }
 
 
     /**
      * 当前用户每日推荐歌曲
      */
-    fun getRecommendSongs() =
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun getRecommendSongs() =
 
         context.userIdFlow.flatMapLatest { userId ->
             musicDao.findRecommendSongs(userId)
@@ -191,10 +217,21 @@ class MusicRepository @Inject constructor(
         }
 
 
+    override suspend fun saveRecommendSongs(list: List<Song>) {
+        saveMusicListToRoom(list)
+        val userId = currentUserRepository.userId()
+        recommendSongDao.reset(
+            userId, list.map {
+                RecommendSong(0, it.id, userId)
+            }
+        )
+    }
+
+
     /**
      * 歌手热门歌曲
      */
-    fun artistHotSongs(artistId: Long) = musicDao.getArtistHotSongs(artistId)
+    override fun artistHotSongs(artistId: Long) = musicDao.getArtistHotSongs(artistId)
         .map {
             queryResultToMusicEntityList(it)
         }
@@ -203,7 +240,7 @@ class MusicRepository @Inject constructor(
     /**
      * 音乐被播放的时候调用下这个方法
      */
-    suspend fun onSongPlayed(songId: Long) {
+    override suspend fun onSongPlayed(songId: Long) {
         songPlayRecordDao.insert(
             SongPlayRecord(
                 songId = songId
@@ -214,8 +251,12 @@ class MusicRepository @Inject constructor(
     /**
      * 插入一条歌曲到本地播放列表
      */
-    suspend fun insertSongIntoLocalPlaylist(songId: Long) {
+    override suspend fun insertSongIntoLocalPlaylist(songId: Long) {
         localPlaylistSongDao.insert(LocalPlaylistSong(songId))
+    }
+
+    override suspend fun removeSongFromLocalPlaylist(songId: Long) {
+        deleteLocalPlaylistSong(songId)
     }
 
     suspend fun insertSongsToLocalPlaylist(list: List<Long>) {
@@ -226,7 +267,8 @@ class MusicRepository @Inject constructor(
         )
     }
 
-    suspend fun getLocalPlaylistSongs() = localPlaylistSongDao.getLocalPlaylistSongs()
+    override fun getLocalPlaylistSongs() =
+        localPlaylistSongDao.getLocalPlaylistSongList()
 
     fun getLocalPlaylistSongList() = localPlaylistSongDao.getLocalPlaylistSongList()
 
@@ -243,12 +285,12 @@ class MusicRepository @Inject constructor(
     /**
      * 保存歌曲歌词
      */
-    suspend fun saveSongLrc(songId: Long, lrc: String) {
+    override suspend fun saveSongLrc(songId: Long, lrc: String) {
         songLrcDao.insert(SongLrc(songId, lrc))
     }
 
     /**
      * 获取歌曲歌词
      */
-    suspend fun getSongLrc(songId: Long) = songLrcDao.findById(songId)?.lrc
+    override suspend fun getSongLrc(songId: Long) = songLrcDao.findById(songId)?.lrc
 }

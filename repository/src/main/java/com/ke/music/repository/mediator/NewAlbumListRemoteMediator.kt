@@ -3,24 +3,27 @@ package com.ke.music.repository.mediator
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
-import androidx.paging.RemoteMediator
 import com.ke.music.api.HttpService
-import com.ke.music.room.db.dao.NewAlbumDao
-import com.ke.music.room.db.entity.NewAlbum
+import com.ke.music.common.entity.IAlbum
+import com.ke.music.common.mediator.NewAlbumsRemoteMediator
+import com.ke.music.common.repository.AlbumRepository
+import javax.inject.Inject
 
-@OptIn(ExperimentalPagingApi::class)
-class NewAlbumListRemoteMediator constructor(
+class NewAlbumListRemoteMediator @Inject constructor(
     private val httpService: HttpService,
-    private val newAlbumDao: NewAlbumDao,
-    var area: String
+    private val albumRepository: AlbumRepository,
 ) :
-    RemoteMediator<Int, NewAlbum>() {
+    NewAlbumsRemoteMediator() {
+
+    override var area: String = "全部"
+
 
     private var offset = 0
 
+    @ExperimentalPagingApi
     override suspend fun load(
         loadType: LoadType,
-        state: PagingState<Int, NewAlbum>
+        state: PagingState<Int, IAlbum>,
     ): MediatorResult {
         try {
 
@@ -40,26 +43,9 @@ class NewAlbumListRemoteMediator constructor(
 
             val response = httpService.getNewAlbumList(area, 30, offset)
 
-            if (offset == 0) {
-                newAlbumDao.deleteAllByArea(area)
-            }
-
-            newAlbumDao.insertAll(
-                response.albums.map {
-                    NewAlbum(
-                        id = 0,
-                        albumId = it.id,
-                        area = area,
-                        name = it.name,
-                        subtitle = it.artist.name,
-                        image = it.picUrl
-                    )
-                }
-            )
-
+            albumRepository.saveNewAlbum(response.albums, area, offset == 0)
             return MediatorResult.Success(
                 endOfPaginationReached = response.albums.isEmpty()
-
             )
 
         } catch (e: Exception) {

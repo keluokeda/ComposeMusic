@@ -24,13 +24,13 @@ fun DownloadingRoute() {
     Scaffold {
         ScalingLazyColumn {
             items(songs, key = {
-                it.id
+                it.second
             }) {
                 Chip(label = {
-                    Text(text = it.name)
+                    Text(text = it.first.album.name)
                 }, icon = {
                     Icon(imageVector = Icons.Default.Clear, contentDescription = null)
-                }, onClick = { viewModel.delete(it) }, modifier = Modifier.fillMaxWidth())
+                }, onClick = { viewModel.delete(it.second) }, modifier = Modifier.fillMaxWidth())
             }
         }
     }

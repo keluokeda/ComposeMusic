@@ -3,7 +3,7 @@ package com.ke.music.room.db.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.ke.music.room.entity.CommentType
+import com.ke.music.common.entity.CommentType
 
 //
 //@Entity(tableName = "comment")

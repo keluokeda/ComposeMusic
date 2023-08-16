@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -18,8 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ke.compose.music.ui.component.AppTopBar
-import com.ke.compose.music.ui.component.MusicView
-import com.ke.music.room.entity.MusicEntity
+import com.ke.compose.music.ui.component.SongView
+import com.ke.compose.music.ui.component.SongViewAction
+import com.ke.music.common.entity.ISongEntity
 import com.ke.music.viewmodel.DownloadedMusicViewModel
 
 @Composable
@@ -40,8 +40,8 @@ fun DownloadedMusicRoute(
 @Composable
 private fun DownloadedMusicScreen(
     onBackButtonClick: () -> Unit,
-    musicList: List<MusicEntity>,
-    onDeleteButtonClick: (Long) -> Unit
+    musicList: List<ISongEntity>,
+    onDeleteButtonClick: (Long) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -60,15 +60,13 @@ private fun DownloadedMusicScreen(
                 .padding(padding)
         ) {
             items(musicList, key = {
-                it.musicId
+                it.song.id
             }) {
-                MusicView(musicEntity = it, rightButton = {
-                    IconButton(onClick = {
-                        onDeleteButtonClick(it.musicId)
-                    }) {
-                        Icon(imageVector = Icons.Default.Delete, contentDescription = null)
+                SongView(iSongEntity = it, actions = listOf(
+                    SongViewAction("删除") {
+                        onDeleteButtonClick(it.song.id)
                     }
-                })
+                ))
             }
         }
     }

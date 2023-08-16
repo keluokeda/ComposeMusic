@@ -1,9 +1,9 @@
-package com.ke.compose.music.ui.playlist_category
+package com.ke.music.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ke.music.repository.domain.GetPlaylistCategoryListUseCase
-import com.ke.music.repository.domain.Result
+import com.ke.music.api.response.PlaylistCategory
+import com.ke.music.common.domain.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,19 +11,19 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PlaylistCategoryViewModel @Inject constructor(private val getPlaylistCategoryListUseCase: GetPlaylistCategoryListUseCase) :
+class PlaylistCategoryViewModel @Inject constructor(private val getPlaylistCategoryListUseCase: com.ke.music.common.domain.GetPlaylistCategoryListUseCase) :
     ViewModel() {
     private val _uiState =
         MutableStateFlow<PlaylistCategoryUiState>(PlaylistCategoryUiState.Loading)
 
-    internal val uiState: StateFlow<PlaylistCategoryUiState>
+    val uiState: StateFlow<PlaylistCategoryUiState>
         get() = _uiState
 
     init {
         loadContent()
     }
 
-    internal fun loadContent() {
+    fun loadContent() {
         viewModelScope.launch {
             _uiState.value = PlaylistCategoryUiState.Loading
             when (val result = getPlaylistCategoryListUseCase(Unit)) {
@@ -37,4 +37,12 @@ class PlaylistCategoryViewModel @Inject constructor(private val getPlaylistCateg
             }
         }
     }
+}
+
+sealed interface PlaylistCategoryUiState {
+    object Loading : PlaylistCategoryUiState
+
+    data class Detail(val list: List<PlaylistCategory>) : PlaylistCategoryUiState
+
+    object Error : PlaylistCategoryUiState
 }

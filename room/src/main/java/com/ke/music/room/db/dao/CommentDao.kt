@@ -7,11 +7,10 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import com.ke.music.common.entity.CommentType
 import com.ke.music.room.db.entity.Comment
-import com.ke.music.room.entity.CommentType
 import com.ke.music.room.entity.QueryCommentAndUserResult
 import com.ke.music.room.entity.QueryCommentResult
-
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -60,7 +59,7 @@ interface CommentDao {
     fun getComments(
         commentType: CommentType,
         sourceId: Long,
-        currentUserId: Long
+        currentUserId: Long,
     ): PagingSource<Int, QueryCommentResult>
 
     @Query("select * from comment where id = :commentId")

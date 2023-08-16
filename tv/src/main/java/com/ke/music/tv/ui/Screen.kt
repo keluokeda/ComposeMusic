@@ -1,8 +1,8 @@
 package com.ke.music.tv.ui
 
+import com.ke.music.common.entity.CommentType
 import com.ke.music.repository.entity.UsersType
 import com.ke.music.room.db.entity.Playlist
-import com.ke.music.room.entity.CommentType
 import java.net.URLEncoder
 
 sealed class Screen(val route: String) {

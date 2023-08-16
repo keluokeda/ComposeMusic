@@ -8,6 +8,7 @@ import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.compose.runtime.staticCompositionLocalOf
+import com.ke.music.common.entity.ISongEntity
 import com.ke.music.room.entity.QueryDownloadedMusicResult
 import com.orhanobut.logger.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -58,7 +59,7 @@ interface MusicPlayerController {
      */
     val progress: StateFlow<Pair<Long, Long>>
 
-    val currentPlaying: StateFlow<QueryDownloadedMusicResult?>
+    val currentPlaying: StateFlow<ISongEntity?>
 
     companion object {
         fun createMusicPlayerController(context: Context): MusicPlayerController {
@@ -91,7 +92,7 @@ private object EmptyMusicPlayerController : MusicPlayerController {
 
     }
 
-    override val currentPlaying: StateFlow<QueryDownloadedMusicResult?>
+    override val currentPlaying: StateFlow<ISongEntity?>
         get() = MutableStateFlow(null)
 
     override fun seekTo(position: Long) {
@@ -111,13 +112,13 @@ internal class MusicPlayerControllerImpl(private val context: Context) : MusicPl
 
     private val _isPlaying = MutableStateFlow(true)
 
-    private val _progress = MutableStateFlow<Pair<Long, Long>>(0L to 0L)
+    private val _progress = MutableStateFlow(0L to 0L)
 
 
-    private val _currentPlaying = MutableStateFlow<QueryDownloadedMusicResult?>(null)
+    private val _currentPlaying = MutableStateFlow<ISongEntity?>(null)
 
 
-    override val currentPlaying: StateFlow<QueryDownloadedMusicResult?>
+    override val currentPlaying: StateFlow<ISongEntity?>
         get() = _currentPlaying
     override val progress: StateFlow<Pair<Long, Long>>
         get() = _progress
@@ -151,7 +152,7 @@ internal class MusicPlayerControllerImpl(private val context: Context) : MusicPl
 //            super.onMetadataChanged(metadata)
 
             _currentPlaying.value = QueryDownloadedMusicResult(
-                id, title, albumName, image, null
+                id, title, 0, albumName, image, null
             )
             _progress.value = 0L to 0
 

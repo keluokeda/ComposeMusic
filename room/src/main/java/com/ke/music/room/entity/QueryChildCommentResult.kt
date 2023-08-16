@@ -1,16 +1,22 @@
 package com.ke.music.room.entity
 
+import com.ke.music.common.entity.IChildComment
+import com.ke.music.common.entity.IUser
+import com.ke.music.room.db.entity.User
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class QueryChildCommentResult(
     val parentCommentId: Long,
-    val commentId: Long,
+    override val commentId: Long,
     val userId: Long,
     val username: String,
     val userAvatar: String,
     val userSignature: String?,
-    val content: String?,
-    val timeString: String,
-    val ip: String,
-    val likedCount: Int,
+    override val content: String,
+    override val timeString: String,
+    override val ip: String,
+    override val likedCount: Int,
     /**
      * 点赞的时间
      */
@@ -23,8 +29,17 @@ data class QueryChildCommentResult(
     /**
      * 回复的人的用户名
      */
-    val beRepliedUsername: String?
-) {
-    val liked: Boolean
+    override val beRepliedUsername: String?,
+) : IChildComment {
+    override val liked: Boolean
         get() = likedTime != null
+
+    override val key: Long
+        get() = commentId
+
+    override val replyCount: Int
+        get() = 0
+
+    override val user: IUser
+        get() = User(userId, username, userAvatar, userSignature)
 }

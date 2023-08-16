@@ -14,13 +14,13 @@ import com.ke.music.room.db.dao.ArtistMusicCrossRefDao
 import com.ke.music.room.db.dao.ChildCommentDao
 import com.ke.music.room.db.dao.CommentDao
 import com.ke.music.room.db.dao.DownloadDao
-import com.ke.music.room.db.dao.HotArtistDao
+import com.ke.music.room.db.dao.HotArtistCrossRefDao
 import com.ke.music.room.db.dao.LocalPlaylistSongDao
 import com.ke.music.room.db.dao.MusicArtistCrossRefDao
 import com.ke.music.room.db.dao.MusicDao
 import com.ke.music.room.db.dao.MvArtistCrossRefDao
 import com.ke.music.room.db.dao.MvDao
-import com.ke.music.room.db.dao.NewAlbumDao
+import com.ke.music.room.db.dao.NewAlbumCrossRefDao
 import com.ke.music.room.db.dao.PlaylistDao
 import com.ke.music.room.db.dao.PlaylistMusicCrossRefDao
 import com.ke.music.room.db.dao.PlaylistSubscriberCrossRefDao
@@ -30,6 +30,7 @@ import com.ke.music.room.db.dao.SongLrcDao
 import com.ke.music.room.db.dao.SongPlayRecordDao
 import com.ke.music.room.db.dao.TopPlaylistDao
 import com.ke.music.room.db.dao.UserAlbumCrossRefDao
+import com.ke.music.room.db.dao.UserArtistCrossRefDao
 import com.ke.music.room.db.dao.UserDao
 import com.ke.music.room.db.dao.UserLikeCommentCrossRefDao
 import com.ke.music.room.db.dao.UserPlaylistCrossRefDao
@@ -48,7 +49,7 @@ object RoomModule {
     @Provides
     @Singleton
     fun provideAppMemoryDatabase(
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
     ): AppMemoryDatabase {
         return Room.inMemoryDatabaseBuilder(context, AppMemoryDatabase::class.java).build()
     }
@@ -57,7 +58,7 @@ object RoomModule {
     @Provides
     @Singleton
     fun provideAppFileDatabase(
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
     ): AppFileDatabase {
         val builder = Room.databaseBuilder(context, AppFileDatabase::class.java, "app")
 
@@ -181,17 +182,7 @@ object RoomModule {
         return appFileDatabase.topPlaylistDao()
     }
 
-    @Provides
-    @Singleton
-    fun provideNewAlbumDao(appFileDatabase: AppFileDatabase): NewAlbumDao {
-        return appFileDatabase.newAlbumDao()
-    }
 
-    @Provides
-    @Singleton
-    fun provideHotArtistDao(appFileDatabase: AppFileDatabase): HotArtistDao {
-        return appFileDatabase.hotArtistDao()
-    }
 
     @Provides
     @Singleton
@@ -240,5 +231,25 @@ object RoomModule {
     @Singleton
     fun provideSongLrcDao(appFileDatabase: AppFileDatabase): SongLrcDao {
         return appFileDatabase.songLrcDao()
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideUserArtistCrossRefDao(appFileDatabase: AppFileDatabase): UserArtistCrossRefDao {
+        return appFileDatabase.userArtistCrossRefDao()
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideHotArtistCrossRefDao(appFileDatabase: AppFileDatabase): HotArtistCrossRefDao {
+        return appFileDatabase.hotArtistCrossRefDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideNewAlbumCrossRefDao(appFileDatabase: AppFileDatabase): NewAlbumCrossRefDao {
+        return appFileDatabase.newAlbumCrossRefDao()
     }
 }

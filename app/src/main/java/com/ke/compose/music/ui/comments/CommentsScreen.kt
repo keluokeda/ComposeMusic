@@ -3,7 +3,6 @@ package com.ke.compose.music.ui.comments
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,11 +23,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,23 +49,21 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
-import com.ke.compose.music.Keyboard
 import com.ke.compose.music.keyboardAsState
 import com.ke.compose.music.niceCount
 import com.ke.compose.music.observeWithLifecycle
 import com.ke.compose.music.toast
 import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.component.Avatar
-import com.ke.music.room.entity.CommentType
-import com.ke.music.room.entity.QueryCommentResult
+import com.ke.music.common.entity.CommentType
+import com.ke.music.common.entity.IComment
 import com.ke.music.viewmodel.CommentsViewModel
-import com.orhanobut.logger.Logger
 
 
 @Composable
 fun CommentsRoute(
     onBackButtonClick: () -> Unit,
-    onMoreCommentClick: (Long, CommentType, Long) -> Unit
+    onMoreCommentClick: (Long, CommentType, Long) -> Unit,
 ) {
     val viewModel: CommentsViewModel = hiltViewModel()
 
@@ -99,18 +96,17 @@ fun CommentsRoute(
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class,
-    ExperimentalLayoutApi::class
 )
 @Composable
 private fun CommentScreen(
-    list: LazyPagingItems<QueryCommentResult>,
+    list: LazyPagingItems<IComment>,
     sending: Boolean,
     onBackButtonClick: () -> Unit,
-    onThumbClick: (QueryCommentResult) -> Unit,
-    onSendComment: (String, QueryCommentResult?) -> Unit,
-    canDeleteComment: (QueryCommentResult) -> Boolean,
+    onThumbClick: (IComment) -> Unit,
+    onSendComment: (String, IComment?) -> Unit,
+    canDeleteComment: (IComment) -> Boolean,
     deleteComment: (Long) -> Unit,
-    onMoreCommentClick: (Long) -> Unit
+    onMoreCommentClick: (Long) -> Unit,
 ) {
     var text by remember {
         mutableStateOf("")
@@ -141,19 +137,18 @@ private fun CommentScreen(
 
             //要删除的评论
             var deleteTargetComment by remember {
-                mutableStateOf<QueryCommentResult?>(null)
+                mutableStateOf<IComment?>(null)
             }
 
 
             var selectedComment by remember {
-                mutableStateOf<QueryCommentResult?>(null)
+                mutableStateOf<IComment?>(null)
             }
 
 
             val isKeyboardOpen by keyboardAsState()
 
-            Logger.d("isKeyboardOpen $isKeyboardOpen")
-            if (isKeyboardOpen == Keyboard.Closed) {
+            if (!isKeyboardOpen) {
                 selectedComment = null
             }
 
@@ -206,15 +201,20 @@ private fun CommentScreen(
                     val item = list[index]
                     CommentItem(
                         comment = item!!,
-                        onThumbClick = onThumbClick,
+
+                        onThumbClick = {
+                            onThumbClick(it)
+                        },
                         onMoreCommentClick = {
                             onMoreCommentClick(item.commentId)
                         },
-                        onClick = { selected ->
+                        onClick = {
+
                             focusRequester.requestFocus()
                             keyboardController?.show()
-                            selectedComment = selected
+                            selectedComment = it
                         }, onLongClick = { comment ->
+//                                comment ->
                             if (canDeleteComment(comment)) {
                                 isDialogOpen = true
                                 deleteTargetComment = comment
@@ -236,7 +236,7 @@ private fun CommentScreen(
                     Text(text = "评论")
                 },
                 placeholder = {
-                    Text(text = if (selectedComment == null) "" else "回复${selectedComment?.username}")
+                    Text(text = if (selectedComment == null) "" else "回复${selectedComment?.user?.name}")
                 },
 
                 trailingIcon = {
@@ -250,22 +250,95 @@ private fun CommentScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(focusRequester),
-                shape = TextFieldDefaults.outlinedShape
+                shape = OutlinedTextFieldDefaults.shape
             )
         }
 
     }
 }
+//
+//
+//@Composable
+//private fun CommentItem(
+//    comment: QueryCommentResult,
+//    modifier: Modifier = Modifier,
+//    onThumbClick: () -> Unit,
+//    onMoreCommentClick: () -> Unit,
+//    onClick: () -> Unit = {},
+//    onLongClick: () -> Unit = {},
+//) {
+//
+//
+//    Column(modifier = modifier
+//        .pointerInput(Unit) {
+//            detectTapGestures(onLongPress = {
+////                Logger.d("长按了 $comment")
+//                onLongClick()
+//            }, onTap = {
+//                onClick()
+//            })
+//        }) {
+//        Row(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+//            Avatar(url = comment.userAvatar, size = 40)
+//            Spacer(modifier = Modifier.width(8.dp))
+//            Column {
+//                Text(text = comment.username, style = MaterialTheme.typography.bodySmall)
+//                Spacer(modifier = Modifier.height(2.dp))
+//                Text(text = comment.content)
+//                Row(verticalAlignment = Alignment.CenterVertically) {
+//                    Text(
+//                        text = "${comment.timeString} ${comment.ip}",
+//                        style = MaterialTheme.typography.bodySmall
+//                    )
+//                    Spacer(modifier = Modifier.weight(1f))
+//                    IconButton(onClick = {
+//                        onThumbClick()
+//                    }) {
+//                        Row(verticalAlignment = Alignment.CenterVertically) {
+//                            if (comment.likedCount > 0)
+//                                Text(
+//                                    text = comment.likedCount.niceCount(),
+//                                    style = MaterialTheme.typography.bodySmall
+//                                )
+//                            Icon(
+//                                imageVector = if (comment.liked) Icons.Default.ThumbUp else Icons.Outlined.ThumbUp,
+//                                contentDescription = null,
+//                                tint = Color.Gray,
+//                                modifier = Modifier.size(18.dp)
+//                            )
+//                        }
+//
+//
+//                    }
+//                }
+//
+//                if (comment.replyCount > 0)
+//
+//                    Text(
+//                        text = comment.replyCount.niceCount() + "条回复>",
+//                        style = MaterialTheme.typography.bodySmall,
+//                        modifier = Modifier.clickable {
+//                            onMoreCommentClick()
+//                        }
+//                    )
+//
+//            }
+//        }
+//        Divider(modifier = Modifier.height(0.2.dp))
+//    }
+//
+//
+//}
 
 
 @Composable
 private fun CommentItem(
-    comment: QueryCommentResult,
+    comment: IComment,
     modifier: Modifier = Modifier,
-    onThumbClick: (QueryCommentResult) -> Unit,
+    onThumbClick: (IComment) -> Unit,
     onMoreCommentClick: () -> Unit,
-    onClick: (QueryCommentResult) -> Unit = {},
-    onLongClick: (QueryCommentResult) -> Unit = {}
+    onClick: (IComment) -> Unit = {},
+    onLongClick: (IComment) -> Unit = {},
 ) {
 
 
@@ -279,10 +352,10 @@ private fun CommentItem(
             })
         }) {
         Row(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-            Avatar(url = comment.userAvatar, size = 40)
+            Avatar(url = comment.user.avatar, size = 40)
             Spacer(modifier = Modifier.width(8.dp))
             Column {
-                Text(text = comment.username, style = MaterialTheme.typography.bodySmall)
+                Text(text = comment.user.name, style = MaterialTheme.typography.bodySmall)
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(text = comment.content)
                 Row(verticalAlignment = Alignment.CenterVertically) {

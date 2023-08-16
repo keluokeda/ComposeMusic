@@ -28,4 +28,10 @@ interface PlaylistSubscriberCrossRefDao {
      */
     @Query("select * from playlist_subscriber_cross_ref where user_id = :userId and playlist_id = :playlistId")
     fun findByUserIdAndPlaylistId(userId: Long, playlistId: Long): Flow<PlaylistSubscriberCrossRef?>
+
+    @Query("select * from playlist_subscriber_cross_ref where user_id = :userId and playlist_id = :playlistId")
+    suspend fun getByUserIdAndPlaylistId(
+        userId: Long,
+        playlistId: Long,
+    ): PlaylistSubscriberCrossRef?
 }

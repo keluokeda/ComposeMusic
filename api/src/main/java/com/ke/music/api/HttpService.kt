@@ -420,7 +420,7 @@ interface HttpService {
         @Query("type") type: String?,
         @Query("area") area: String?,
         @Query("limit") limit: Int,
-        @Query("offset") offset: Int
+        @Query("offset") offset: Int,
     ): MvAllResponse
 
     /**
@@ -428,6 +428,16 @@ interface HttpService {
      */
     @GET("lyric")
     suspend fun getSongLrc(
-        @Query("id") songId: Long
+        @Query("id") songId: Long,
     ): LrcResponse
+
+    /**
+     * 关注歌手
+     * @param t 1表示收藏 0表示取消收藏
+     */
+    @GET("artist/sub")
+    suspend fun followArtist(
+        @Query("id") artistId: Long,
+        @Query("t") t: Int = 1,
+    )
 }

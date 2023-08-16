@@ -38,7 +38,6 @@ import coil.compose.AsyncImage
 import com.ke.music.room.db.entity.HotArtist
 import com.ke.music.tv.ui.components.LocalNavigationHandler
 import com.ke.music.tv.ui.components.NavigationAction
-import com.ke.music.tv.ui.components.items
 import com.ke.music.tv.ui.theme.ComposeMusicTheme
 
 @Composable
@@ -156,7 +155,7 @@ private fun ArtistListScreen(
 
         LazyVerticalGrid(columns = GridCells.Fixed(5)) {
             items(list, key = {
-                it.id
+                it.artistId
             }) {
                 val artist = it!!
                 Box(

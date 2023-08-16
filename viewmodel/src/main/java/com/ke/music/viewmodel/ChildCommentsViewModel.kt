@@ -1,4 +1,4 @@
-package com.ke.compose.music.ui.child_comments
+package com.ke.music.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -7,15 +7,14 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.PagingSource
 import androidx.paging.cachedIn
-import com.ke.music.api.HttpService
-import com.ke.music.repository.ChildCommentRepository
-import com.ke.music.repository.CommentRepository
-import com.ke.music.repository.domain.LikeCommentRequest
-import com.ke.music.repository.domain.LikeCommentUseCase
-import com.ke.music.repository.mediator.ChildCommentsRemoteMediator
-import com.ke.music.room.entity.CommentType
-import com.ke.music.room.entity.QueryChildCommentResult
+import com.ke.music.common.domain.LikeCommentUseCase
+import com.ke.music.common.entity.CommentType
+import com.ke.music.common.entity.IChildComment
+import com.ke.music.common.entity.LikeCommentRequest
+import com.ke.music.common.mediator.ChildCommentsRemoteMediator
+import com.ke.music.common.repository.CommentRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -24,12 +23,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-internal class ChildCommentsViewModel @Inject constructor(
+class ChildCommentsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    httpService: HttpService,
     private val likeCommentUseCase: LikeCommentUseCase,
-    private val childCommentRepository: ChildCommentRepository,
-    private val commentRepository: CommentRepository
+    private val commentRepository: CommentRepository,
+    remoteMediator: ChildCommentsRemoteMediator,
 ) :
     ViewModel() {
     private val sourceId = savedStateHandle.get<Long>("id")!!
@@ -37,22 +35,20 @@ internal class ChildCommentsViewModel @Inject constructor(
     private val commentId = savedStateHandle.get<Long>("commentId")!!
 
 
-    internal val rootComment = commentRepository.queryCommentAndUser(commentId).stateIn(
+    val rootComment = commentRepository.findComment(commentId).stateIn(
         viewModelScope, SharingStarted.Eagerly, null
     )
 
 
-    private val remoteMediator =
-        ChildCommentsRemoteMediator(
-            httpService,
-            commentType,
-            sourceId,
-            commentId,
-            childCommentRepository
-        )
+    init {
+        remoteMediator.sourceId = sourceId
+        remoteMediator.commentType = commentType
+        remoteMediator.commentId = commentId
+    }
+
 
     @OptIn(ExperimentalPagingApi::class)
-    val comments: Flow<PagingData<QueryChildCommentResult>> = Pager(
+    val comments: Flow<PagingData<IChildComment>> = Pager(
         config = PagingConfig(
             pageSize = 50,
             enablePlaceholders = false,
@@ -60,18 +56,17 @@ internal class ChildCommentsViewModel @Inject constructor(
         ),
         remoteMediator = remoteMediator
     ) {
-        childCommentRepository.getChildComments(commentId)
+        commentRepository.getChildComments(commentId) as PagingSource<Int, IChildComment>
     }.flow
         .cachedIn(viewModelScope)
 
-    internal fun toggleLiked(childComment: QueryChildCommentResult) {
+    fun toggleLiked(childComment: IChildComment) {
         viewModelScope.launch {
             likeCommentUseCase(
                 LikeCommentRequest(
                     sourceId,
                     commentType,
                     childComment.commentId,
-                    !childComment.liked,
                     true
                 )
             )

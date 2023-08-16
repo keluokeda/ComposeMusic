@@ -26,12 +26,12 @@ import com.ke.compose.music.ui.home.HomeRoute
 import com.ke.compose.music.ui.message.MessageRoute
 import com.ke.compose.music.ui.mine.MineRoute
 import com.ke.compose.music.ui.playlist.PlaylistRoute
-import com.ke.music.room.db.entity.Playlist
+import com.ke.music.common.entity.IPlaylist
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainRoute(
-    onTapPlaylist: (Playlist) -> Unit,
+    onTapPlaylist: (IPlaylist) -> Unit,
     onNewPlaylistClick: () -> Unit,
 
     ) {

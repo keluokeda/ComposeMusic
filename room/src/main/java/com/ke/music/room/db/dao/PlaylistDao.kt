@@ -12,18 +12,30 @@ interface PlaylistDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(
-        list: List<Playlist>
+        list: List<Playlist>,
     )
+
+    /**
+     * 插入之前先检查一下，防止没有分享、订阅评论数据的覆盖有数据的
+     */
+    suspend fun insertBeforeCheck(list: List<Playlist>) {
+        insertAll(list.filter {
+            val target = findPlaylistById(it.id)
+            //如果是空 就写入 或者有信息就写入
+            target == null || target.hasPayload
+        })
+    }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(playlist: Playlist)
+
 
     /**
      * 获取用户创建的歌单
      */
     @Query("select id,creator_id,cover_image_url,name,tags,description,track_count,play_count,update_time,share_count,booked_count,comment_count from playlist inner join user_playlist_cross_ref on playlist_id = playlist.id where creator_id = :userId order by `index`")
     fun getUserCreatedPlaylist(
-        userId: Long
+        userId: Long,
     ): Flow<List<Playlist>>
 
     /**
@@ -31,7 +43,7 @@ interface PlaylistDao {
      */
     @Query("select id,creator_id,cover_image_url,name,tags,description,track_count,play_count,update_time,share_count,comment_count,booked_count from playlist inner join playlist_subscriber_cross_ref on id = playlist_id where user_id = :userId order by `index`")
     fun getUserFollowingPlaylist(
-        userId: Long
+        userId: Long,
     ): Flow<List<Playlist>>
 
     @Query("select * from playlist where id = :id")

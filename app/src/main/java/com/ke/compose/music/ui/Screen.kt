@@ -1,9 +1,9 @@
 package com.ke.compose.music.ui
 
+import com.ke.music.common.entity.CommentType
+import com.ke.music.common.entity.IPlaylist
 import com.ke.music.repository.entity.ShareType
 import com.ke.music.repository.entity.UsersType
-import com.ke.music.room.db.entity.Playlist
-import com.ke.music.room.entity.CommentType
 import java.net.URLEncoder
 
 sealed class Screen(val route: String) {
@@ -27,7 +27,7 @@ sealed class Screen(val route: String) {
      * 歌单详情
      */
     object PlaylistDetail : Screen("/playlist/detail/{id}") {
-        fun createUrl(playlist: Playlist) = "/playlist/detail/${playlist.id}"
+        fun createUrl(playlist: IPlaylist) = "/playlist/detail/${playlist.id}"
     }
 
     /**
@@ -57,7 +57,7 @@ sealed class Screen(val route: String) {
     object PlaylistInfo :
         Screen("/playlist/info?name={name}&description={description}&image={image}") {
 
-        fun createFromPlaylist(playlist: Playlist) =
+        fun createFromPlaylist(playlist: IPlaylist) =
             "/playlist/info?name=${playlist.name}&description=${
                 URLEncoder.encode(
                     playlist.description ?: "",
@@ -77,7 +77,7 @@ sealed class Screen(val route: String) {
             id: Long,
             title: String,
             subTitle: String,
-            cover: String
+            cover: String,
         ): String {
             return "/share?type=$shareType&id=$id&title=$title&subTitle=${
                 URLEncoder.encode(

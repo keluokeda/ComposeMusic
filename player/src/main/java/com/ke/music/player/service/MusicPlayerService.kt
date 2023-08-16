@@ -20,10 +20,10 @@ import androidx.media3.common.Tracks
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerNotificationManager
 import com.bumptech.glide.Glide
+import com.ke.music.common.entity.ISongEntity
+import com.ke.music.common.repository.SongRepository
 import com.ke.music.player.R
-import com.ke.music.repository.MusicRepository
 import com.ke.music.repository.domain.GetMusicUrlUseCase
-import com.ke.music.room.entity.DownloadedMusicEntity
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -85,7 +85,7 @@ class MusicPlayerService : MediaBrowserServiceCompat(), Player.Listener,
 
 
         serviceScope.launch {
-            musicRepository.onSongPlayed(songId)
+            songRepository.onSongPlayed(songId)
         }
 
         //当前正在播放的音乐
@@ -145,7 +145,7 @@ class MusicPlayerService : MediaBrowserServiceCompat(), Player.Listener,
     lateinit var getMusicUrlUseCase: GetMusicUrlUseCase
 
     @Inject
-    lateinit var musicRepository: MusicRepository
+    lateinit var songRepository: SongRepository
 
     override fun onCreate() {
         super.onCreate()
@@ -202,7 +202,7 @@ class MusicPlayerService : MediaBrowserServiceCompat(), Player.Listener,
 
                 serviceScope.launch {
                     val musicId = mediaId.toLongOrNull() ?: return@launch
-                    val result = musicRepository.findDownloadedMusic(musicId)
+                    val result = songRepository.findDownloadedSong(musicId)
                     if (result != null) {
                         //已经下载了
                         if (exoPlayer.mediaItems.map { it.mediaId }.contains(musicId.toString())) {
@@ -215,8 +215,8 @@ class MusicPlayerService : MediaBrowserServiceCompat(), Player.Listener,
                         } else {
                             //不在列表中 就插入进去
 
-                            musicRepository.insertSongIntoLocalPlaylist(
-                                result.musicId
+                            songRepository.insertSongIntoLocalPlaylist(
+                                result.song.id
                             )
 
 //                            exoPlayer.addMediaItem(
@@ -276,8 +276,8 @@ class MusicPlayerService : MediaBrowserServiceCompat(), Player.Listener,
 //            musicRepository.getLocalPlaylistSongs()
 
             delay(1000)//经常是先调用后连上 会收不到第一次的回调
-            musicRepository
-                .getLocalPlaylistSongList()
+            songRepository
+                .getLocalPlaylistSongs()
                 .distinctUntilChanged()
                 .collect { list ->
                     //本地播放列表发生了变化
@@ -382,7 +382,7 @@ private val ExoPlayer.mediaItems: List<MediaItem>
         return mediaList
     }
 
-private fun ExoPlayer.updateMediaItems(list: List<DownloadedMusicEntity>) {
+private fun ExoPlayer.updateMediaItems(list: List<ISongEntity>) {
 
 
     if (mediaItemCount == 0) {
@@ -415,7 +415,7 @@ private fun ExoPlayer.updateMediaItems(list: List<DownloadedMusicEntity>) {
 
     //当前播放的歌曲在新列表中的位置
     val currentPlayingInNewListIndex = list.indexOfFirst {
-        it.musicId.toString() == currentMediaItem?.mediaId
+        it.song.id.toString() == currentMediaItem?.mediaId
     }
     if (currentPlayingInNewListIndex == -1) {
         //表示把当前正在播放的给删除了
@@ -435,7 +435,7 @@ private fun ExoPlayer.updateMediaItems(list: List<DownloadedMusicEntity>) {
     if (mediaItemList.size - list.size == 1) {
         //删除了一个 但删除的不是当前正在播放的 但删除的哪一个不知道
         val target =
-            (mediaItemList.map { it.mediaId } - list.map { it.musicId.toString() }.toSet()).first()
+            (mediaItemList.map { it.mediaId } - list.map { it.song.id.toString() }.toSet()).first()
 
         val index = mediaItemList.indexOfFirst {
             it.mediaId == target
@@ -448,17 +448,17 @@ private fun ExoPlayer.updateMediaItems(list: List<DownloadedMusicEntity>) {
 
 }
 
-private fun DownloadedMusicEntity.toMediaItem(): MediaItem {
+private fun ISongEntity.toMediaItem(): MediaItem {
     return MediaItem.Builder()
-        .setMediaId(musicId.toString())
+        .setMediaId(song.id.toString())
         .setMediaMetadata(
             MediaMetadata
                 .Builder()
-                .setTitle(name)
-                .setSubtitle(albumName)
-                .setDescription(musicId.toString())
+                .setTitle(song.name)
+                .setSubtitle(album.name)
+                .setDescription(song.id.toString())
                 .setArtworkUri(
-                    Uri.parse(albumImage)
+                    Uri.parse(album.image)
                 )
                 .build()
         )
