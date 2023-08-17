@@ -5,7 +5,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ke.compose.music.toast
-import com.ke.music.repository.domain.AddOrRemoveSongsToPlaylistRequest
+import com.ke.music.common.entity.AddOrRemoveSongsToPlaylistRequest
 import com.ke.music.repository.domain.AddOrRemoveSongsToPlaylistUseCase
 import com.ke.music.repository.userIdFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AppViewModel @Inject constructor(
     private val addOrRemoveSongsToPlaylistUseCase: AddOrRemoveSongsToPlaylistUseCase,
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
 ) : ViewModel(), IAppViewModel {
 
     private var _currentUserId = 0L

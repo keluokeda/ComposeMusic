@@ -44,6 +44,13 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.leanback:leanback:1.0.0'
     implementation project(path: ':download')
+    implementation project(path: ':common')
+    implementation project(path: ':domain')
+    implementation project(path: ':repository')
+    implementation project(path: ':player')
+    implementation project(path: ':api')
+    implementation project(path: ':viewmodel')
+    implementation project(path: ':amlv')
     implementation 'androidx.paging:paging-compose:3.2.0'
 
     implementation platform("androidx.compose:compose-bom:$compose_bom")
@@ -62,13 +69,6 @@ dependencies {
     implementation "com.google.dagger:hilt-android:2.45"
     kapt "com.google.dagger:hilt-compiler:2.45"
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-
-
-    implementation project(path: ':repository')
-    implementation project(path: ':player')
-    implementation project(path: ':api')
-    implementation project(path: ':viewmodel')
-    implementation project(path: ':amlv')
 
 
     def nav_version = "2.5.3"

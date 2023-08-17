@@ -38,9 +38,11 @@ import coil.compose.AsyncImage
 import com.ke.music.download.LocalDownloadManager
 import com.ke.music.tv.IMAGE_SIZE
 import com.ke.music.tv.ui.components.LocalNavigationHandler
-import com.ke.music.tv.ui.components.MusicView
 import com.ke.music.tv.ui.components.NavigationAction
 import com.ke.music.tv.ui.components.ShareAction
+import com.ke.music.tv.ui.components.SongView
+import com.ke.music.viewmodel.AlbumDetailUiState
+import com.ke.music.viewmodel.AlbumDetailViewModel
 
 @Composable
 fun AlbumDetailRoute() {
@@ -78,7 +80,7 @@ private fun AlbumDetailScreen(uiState: AlbumDetailUiState, onCollectClick: () ->
                 ) {
 
                     Text(
-                        text = uiState.albumEntity!!.name,
+                        text = uiState.albumEntity!!.album.name,
                         style = MaterialTheme.typography.headlineMedium.copy(
                             fontWeight = FontWeight.Bold
                         )
@@ -86,7 +88,7 @@ private fun AlbumDetailScreen(uiState: AlbumDetailUiState, onCollectClick: () ->
 
                     Spacer(modifier = Modifier.height(8.dp))
                     AsyncImage(
-                        model = uiState.albumEntity.image,
+                        model = uiState.albumEntity?.album?.image,
                         contentDescription = null,
                         modifier = Modifier.size(
                             IMAGE_SIZE.dp
@@ -105,7 +107,7 @@ private fun AlbumDetailScreen(uiState: AlbumDetailUiState, onCollectClick: () ->
                             onCollectClick()
                         }) {
                             Icon(
-                                imageVector = if (uiState.albumEntity.collected) Icons.Default.Star else Icons.Default.StarBorder,
+                                imageVector = if (uiState.albumEntity!!.collected) Icons.Default.Star else Icons.Default.StarBorder,
                                 contentDescription = null
                             )
                         }
@@ -118,7 +120,7 @@ private fun AlbumDetailScreen(uiState: AlbumDetailUiState, onCollectClick: () ->
                             navigationHandler.navigate(
                                 NavigationAction.NavigateToShare(
                                     ShareAction.Album(
-                                        uiState.albumEntity
+                                        uiState.albumEntity!!
                                     )
                                 )
                             )
@@ -127,7 +129,7 @@ private fun AlbumDetailScreen(uiState: AlbumDetailUiState, onCollectClick: () ->
                         }
 
                         IconButton(onClick = {
-                            downloadManager.downloadAlbum(uiState.albumEntity.albumId)
+                            downloadManager.downloadAlbum(uiState.albumEntity!!.album.albumId)
                         }) {
                             Icon(imageVector = Icons.Default.Download, contentDescription = null)
                         }
@@ -144,10 +146,10 @@ private fun AlbumDetailScreen(uiState: AlbumDetailUiState, onCollectClick: () ->
                         .weight(1f)
                         .fillMaxHeight(), contentPadding = PaddingValues(vertical = 16.dp)
                 ) {
-                    items(uiState.musicList, key = {
-                        it.musicId
+                    items(uiState.songs, key = {
+                        it.song.id
                     }) {
-                        MusicView(index = uiState.musicList.indexOf(it), musicEntity = it)
+                        SongView(index = uiState.songs.indexOf(it), entity = it)
                     }
                 }
             }

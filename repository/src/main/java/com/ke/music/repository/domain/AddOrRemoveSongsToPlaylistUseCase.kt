@@ -1,6 +1,7 @@
 package com.ke.music.repository.domain
 
 import com.ke.music.api.HttpService
+import com.ke.music.common.entity.AddOrRemoveSongsToPlaylistRequest
 import com.ke.music.room.db.dao.PlaylistMusicCrossRefDao
 import com.ke.music.room.db.entity.PlaylistMusicCrossRef
 import com.orhanobut.logger.Logger
@@ -47,8 +48,3 @@ class AddOrRemoveSongsToPlaylistUseCase @Inject constructor(
     }
 }
 
-data class AddOrRemoveSongsToPlaylistRequest(
-    val playlistId: Long,
-    val songIds: List<Long>,
-    val add: Boolean
-)

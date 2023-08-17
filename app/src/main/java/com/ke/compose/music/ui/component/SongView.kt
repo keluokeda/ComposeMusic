@@ -147,6 +147,7 @@ private fun MusicDropDownMenu(
             DropdownMenuItem(text = {
                 Text(text = "收藏到歌单")
             }, onClick = {
+                navigationHandler.navigate(NavigationAction.NavigateToPlaylistList(entity.song.id))
                 expanded = false
             })
 

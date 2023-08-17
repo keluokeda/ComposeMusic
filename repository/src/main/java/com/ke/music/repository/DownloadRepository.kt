@@ -132,7 +132,7 @@ internal class DownloadRepository @Inject constructor(private val downloadDao: D
             }
         }
 
-    fun getDownloadingMusics() = downloadDao.getDownloadingMusics()
+    private fun getDownloadingMusics() = downloadDao.getDownloadingMusics()
 
 
     override suspend fun retryDownload(id: Long) {

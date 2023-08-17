@@ -25,19 +25,20 @@ import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import coil.compose.AsyncImage
+import com.ke.music.common.entity.IPlaylist
 import com.ke.music.common.observeWithLifecycle
 import com.ke.music.repository.toast
-import com.ke.music.room.db.entity.Playlist
+import com.ke.music.viewmodel.PlaylistListViewModel
 
 @Composable
 fun MyPlaylistRoute(
 ) {
-    val viewModel: MyPlaylistViewModel = hiltViewModel()
+    val viewModel: PlaylistListViewModel = hiltViewModel()
     val list by viewModel.list.collectAsStateWithLifecycle()
     val loading by viewModel.loading.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val backHandler = LocalOnBackPressedDispatcherOwner.current
-    viewModel.navigationActions.observeWithLifecycle {
+    viewModel.result.observeWithLifecycle {
         if (it) {
             context.toast("收藏成功")
             backHandler?.onBackPressedDispatcher?.onBackPressed()
@@ -49,7 +50,7 @@ fun MyPlaylistRoute(
         list = list,
         loading,
         onSelected = {
-            viewModel.addToPlaylist(it.id)
+            viewModel.collectSongToPlaylist(it.id)
         },
     )
 }
@@ -57,9 +58,9 @@ fun MyPlaylistRoute(
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 private fun MyPlaylistScreen(
-    list: List<Playlist>,
+    list: List<IPlaylist>,
     loading: Boolean,
-    onSelected: (Playlist) -> Unit,
+    onSelected: (IPlaylist) -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         TvLazyVerticalGrid(

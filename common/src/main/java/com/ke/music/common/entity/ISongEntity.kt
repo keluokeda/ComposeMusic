@@ -14,4 +14,13 @@ interface ISongEntity {
      * 本地路径 已下载才有
      */
     val path: String?
+
+
+    /**
+     * 副标题
+     */
+    fun subtitle(): String {
+        return artists.joinToString("-") { it.name } + " " + album.name
+    }
 }
+

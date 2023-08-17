@@ -108,9 +108,9 @@ sealed class Screen(val route: String) {
     /**
      * 我的歌单列表
      */
-    object PlaylistList : Screen("/playlist/list") {
+    object PlaylistList : Screen("/playlist/list?id={id}") {
 
-        fun createPath() = "/playlist/list"
+        fun createPath(songId: Long) = "/playlist/list?id=$songId"
 
     }
 

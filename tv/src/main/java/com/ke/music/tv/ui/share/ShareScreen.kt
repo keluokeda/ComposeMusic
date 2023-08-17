@@ -52,6 +52,7 @@ import com.ke.music.repository.toast
 import com.ke.music.tv.IMAGE_SIZE
 import com.ke.music.tv.ui.components.Avatar
 import com.ke.music.tv.ui.theme.ComposeMusicTheme
+import com.ke.music.viewmodel.ShareViewModel
 
 
 @Composable
@@ -78,7 +79,7 @@ fun ShareRoute(
         cover = viewModel.cover,
         sending = sending,
     ) { list ->
-        viewModel.share(list)
+        viewModel.share(list, "")
     }
 }
 
@@ -90,7 +91,7 @@ private fun ShareScreen(
     subTitle: String,
     cover: String,
     sending: Boolean,
-    shareClick: (List<User>) -> Unit
+    shareClick: (List<User>) -> Unit,
 ) {
 
     Box(
@@ -170,7 +171,7 @@ private fun ShareContent(
     subTitle: String = "来自汉库克的歌单",
     cover: String = "",
     shareButtonEnable: Boolean = false,
-    onShareClick: () -> Unit = {}
+    onShareClick: () -> Unit = {},
 ) {
 
     Column(

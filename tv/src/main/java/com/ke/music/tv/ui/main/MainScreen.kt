@@ -44,12 +44,12 @@ private fun MainScreen() {
             },
             headlineContent = { Text(text = "正在下载") })
 
-        ListItem(
-            selected = false,
-            onClick = {
-                navigationHandler.navigate(NavigationAction.NavigateToPlaylistTop())
-            },
-            headlineContent = { Text(text = "网友精选碟") })
+//        ListItem(
+//            selected = false,
+//            onClick = {
+//                navigationHandler.navigate(NavigationAction.NavigateToPlaylistTop())
+//            },
+//            headlineContent = { Text(text = "网友精选碟") })
 
         ListItem(
             selected = false,

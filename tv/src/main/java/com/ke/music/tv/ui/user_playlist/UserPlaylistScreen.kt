@@ -23,31 +23,29 @@ import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import coil.compose.AsyncImage
-import com.ke.music.room.db.entity.Playlist
+import com.ke.music.common.entity.IPlaylist
+import com.ke.music.viewmodel.PlaylistViewModel
 
 
 @Composable
 fun UserPlaylistRoute(
-    onItemClick: (Playlist) -> Unit,
+    onItemClick: (IPlaylist) -> Unit,
 ) {
-    val viewModel: UserPlaylistViewModel = hiltViewModel()
+    val viewModel: PlaylistViewModel = hiltViewModel()
 
     val playlistList by viewModel.playlistList.collectAsStateWithLifecycle()
 
     UserPlaylistScreen(
         playlistList = playlistList,
         onItemClick
-    ) {
-        viewModel.deletePlaylist(it.id)
-    }
+    )
 }
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 private fun UserPlaylistScreen(
-    playlistList: List<Playlist>,
-    onItemClick: (Playlist) -> Unit,
-    onDeletePlaylistClick: (Playlist) -> Unit
+    playlistList: List<IPlaylist>,
+    onItemClick: (IPlaylist) -> Unit,
 ) {
 
 

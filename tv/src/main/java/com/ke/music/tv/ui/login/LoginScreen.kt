@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,6 +26,7 @@ import androidx.tv.material3.OutlinedButton
 import androidx.tv.material3.Text
 import com.ke.music.common.observeWithLifecycle
 import com.ke.music.tv.ui.theme.ComposeMusicTheme
+import com.ke.music.viewmodel.LoginViewModel
 import com.lightspark.composeqr.QrCodeView
 
 @Composable
@@ -37,7 +37,6 @@ fun LoginScreen(
 
     val url by loginViewModel.qrUrl.collectAsStateWithLifecycle()
 
-    val context = LocalContext.current.applicationContext
 
     loginViewModel.navigationActions.observeWithLifecycle {
         if (it) {

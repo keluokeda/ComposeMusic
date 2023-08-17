@@ -33,8 +33,6 @@ import androidx.compose.ui.graphics.ImageShader
 import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -52,10 +50,8 @@ import coil.compose.AsyncImage
 import com.dokar.amlv.FadingEdges
 import com.dokar.amlv.LyricsView
 import com.dokar.amlv.rememberLyricsViewState
+import com.ke.music.common.entity.ISongEntity
 import com.ke.music.player.service.LocalMusicPlayerController
-import com.ke.music.room.entity.DownloadedMusicEntity
-import com.ke.music.room.entity.QueryDownloadedMusicResult
-import com.ke.music.tv.ui.theme.ComposeMusicTheme
 import com.ke.music.viewmodel.LocalPlaylistSongsViewModel
 
 
@@ -90,15 +86,15 @@ fun PlayRoute() {
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 private fun PlayScreen(
-    currentPlayingSong: QueryDownloadedMusicResult?,
+    currentPlayingSong: ISongEntity?,
     progress: Pair<Long, Long>,
     playing: Boolean,
-    songs: List<DownloadedMusicEntity>,
+    songs: List<ISongEntity>,
     skipNext: () -> Unit,
     skipPrevious: () -> Unit,
     playPause: () -> Unit,
     playNow: (Long) -> Unit,
-    removeFromLocalPlaylist: (Long) -> Unit
+    removeFromLocalPlaylist: (Long) -> Unit,
 ) {
 
     var bitmap by remember {
@@ -143,7 +139,7 @@ private fun PlayScreen(
                 tonalElevation = 4.dp,
             ) {
                 AsyncImage(
-                    model = currentPlayingSong?.albumImage,
+                    model = currentPlayingSong?.album?.image,
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
                     onSuccess = {
@@ -153,12 +149,12 @@ private fun PlayScreen(
             }
 
             Text(
-                text = currentPlayingSong?.name ?: "",
+                text = currentPlayingSong?.song?.name ?: "",
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(vertical = 8.dp)
             )
 
-            Text(text = currentPlayingSong?.albumName ?: "")
+            Text(text = currentPlayingSong?.album?.name ?: "")
 
 
             val iconSize = 48.dp
@@ -243,9 +239,11 @@ private fun PlayScreen(
             ),
             darkTheme = false,
             fadingEdges = FadingEdges(top = 16.dp, bottom = 150.dp),
-        ) { text: String, modifier: Modifier,
-            color: Color,
-            fontSize: TextUnit, fontWeight: FontWeight, lineHeight: TextUnit ->
+        ) {
+                text: String, modifier: Modifier,
+                color: Color,
+                fontSize: TextUnit, fontWeight: FontWeight, lineHeight: TextUnit,
+            ->
 
             Text(
                 text = text,
@@ -265,21 +263,22 @@ private fun PlayScreen(
                 .weight(1f)
                 .padding(16.dp)
         ) {
+
             items(songs, key = {
-                it.musicId
+                it.song.id
             }) {
                 ListItem(selected = false,
                     onClick = {
-                        playNow(it.musicId)
+                        playNow(it.song.id)
                     },
                     onLongClick = {
-                        removeFromLocalPlaylist(it.musicId)
+                        removeFromLocalPlaylist(it.song.id)
                     },
                     headlineContent = {
-                        Text(text = it.name)
+                        Text(text = it.song.name)
                     },
                     supportingContent = {
-                        Text(text = it.albumName)
+                        Text(text = it.album.name)
                     },
                     leadingContent = {
                         Icon(
@@ -336,21 +335,21 @@ private val LRC_HELP =
 //[02:12.85]Ooh
 //"""
 
-
-@Composable
-@Preview(device = Devices.TV_1080p)
-private fun PlayScreenPreview() {
-    ComposeMusicTheme {
-        PlayScreen(
-            currentPlayingSong = QueryDownloadedMusicResult(0, "最爱", "周慧敏", "", ""),
-            progress = 10000L to 20000,
-            playing = true,
-            songs = emptyList(),
-            skipNext = { },
-            skipPrevious = { },
-            playPause = { },
-            playNow = {},
-            removeFromLocalPlaylist = {}
-        )
-    }
-}
+//
+//@Composable
+//@Preview(device = Devices.TV_1080p)
+//private fun PlayScreenPreview() {
+//    ComposeMusicTheme {
+//        PlayScreen(
+//            currentPlayingSong = QueryDownloadedMusicResult(0, "最爱", "周慧敏", "", ""),
+//            progress = 10000L to 20000,
+//            playing = true,
+//            songs = emptyList(),
+//            skipNext = { },
+//            skipPrevious = { },
+//            playPause = { },
+//            playNow = {},
+//            removeFromLocalPlaylist = {}
+//        )
+//    }
+//}

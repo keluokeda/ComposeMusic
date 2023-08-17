@@ -21,4 +21,9 @@ internal class UserIdRepository @Inject constructor(@ApplicationContext private 
         get() = runBlocking {
             context.getUserId()
         }
+
+
+    override suspend fun setUserId(userId: Long) {
+        context.setUserId(userId)
+    }
 }

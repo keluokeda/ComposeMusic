@@ -15,19 +15,19 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
 import androidx.tv.material3.IconButton
-import com.ke.music.room.entity.MusicEntity
-import com.ke.music.tv.ui.components.MusicView
+import com.ke.music.common.entity.ISongEntity
+import com.ke.music.tv.ui.components.SongView
+import com.ke.music.viewmodel.DownloadedMusicViewModel
 
 @Composable
 fun DownloadedMusicRoute(
-    onBackButtonClick: () -> Unit,
 ) {
 
     val viewModel: DownloadedMusicViewModel = hiltViewModel()
-    val list by viewModel.downloadMusicList.collectAsStateWithLifecycle()
+    val list by viewModel.downloadedMusicList.collectAsStateWithLifecycle()
 
 
-    DownloadedMusicScreen(onBackButtonClick = onBackButtonClick, musicList = list) {
+    DownloadedMusicScreen(songList = list) {
         viewModel.deleteDownloadedMusic(it)
     }
 }
@@ -35,9 +35,8 @@ fun DownloadedMusicRoute(
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 private fun DownloadedMusicScreen(
-    onBackButtonClick: () -> Unit,
-    musicList: List<MusicEntity>,
-    onDeleteButtonClick: (Long) -> Unit
+    songList: List<ISongEntity>,
+    onDeleteButtonClick: (Long) -> Unit,
 ) {
 
     LazyColumn(
@@ -45,14 +44,14 @@ private fun DownloadedMusicScreen(
             .fillMaxSize(),
         contentPadding = PaddingValues(32.dp)
     ) {
-        items(musicList, key = {
-            it.musicId
+        items(songList, key = {
+            it.song.id
         }) {
-            MusicView(
-                musicList.indexOf(it),
-                musicEntity = it, rightButton = {
+            SongView(
+                songList.indexOf(it),
+                entity = it, rightButton = {
                     IconButton(onClick = {
-                        onDeleteButtonClick(it.musicId)
+                        onDeleteButtonClick(it.song.id)
                     }) {
                         Icon(imageVector = Icons.Default.Delete, contentDescription = null)
                     }

@@ -35,7 +35,7 @@ import androidx.tv.material3.Tab
 import androidx.tv.material3.TabRow
 import androidx.tv.material3.Text
 import coil.compose.AsyncImage
-import com.ke.music.room.db.entity.NewAlbum
+import com.ke.music.common.entity.IAlbum
 import com.ke.music.tv.ui.components.LocalNavigationHandler
 import com.ke.music.tv.ui.components.NavigationAction
 import com.ke.music.tv.ui.components.items
@@ -48,10 +48,10 @@ fun AlbumSquareRoute() {
     val list = viewModel.albumList.collectAsLazyPagingItems()
 
     AlbumSquareScreen(list, onTabFocus = {
-        if (viewModel.area == it) {
+        if (viewModel.area.value == it) {
             return@AlbumSquareScreen
         }
-        viewModel.area = it
+        viewModel.updateArea(it)
         list.refresh()
     })
 }
@@ -60,7 +60,7 @@ fun AlbumSquareRoute() {
 @OptIn(ExperimentalTvMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun AlbumSquareScreen(
-    list: LazyPagingItems<NewAlbum>,
+    list: LazyPagingItems<IAlbum>,
     onTabFocus: (String) -> Unit,
 ) {
 
@@ -96,8 +96,9 @@ fun AlbumSquareScreen(
 
         LazyVerticalGrid(columns = GridCells.Fixed(5)) {
 
+
             items(list, key = {
-                it.id
+                it.albumId
             }) {
                 val item = it!!
                 val navigationHandler = LocalNavigationHandler.current

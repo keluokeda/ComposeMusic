@@ -27,10 +27,11 @@ import androidx.tv.material3.Icon
 import androidx.tv.material3.OutlinedButton
 import androidx.tv.material3.Text
 import coil.compose.AsyncImage
+import com.ke.music.common.entity.ISongEntity
 import com.ke.music.download.LocalDownloadManager
-import com.ke.music.room.entity.MusicEntity
 import com.ke.music.tv.IMAGE_SIZE
-import com.ke.music.tv.ui.components.MusicView
+import com.ke.music.tv.ui.components.SongView
+import com.ke.music.viewmodel.RecommendSongsViewModel
 
 /**
  * 每日推荐
@@ -48,7 +49,7 @@ fun RecommendSongsRoute(
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 private fun RecommendSongsScreen(
-    list: List<MusicEntity>
+    list: List<ISongEntity>,
 ) {
 
     Row {
@@ -98,13 +99,13 @@ private fun RecommendSongsScreen(
                 .padding(16.dp)
         ) {
             items(list, key = {
-                it.musicId
+                it.song.id
             }) {
-                MusicView(
+                SongView(
                     list.indexOf(it),
-                    musicEntity = it,
+                    entity = it,
                     onHasFocus = { entity ->
-                        imageUrl = entity.album.imageUrl
+                        imageUrl = entity.album.image
                     }
 
                 )

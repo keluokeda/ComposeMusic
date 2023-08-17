@@ -1,6 +1,5 @@
 <resources>
 
     <style name="Theme.ComposeMusic" parent="@style/Theme.Leanback">
-        <item name="android:windowBackground">#eee</item>
     </style>
 </resources>

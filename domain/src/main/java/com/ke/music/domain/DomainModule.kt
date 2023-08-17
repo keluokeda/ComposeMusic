@@ -1,7 +1,9 @@
 package com.ke.music.domain
 
+import com.ke.music.common.domain.AddOrRemoveSongsToPlaylistUseCase
 import com.ke.music.common.domain.CollectAlbumUseCase
 import com.ke.music.common.domain.CreatePlaylistUseCase
+import com.ke.music.common.domain.CreateQRUrlUseCase
 import com.ke.music.common.domain.DeleteCommentUseCase
 import com.ke.music.common.domain.DeletePlaylistUseCase
 import com.ke.music.common.domain.DownloadSongListUseCase
@@ -17,6 +19,7 @@ import com.ke.music.common.domain.LoadArtistDetailUseCase
 import com.ke.music.common.domain.LoadCurrentUserPlaylistUseCase
 import com.ke.music.common.domain.LoadPlaylistDetailUseCase
 import com.ke.music.common.domain.LoadRecommendSongsUseCase
+import com.ke.music.common.domain.LoginUseCase
 import com.ke.music.common.domain.SendCommentUseCase
 import com.ke.music.common.domain.ShareResourceUseCase
 import dagger.Binds
@@ -89,4 +92,15 @@ abstract class DomainModule {
 
     @Binds
     internal abstract fun bindGetSongUrlUseCase(getSongUrlUseCaseImpl: GetSongUrlUseCaseImpl): GetSongUrlUseCase
+
+    @Binds
+    internal abstract fun bindCreateQRUrlUseCase(createQRUrlUseCaseImpl: CreateQRUrlUseCaseImpl): CreateQRUrlUseCase
+
+    @Binds
+    internal abstract fun bindLoginUseCase(loginUseCaseImpl: LoginUseCaseImpl): LoginUseCase
+
+    @Binds
+    internal abstract fun bindAddOrRemoveSongsToPlaylistUseCase(
+        addOrRemoveSongsToPlaylistUseCaseImpl: AddOrRemoveSongsToPlaylistUseCaseImpl,
+    ): AddOrRemoveSongsToPlaylistUseCase
 }

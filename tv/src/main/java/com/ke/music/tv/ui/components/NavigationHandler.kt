@@ -2,9 +2,10 @@ package com.ke.music.tv.ui.components
 
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.ke.music.common.entity.CommentType
+import com.ke.music.common.entity.IAlbumEntity
+import com.ke.music.common.entity.IPlaylist
+import com.ke.music.common.entity.ISongEntity
 import com.ke.music.common.entity.ShareType
-import com.ke.music.room.entity.AlbumEntity
-import com.ke.music.room.entity.MusicEntity
 import com.ke.music.tv.ui.Screen
 import java.net.URLEncoder
 
@@ -18,7 +19,7 @@ sealed interface NavigationAction {
      */
     data class NavigateToComments(
         val commentType: CommentType,
-        val id: Long
+        val id: Long,
     ) : NavigationAction {
 
         override fun createPath(): String {
@@ -35,7 +36,7 @@ sealed interface NavigationAction {
 //        val title: String,
 //        val subTitle: String,
 //        val cover: String
-        val shareAction: ShareAction
+        val shareAction: ShareAction,
     ) : NavigationAction {
         override fun createPath(): String {
             return Screen.Share.createPath(shareAction.createPath())
@@ -46,7 +47,7 @@ sealed interface NavigationAction {
      * 导航到专辑详情
      */
     data class NavigateToAlbumDetail(
-        val id: Long
+        val id: Long,
     ) : NavigationAction {
         override fun createPath(): String {
             return Screen.AlbumDetail.createPath(id)
@@ -148,7 +149,7 @@ sealed interface ShareAction {
 
     companion object {
         private fun createPath(
-            shareType: ShareType, id: Long, title: String, subTitle: String, cover: String
+            shareType: ShareType, id: Long, title: String, subTitle: String, cover: String,
         ) = "/share?type=$shareType&id=$id&title=$title&subTitle=${
             URLEncoder.encode(
                 subTitle,
@@ -159,7 +160,7 @@ sealed interface ShareAction {
 
     fun createPath(): String
 
-    data class Playlist(val playlist: com.ke.music.room.db.entity.Playlist) : ShareAction {
+    data class Playlist(val playlist: IPlaylist) : ShareAction {
         override fun createPath(): String {
             return Companion.createPath(
                 ShareType.Playlist,
@@ -171,26 +172,26 @@ sealed interface ShareAction {
         }
     }
 
-    data class Music(val musicEntity: MusicEntity) : ShareAction {
+    data class Music(val musicEntity: ISongEntity) : ShareAction {
         override fun createPath(): String {
             return Companion.createPath(
                 ShareType.Song,
-                musicEntity.musicId,
-                musicEntity.name,
-                musicEntity.subTitle,
-                musicEntity.album.imageUrl
+                musicEntity.song.id,
+                musicEntity.song.name,
+                musicEntity.album.name,
+                musicEntity.album.image
             )
         }
     }
 
-    data class Album(val albumEntity: AlbumEntity) : ShareAction {
+    data class Album(val albumEntity: IAlbumEntity) : ShareAction {
         override fun createPath(): String {
             return Companion.createPath(
                 ShareType.Album,
-                albumEntity.albumId,
-                albumEntity.name,
+                albumEntity.album.albumId,
+                albumEntity.album.name,
                 albumEntity.description ?: "¬",
-                albumEntity.image
+                albumEntity.album.image
             )
         }
     }

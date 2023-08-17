@@ -52,9 +52,9 @@ sealed interface NavigationAction {
     /**
      * 导航到用户歌单列表
      */
-    object NavigateToPlaylistList : NavigationAction {
+    data class NavigateToPlaylistList(val songId: Long) : NavigationAction {
         override fun createPath(): String {
-            return Screen.PlaylistList.createPath()
+            return Screen.PlaylistList.createPath(songId)
         }
     }
 

@@ -35,10 +35,14 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Tab
 import androidx.tv.material3.Text
 import coil.compose.AsyncImage
-import com.ke.music.room.db.entity.HotArtist
+import com.ke.music.common.entity.IArtist
 import com.ke.music.tv.ui.components.LocalNavigationHandler
 import com.ke.music.tv.ui.components.NavigationAction
+import com.ke.music.tv.ui.components.items
 import com.ke.music.tv.ui.theme.ComposeMusicTheme
+import com.ke.music.viewmodel.ArtistArea
+import com.ke.music.viewmodel.ArtistListViewModel
+import com.ke.music.viewmodel.ArtistType
 
 @Composable
 fun ArtistListRoute() {
@@ -61,79 +65,17 @@ fun ArtistListRoute() {
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 private fun ArtistListScreen(
-    list: LazyPagingItems<HotArtist>,
+    list: LazyPagingItems<IArtist>,
     area: ArtistArea,
     type: ArtistType,
     onUpdateType: (ArtistType) -> Unit,
     onUpdateArea: (ArtistArea) -> Unit,
 ) {
-//    Scaffold(
-//        topBar = {
-//            AppTopBar(
-//                title = { Text(text = "热门歌手") },
-//                navigationIcon = {
-//                    IconButton(onClick = {
-//                        backHandler.navigateBack()
-//                    }) {
-//                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
-//                    }
-//                },
-//                actions = {
-//
-//                    var isAreaContextMenuVisible by rememberSaveable {
-//                        mutableStateOf(false)
-//                    }
-//                    DropDownButton(
-//                        content = {
-//                            TextButton(onClick = {
-//                                isAreaContextMenuVisible = true
-//                            }) {
-//                                Text(text = area.title)
-//                            }
-//                        },
-//                        isContextMenuVisible = isAreaContextMenuVisible,
-//                        onDismissRequest = { isAreaContextMenuVisible = false },
-//                        actions = ArtistArea.values().map {
-//                            it.title
-//                        },
-//                        onItemClick = {
-//                            isAreaContextMenuVisible = false
-//                            onUpdateArea(ArtistArea.values()[it])
-//                        }
-//                    )
-//
-//                    var isTypeContextMenuVisible by rememberSaveable {
-//                        mutableStateOf(false)
-//                    }
-//                    DropDownButton(
-//                        content = {
-//                            TextButton(onClick = {
-//                                isTypeContextMenuVisible = true
-//                            }) {
-//                                Text(text = type.title)
-//                            }
-//                        },
-//                        isContextMenuVisible = isTypeContextMenuVisible,
-//                        onDismissRequest = { isTypeContextMenuVisible = false },
-//                        actions = ArtistType.values().map {
-//                            it.title
-//                        },
-//                        onItemClick = {
-//                            isTypeContextMenuVisible = false
-//                            onUpdateType(ArtistType.values()[it])
-//                        }
-//                    )
-//                }
-//
-//            )
-//        },
-//
-//        ) { paddingValues ->
+
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-//            .padding(paddingValues)
     ) {
 
         TabRow(
@@ -154,6 +96,8 @@ private fun ArtistListScreen(
 
 
         LazyVerticalGrid(columns = GridCells.Fixed(5)) {
+//            items(list, key = {
+//            }) {
             items(list, key = {
                 it.artistId
             }) {
@@ -224,7 +168,7 @@ private fun TabRow(
     title: String,
     selected: String,
     tabList: List<String>,
-    onTabFocus: (Int) -> Unit
+    onTabFocus: (Int) -> Unit,
 ) {
 //    var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
 
@@ -276,46 +220,4 @@ fun TabRowPreview() {
             tabList = listOf("全部", "男歌手", "女歌手", "乐队"),
             onTabFocus = {})
     }
-}
-
-
-//
-//@Composable
-//private fun DropDownButton(
-//    content: @Composable () -> Unit,
-//    isContextMenuVisible: Boolean,
-//    onDismissRequest: () -> Unit,
-//    actions: List<String>,
-//    onItemClick: (Int) -> Unit
-//) {
-//
-//
-//    Box {
-//        content()
-//
-//        DropdownMenu(expanded = isContextMenuVisible, onDismissRequest = onDismissRequest) {
-//            actions.forEachIndexed { index, s ->
-//                DropdownMenuItem(text = { Text(text = s) }, onClick = {
-//                    onItemClick(index)
-//                })
-//
-//            }
-//        }
-//    }
-//}
-
-internal enum class ArtistArea(val title: String, val value: Int) {
-    All("全部", -1),
-    China("华语", 7),
-    EA("欧美", 96),
-    Japan("日本", 8),
-    Korea("韩国", 16),
-    Other("其他", 0)
-}
-
-internal enum class ArtistType(val title: String, val value: Int) {
-    All("全部", -1),
-    Man("男歌手", 1),
-    Women("女歌手", 2),
-    Band("乐队", 3)
 }

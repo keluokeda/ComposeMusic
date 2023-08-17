@@ -13,6 +13,7 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.darkColorScheme
 import androidx.tv.material3.lightColorScheme
 
+@OptIn(ExperimentalTvMaterial3Api::class)
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
     secondary = PurpleGrey80,
@@ -34,20 +35,20 @@ private val LightColorScheme = lightColorScheme(
     */
 )
 
+@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun ComposeMusicTheme(
-    darkTheme: Boolean = false,
+    darkTheme: Boolean = true,
 //        isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
 //    dynamicColor: Boolean = true,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val colorScheme = when {
 //        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
 //            val context = LocalContext.current
 //            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
 //        }
-
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }

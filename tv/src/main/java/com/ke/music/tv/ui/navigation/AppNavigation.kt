@@ -31,7 +31,6 @@ import com.ke.music.tv.ui.my_playlist.MyPlaylistRoute
 import com.ke.music.tv.ui.play.PlayRoute
 import com.ke.music.tv.ui.playlist_detail.PlaylistDetailRoute
 import com.ke.music.tv.ui.playlist_info.PlaylistInfoScreen
-import com.ke.music.tv.ui.playlist_top.PlaylistTopRoute
 import com.ke.music.tv.ui.recommend_songs.RecommendSongsRoute
 import com.ke.music.tv.ui.share.ShareRoute
 import com.ke.music.tv.ui.slpash.SplashScreen
@@ -67,29 +66,40 @@ private fun NavigationTree(navController: NavHostController) {
         composable(Screen.Splash.route) {
             SplashScreen {
                 if (it) {
-//                    navController.navigate(Screen.PlaylistDetail.createUrl())
-                    navController.navigate(Screen.Main.route)
+                    navController.navigate(Screen.Main.route) {
+                        popUpTo(Screen.Splash.route) {
+                            inclusive = true
+                        }
+                    }
                 } else {
-                    navController.navigate(Screen.Login.route)
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Splash.route) {
+                            inclusive = true
+                        }
+                    }
                 }
             }
         }
         composable(Screen.Login.route) {
             LoginScreen {
-                navController.navigate(Screen.Main.route)
+                navController.navigate(Screen.Main.route) {
+                    popUpTo(Screen.Login.route) {
+                        inclusive = true
+                    }
+                }
             }
         }
 
         composable(Screen.Main.route) {
             MainRoute()
         }
-        composable(Screen.PlaylistDetail.route) {
+        composable(Screen.PlaylistDetail.route, arguments = listOf(
+            navArgument("id") {
+                type = NavType.LongType
+            }
+        )) {
             PlaylistDetailRoute(
-                onCommentButtonClick = {},
-                onPlaylistSubscribersClick = {},
-                onCoverImageClick = {
-                    navController.navigate(Screen.PlaylistInfo.createFromPlaylist(it))
-                }
+
             )
         }
 
@@ -110,9 +120,7 @@ private fun NavigationTree(navController: NavHostController) {
         }
 
         composable(Screen.DownloadedMusic.route) {
-            DownloadedMusicRoute {
-
-            }
+            DownloadedMusicRoute()
         }
 
         composable(Screen.RecommendSongs.route) {
@@ -127,15 +135,7 @@ private fun NavigationTree(navController: NavHostController) {
             AlbumDetailRoute()
         }
 
-        composable(Screen.PlaylistTop.route,
-            arguments = listOf(
-                navArgument("category") {
-                    type = NavType.StringType
-                    defaultValue = "全部"
-                }
-            )) {
-            PlaylistTopRoute()
-        }
+
         composable(Screen.MyPlaylist.route, arguments = listOf(
             navArgument("id") {
                 type = NavType.LongType

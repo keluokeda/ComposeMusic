@@ -36,20 +36,20 @@ import androidx.tv.material3.IconButton
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import coil.compose.AsyncImage
+import com.ke.music.common.entity.IPlaylist
+import com.ke.music.common.entity.ISongEntity
 import com.ke.music.download.LocalDownloadManager
-import com.ke.music.room.db.entity.Playlist
-import com.ke.music.room.entity.MusicEntity
 import com.ke.music.tv.LocalAppViewModel
 import com.ke.music.tv.ui.components.LocalNavigationHandler
-import com.ke.music.tv.ui.components.MusicView
 import com.ke.music.tv.ui.components.NavigationAction
 import com.ke.music.tv.ui.components.ShareAction
+import com.ke.music.tv.ui.components.SongView
+import com.ke.music.viewmodel.PlaylistDetailUiState
+import com.ke.music.viewmodel.PlaylistDetailViewModel
 
 @Composable
 fun PlaylistDetailRoute(
-    onCommentButtonClick: (Long) -> Unit,
-    onPlaylistSubscribersClick: (Long) -> Unit,
-    onCoverImageClick: (Playlist) -> Unit,
+
 ) {
 
     val viewModel: PlaylistDetailViewModel = hiltViewModel()
@@ -62,10 +62,10 @@ fun PlaylistDetailRoute(
         onDeleteMusic = {
 
         },
-        onCommentButtonClick,
-        onCoverImageClick,
+        {},
+        { },
     ) {
-        viewModel.toggleBooked(it)
+        viewModel.toggleBooked(it.playlist!!.id)
     }
 }
 
@@ -74,9 +74,9 @@ fun PlaylistDetailRoute(
 @Composable
 private fun PlaylistDetailScreen(
     uiState: PlaylistDetailUiState,
-    onDeleteMusic: (MusicEntity) -> Unit,
+    onDeleteMusic: (ISongEntity) -> Unit,
     onCommentButtonClick: (Long) -> Unit,
-    onCoverImageClick: (Playlist) -> Unit,
+    onCoverImageClick: (IPlaylist) -> Unit,
     bookClick: (PlaylistDetailUiState) -> Unit,
 ) {
 
@@ -152,7 +152,7 @@ private fun PlaylistDetailScreen(
                         }
                         val downloadManager = LocalDownloadManager.current
                         IconButton(onClick = {
-                            downloadManager.downloadPlaylist(uiState.playlist.id)
+                            downloadManager.downloadPlaylist(uiState.playlist!!.id)
                         }) {
                             Icon(imageVector = Icons.Default.Download, contentDescription = null)
                         }
@@ -161,7 +161,7 @@ private fun PlaylistDetailScreen(
                     Text(text = uiState.playlist!!.name, style = MaterialTheme.typography.bodyLarge)
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = uiState.playlist.description ?: "",
+                        text = uiState.playlist?.description ?: "",
                         maxLines = 1,
                         style = MaterialTheme.typography.bodySmall
                     )
@@ -300,16 +300,16 @@ private fun PlaylistDetailScreen(
                     items(
                         uiState.songs,
                         key = {
-                            it.musicId
+                            it.song.id
                         },
-                    ) { musicEntity ->
+                    ) { entity ->
 
-                        MusicView(
-                            uiState.songs.indexOf(musicEntity),
-                            musicEntity = musicEntity,
+                        SongView(
+                            uiState.songs.indexOf(entity),
+                            entity = entity,
 
                             onHasFocus = {
-                                imageUrl = it.album.imageUrl
+                                imageUrl = it.album.image
                             }
 
 

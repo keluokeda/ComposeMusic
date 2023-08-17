@@ -24,8 +24,9 @@ import androidx.tv.material3.Icon
 import androidx.tv.material3.IconButton
 import androidx.tv.material3.Text
 import coil.compose.AsyncImage
-import com.ke.music.room.db.entity.Download
-import com.ke.music.room.entity.QueryDownloadingMusicResult
+import com.ke.music.common.entity.DownloadStatus
+import com.ke.music.common.entity.ISongEntity
+import com.ke.music.viewmodel.DownloadingMusicViewModel
 
 @Composable
 fun DownloadingMusicRoute(
@@ -35,7 +36,7 @@ fun DownloadingMusicRoute(
     val list by viewModel.all.collectAsStateWithLifecycle()
 
     DownloadingMusicScreen(list = list, {
-        viewModel.retry(it.id)
+        viewModel.retry(it)
     }, {
         viewModel.delete(it)
     })
@@ -43,9 +44,9 @@ fun DownloadingMusicRoute(
 
 @Composable
 private fun DownloadingMusicScreen(
-    list: List<QueryDownloadingMusicResult>,
-    onRetryButtonClick: (QueryDownloadingMusicResult) -> Unit,
-    deleteButtonClick: (QueryDownloadingMusicResult) -> Unit
+    list: List<Pair<ISongEntity, Long>>,
+    onRetryButtonClick: (Long) -> Unit,
+    deleteButtonClick: (Long) -> Unit,
 ) {
 
 
@@ -54,13 +55,14 @@ private fun DownloadingMusicScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
+
         items(list, key = {
-            it.id
+            it.second
         }) {
-            DownloadingMusicView(music = it, retryButtonClick = {
-                onRetryButtonClick(it)
+            DownloadingMusicView(song = it.first, retryButtonClick = {
+                onRetryButtonClick(it.second)
             }, deleteButtonClick = {
-                deleteButtonClick(it)
+                deleteButtonClick(it.second)
             })
         }
     }
@@ -70,9 +72,9 @@ private fun DownloadingMusicScreen(
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 private fun DownloadingMusicView(
-    music: QueryDownloadingMusicResult,
+    song: ISongEntity,
     retryButtonClick: () -> Unit = {},
-    deleteButtonClick: () -> Unit = {}
+    deleteButtonClick: () -> Unit = {},
 ) {
     Row(
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
@@ -80,18 +82,18 @@ private fun DownloadingMusicView(
     ) {
 
         AsyncImage(
-            model = music.albumImage,
+            model = song.album.image,
             contentDescription = null,
             modifier = Modifier.size(40.dp)
         )
         Text(
-            text = music.displayName, modifier = Modifier
+            text = song.song.name, modifier = Modifier
                 .weight(1f)
                 .padding(horizontal = 8.dp),
             maxLines = 1
         )
 
-        if (music.status == Download.STATUS_DOWNLOAD_ERROR) {
+        if (song.status == DownloadStatus.Error) {
             IconButton(onClick = retryButtonClick) {
                 Icon(imageVector = Icons.Default.Refresh, contentDescription = null)
             }
@@ -103,7 +105,7 @@ private fun DownloadingMusicView(
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        if (music.status != Download.STATUS_DOWNLOADING) {
+        if (song.status != DownloadStatus.Downloading) {
             IconButton(onClick = deleteButtonClick) {
                 Icon(imageVector = Icons.Default.Clear, contentDescription = null)
             }

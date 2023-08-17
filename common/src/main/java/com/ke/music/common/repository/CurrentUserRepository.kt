@@ -19,4 +19,6 @@ interface CurrentUserRepository {
      * 直接获取当前用户id
      */
     val userId: Long
+
+    suspend fun setUserId(userId: Long)
 }

@@ -233,16 +233,15 @@ private fun NavigationTree(navController: NavHostController) {
         }
 
         composable(
-            Screen.PlaylistList.route
+            Screen.PlaylistList.route,
+            arguments = listOf(
+                navArgument("id") {
+                    type = NavType.LongType
+                }
+            )
         ) {
 
-            val appViewModel = LocalAppViewModel.current
-            PlaylistListRoute({
-                appViewModel.collectMusicsToPlaylist(
-                    appViewModel.selectedSongList, it
-                )
-                navController.popBackStack()
-            }) {
+            PlaylistListRoute {
                 navController.navigate(Screen.PlaylistNew.route)
             }
         }

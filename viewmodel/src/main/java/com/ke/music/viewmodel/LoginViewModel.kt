@@ -2,10 +2,10 @@ package com.ke.music.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ke.music.repository.domain.CreateQRUrlUseCase
-import com.ke.music.repository.domain.LoginUseCase
-import com.ke.music.repository.domain.Result
-import com.ke.music.repository.domain.successOr
+import com.ke.music.common.domain.CreateQRUrlUseCase
+import com.ke.music.common.domain.LoginUseCase
+import com.ke.music.common.domain.Result
+import com.ke.music.common.domain.successOr
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -19,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val createQRUrlUseCase: CreateQRUrlUseCase,
-    private val loginUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase,
 ) : ViewModel() {
 
     private val _qrUrl = MutableStateFlow<String?>("")
@@ -71,7 +71,7 @@ class LoginViewModel @Inject constructor(
      * 开启自动登录
      */
     fun startAutoLogin(
-        interval: Long = 2000
+        interval: Long = 2000,
     ) {
         viewModelScope.launch {
             while (true) {

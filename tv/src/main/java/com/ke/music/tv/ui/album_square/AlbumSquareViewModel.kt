@@ -5,73 +5,49 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.paging.PagingSource
 import androidx.paging.cachedIn
-import com.ke.music.api.HttpService
-import com.ke.music.repository.mediator.NewAlbumListRemoteMediator
-import com.ke.music.room.db.dao.NewAlbumDao
+import com.ke.music.common.entity.IAlbum
+import com.ke.music.common.mediator.NewAlbumsRemoteMediator
+import com.ke.music.common.repository.AlbumRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
+
 @HiltViewModel
-internal class AlbumSquareViewModel @Inject constructor(
-    private val newAlbumDao: NewAlbumDao,
-    httpService: HttpService,
+class AlbumSquareViewModel @Inject constructor(
+    private val albumRepository: AlbumRepository,
+    newAlbumsRemoteMediator: NewAlbumsRemoteMediator,
 ) : ViewModel() {
 
-    internal var area = "ALL"
-        set(value) {
-            if (field == value) {
-                return
-            }
-            field = value
-            remoteMediator.area = value
-        }
+    private val _area = MutableStateFlow("ALL")
+
+    internal val area: StateFlow<String>
+        get() = _area
 
 
-    private val remoteMediator = NewAlbumListRemoteMediator(httpService, newAlbumDao, area)
+    internal fun updateArea(value: String) {
+        _area.value = value
+    }
+
+    init {
+        newAlbumsRemoteMediator.area = area.value
+    }
+
 
     @OptIn(ExperimentalPagingApi::class)
-    internal val albumList = Pager(
+    val albumList = Pager(
         config = PagingConfig(
             pageSize = 50,
             enablePlaceholders = false,
             initialLoadSize = 50
         ),
-        remoteMediator = remoteMediator
+        remoteMediator = newAlbumsRemoteMediator
     ) {
-//        commentRepository.getComments(id, commentType)
-        newAlbumDao.getAlbumListByArea(area)
+        albumRepository.getNewAlbums(area.value) as PagingSource<Int, IAlbum>
     }.flow
         .cachedIn(viewModelScope)
 
 }
-//
-//@HiltViewModel
-//internal class AllAlbumSquareViewModel @Inject constructor(
-//    private val httpService: HttpService,
-//    private val newAlbumDao: NewAlbumDao
-//) : AlbumSquareViewModel(newAlbumDao, httpService, "ALL")
-//
-//@HiltViewModel
-//internal class ZhAlbumSquareViewModel @Inject constructor(
-//    private val httpService: HttpService,
-//    private val newAlbumDao: NewAlbumDao
-//) : AlbumSquareViewModel(newAlbumDao, httpService, "ZH")
-//
-//@HiltViewModel
-//internal class EaAlbumSquareViewModel @Inject constructor(
-//    private val httpService: HttpService,
-//    private val newAlbumDao: NewAlbumDao
-//) : AlbumSquareViewModel(newAlbumDao, httpService, "EA")
-//
-//@HiltViewModel
-//internal class KrAlbumSquareViewModel @Inject constructor(
-//    private val httpService: HttpService,
-//    private val newAlbumDao: NewAlbumDao
-//) : AlbumSquareViewModel(newAlbumDao, httpService, "KR")
-//
-//@HiltViewModel
-//internal class JpAlbumSquareViewModel @Inject constructor(
-//    private val httpService: HttpService,
-//    private val newAlbumDao: NewAlbumDao
-//) : AlbumSquareViewModel(newAlbumDao, httpService, "JP")

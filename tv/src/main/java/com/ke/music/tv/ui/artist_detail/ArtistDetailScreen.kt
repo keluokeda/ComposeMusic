@@ -37,8 +37,8 @@ import androidx.tv.material3.NavigationDrawer
 import androidx.tv.material3.Surface
 import androidx.tv.material3.Text
 import androidx.tv.material3.rememberDrawerState
-import com.ke.music.room.entity.MusicEntity
-import com.ke.music.tv.ui.components.MusicView
+import com.ke.music.common.entity.ISongEntity
+import com.ke.music.tv.ui.components.SongView
 import com.orhanobut.logger.Logger
 
 
@@ -47,7 +47,7 @@ private val navigationRow: @Composable (
     drawerValue: DrawerValue,
     menu: MenuItem,
     modifier: Modifier,
-    onMenuSelected: ((menuItem: MenuItem) -> Unit)
+    onMenuSelected: ((menuItem: MenuItem) -> Unit),
 ) -> Unit =
     { drawerValue, menu, modifier, onMenuSelected ->
 //        val padding = animateDpAsState(
@@ -113,7 +113,7 @@ private val navigationRow: @Composable (
 
 private enum class MenuItem(
     val text: String,
-    val icon: ImageVector? = null
+    val icon: ImageVector? = null,
 ) {
     HotSongs("热门歌曲", Icons.Default.MusicNote),
     AllAlbum("所有专辑", Icons.Default.Album),
@@ -161,46 +161,46 @@ fun ArtistDetailRoute() {
             }
 
             MenuItem.AllAlbum -> {
-                ArtistDescScreen()
+//                ArtistDescScreen()
             }
 
             MenuItem.Mv -> {
-                ArtistDescScreen()
+//                ArtistDescScreen()
 
             }
         }
     }
 
 }
+//
+//@OptIn(ExperimentalTvMaterial3Api::class)
+//@Composable
+//private fun ArtistDescScreen() {
+//    val viewModel: ArtistDescViewModel = hiltViewModel()
+//    val descriptions by viewModel.artistDescriptionList.collectAsStateWithLifecycle()
+//
+//
+//    TvLazyColumn {
+//        items(descriptions, key = {
+//            it.id
+//        }) {
+//            Column {
+//                Text(text = it.title)
+//                Text(text = it.content)
+//            }
+//        }
+//    }
+//}
 
-@OptIn(ExperimentalTvMaterial3Api::class)
+
 @Composable
-private fun ArtistDescScreen() {
-    val viewModel: ArtistDescViewModel = hiltViewModel()
-    val descriptions by viewModel.artistDescriptionList.collectAsStateWithLifecycle()
-
-
-    TvLazyColumn {
-        items(descriptions, key = {
-            it.id
-        }) {
-            Column {
-                Text(text = it.title)
-                Text(text = it.content)
-            }
-        }
-    }
-}
-
-
-@Composable
-fun ArtistHotSongs(list: List<MusicEntity>) {
+fun ArtistHotSongs(list: List<ISongEntity>) {
 
     TvLazyColumn {
         items(list, key = {
-            it.musicId
+            it.song.id
         }) {
-            MusicView(index = list.indexOf(it), musicEntity = it, autoRequestFocus = false)
+            SongView(index = list.indexOf(it), entity = it, autoRequestFocus = false)
         }
     }
 }

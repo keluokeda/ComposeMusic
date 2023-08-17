@@ -30,22 +30,22 @@ import androidx.tv.material3.Icon
 import androidx.tv.material3.IconButton
 import androidx.tv.material3.ListItem
 import androidx.tv.material3.Text
+import com.ke.music.common.entity.DownloadStatus
+import com.ke.music.common.entity.ISongEntity
 import com.ke.music.download.LocalDownloadManager
 import com.ke.music.player.service.LocalMusicPlayerController
-import com.ke.music.room.db.entity.Download
-import com.ke.music.room.entity.MusicEntity
 
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-fun MusicView(
+fun SongView(
     index: Int,
-    musicEntity: MusicEntity,
-    rightButton: @Composable (MusicEntity) -> Unit = {
+    entity: ISongEntity,
+    rightButton: @Composable (ISongEntity) -> Unit = {
     },
-    onHasFocus: (MusicEntity) -> Unit = {
+    onHasFocus: (ISongEntity) -> Unit = {
     },
-    autoRequestFocus: Boolean = true
+    autoRequestFocus: Boolean = true,
 ) {
     var hasFocus by remember {
         mutableStateOf(false)
@@ -66,40 +66,39 @@ fun MusicView(
     ListItem(modifier = Modifier.onFocusChanged {
         hasFocus = it.hasFocus
         if (hasFocus) {
-            onHasFocus(musicEntity)
+            onHasFocus(entity)
         }
     }, selected = false, onClick = {
         focusRequester.requestFocus()
     }, headlineContent = {
-        Text(text = musicEntity.name, maxLines = 1)
+        Text(text = entity.song.name, maxLines = 1)
     }, supportingContent = {
-        Text(text = musicEntity.subTitle, maxLines = 1)
+        Text(text = entity.subtitle(), maxLines = 1)
 
     }, leadingContent = {
 
         val callback: (() -> Unit)? =
-            when (musicEntity.downloadStatus) {
-                Download.STATUS_DOWNLOADED -> {
+            when (entity.status) {
+                DownloadStatus.Downloaded -> {
                     //已经下载 直接播放
                     {
-                        musicPlayerController.playMusic(musicEntity.musicId)
+                        musicPlayerController.playMusic(entity.song.id)
                     }
 
                 }
 
-                Download.STATUS_DOWNLOAD_ERROR -> {
+                DownloadStatus.Error -> {
                     //下载失败 需要重试
                     {
                         //                appViewModel.playMusic(musicEntity.musicId)
-                        downloadManager.retry(musicEntity.musicId)
+                        downloadManager.retry(entity.song.id)
                     }
                 }
 
-                Download.STATUS_DOWNLOAD_IDLE, null -> {
+                DownloadStatus.Idle -> {
                     //可以下载
                     {
-                        downloadManager.downloadMusic(musicEntity.musicId)
-
+                        downloadManager.downloadMusic(entity.song.id)
                     }
                 }
 
@@ -118,22 +117,22 @@ fun MusicView(
             modifier = Modifier.focusRequester(focusRequester)
         ) {
             if (hasFocus) {
-                when (musicEntity.downloadStatus) {
-                    Download.STATUS_DOWNLOADED -> {
+                when (entity.status) {
+                    DownloadStatus.Downloaded -> {
                         //已经下载 可以播放
                         Icon(imageVector = Icons.Default.PlayArrow, contentDescription = null)
                     }
 
-                    Download.STATUS_DOWNLOAD_IDLE, null -> {
+                    DownloadStatus.Idle -> {
                         //可以下载
                         Icon(imageVector = Icons.Default.Download, contentDescription = null)
                     }
 
-                    Download.STATUS_DOWNLOAD_ERROR -> {
+                    DownloadStatus.Error -> {
                         Icon(imageVector = Icons.Default.Refresh, contentDescription = null)
                     }
 
-                    Download.STATUS_DOWNLOADING -> {
+                    DownloadStatus.Downloading -> {
                         Icon(imageVector = Icons.Default.Downloading, contentDescription = null)
                     }
                 }
@@ -149,7 +148,7 @@ fun MusicView(
 
                 val navigationHandler = LocalNavigationHandler.current
 
-                if (musicEntity.mv != 0L) {
+                if (entity.song.mv != 0L) {
                     IconButton(onClick = { }) {
                         Icon(imageVector = Icons.Default.OndemandVideo, contentDescription = null)
                     }
@@ -158,7 +157,7 @@ fun MusicView(
                 }
 
                 IconButton(onClick = {
-                    navigationHandler.navigate(NavigationAction.NavigateToMyPlaylist(musicEntity.musicId))
+                    navigationHandler.navigate(NavigationAction.NavigateToMyPlaylist(entity.song.id))
                 }) {
                     Icon(imageVector = Icons.Default.AddToPhotos, contentDescription = null)
                 }
@@ -172,7 +171,7 @@ fun MusicView(
                     navigationHandler.navigate(
                         NavigationAction.NavigateToShare(
                             ShareAction.Music(
-                                musicEntity
+                                entity
                             )
                         )
                     )
@@ -188,12 +187,12 @@ fun MusicView(
                 Spacer(modifier = Modifier.width(8.dp))
 
                 IconButton(onClick = {
-                    navigationHandler.navigate(NavigationAction.NavigateToAlbumDetail(musicEntity.album.albumId))
+                    navigationHandler.navigate(NavigationAction.NavigateToAlbumDetail(entity.album.albumId))
                 }) {
                     Icon(imageVector = Icons.Default.Album, contentDescription = null)
                 }
                 Spacer(modifier = Modifier.width(8.dp))
-                rightButton(musicEntity)
+                rightButton(entity)
             }
         }
 
