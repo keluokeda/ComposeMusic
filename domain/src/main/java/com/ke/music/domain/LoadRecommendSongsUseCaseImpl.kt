@@ -5,7 +5,7 @@ import com.ke.music.common.domain.LoadRecommendSongsUseCase
 import com.ke.music.common.repository.SongRepository
 import javax.inject.Inject
 
-class LoadRecommendSongsUseCaseImpl @Inject constructor(
+internal class LoadRecommendSongsUseCaseImpl @Inject constructor(
     private val httpService: HttpService,
     private val songRepository: SongRepository,
 ) : UseCase<Unit, Unit>(), LoadRecommendSongsUseCase {

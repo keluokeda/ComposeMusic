@@ -8,11 +8,15 @@ import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.compose.runtime.staticCompositionLocalOf
+import com.ke.music.common.entity.DownloadStatus
+import com.ke.music.common.entity.IAlbum
+import com.ke.music.common.entity.IArtist
+import com.ke.music.common.entity.ISong
 import com.ke.music.common.entity.ISongEntity
-import com.ke.music.room.entity.QueryDownloadedMusicResult
 import com.orhanobut.logger.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.parcelize.Parcelize
 
 interface MusicPlayerController {
     /**
@@ -105,6 +109,30 @@ val LocalMusicPlayerController = staticCompositionLocalOf<MusicPlayerController>
     EmptyMusicPlayerController
 }
 
+
+private class SongEntity(
+    override val song: ISong,
+    override val album: IAlbum,
+    override val artists: List<IArtist>,
+    override val status: DownloadStatus,
+    override val path: String?,
+) : ISongEntity
+
+private class Song(
+    override val id: Long,
+    override val name: String,
+    override val albumId: Long,
+    override val mv: Long,
+) : ISong
+
+@Parcelize
+private class Album(
+    override val albumId: Long,
+    override val name: String,
+    override val image: String,
+    override val key: Long,
+) : IAlbum
+
 internal class MusicPlayerControllerImpl(private val context: Context) : MusicPlayerController {
 
     private lateinit var mediaBrowser: MediaBrowserCompat
@@ -151,9 +179,16 @@ internal class MusicPlayerControllerImpl(private val context: Context) : MusicPl
             val id = metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID).toLong()
 //            super.onMetadataChanged(metadata)
 
-            _currentPlaying.value = QueryDownloadedMusicResult(
-                id, title, 0, albumName, image, null
+            _currentPlaying.value = SongEntity(
+                song = Song(id, title, 0, 0),
+                album = Album(0, albumName, image, 0),
+                artists = emptyList(),
+                path = null,
+                status = DownloadStatus.Downloaded
             )
+//                QueryDownloadedMusicResult(
+//                    id, title, 0, albumName, image, null
+//                )
             _progress.value = 0L to 0
 
         }

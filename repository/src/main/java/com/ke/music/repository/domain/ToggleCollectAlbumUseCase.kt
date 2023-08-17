@@ -1,13 +1,12 @@
 package com.ke.music.repository.domain
 
 import com.ke.music.api.HttpService
-import com.ke.music.repository.AlbumRepository
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 
 class ToggleCollectAlbumUseCase @Inject constructor(
-    private val albumRepository: AlbumRepository,
-    private val httpService: HttpService
+    private val albumRepository: com.ke.music.common.repository.AlbumRepository,
+    private val httpService: HttpService,
 ) :
     UseCase<Pair<Long, Boolean>, Unit>(Dispatchers.IO) {
 

@@ -3,25 +3,25 @@ package com.ke.music.repository.mediator
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
-import androidx.paging.RemoteMediator
 import com.ke.music.api.HttpService
-import com.ke.music.repository.PlaylistRepository
-import com.ke.music.room.db.entity.Playlist
+import com.ke.music.common.entity.IPlaylist
+import com.ke.music.common.mediator.TopPlaylistRemoteMediator
+import com.ke.music.common.repository.PlaylistRepository
 
-@OptIn(ExperimentalPagingApi::class)
 class TopPlaylistRemoteMediator constructor(
     private val httpService: HttpService,
-    var category: String?,
-    private val playlistRepository: PlaylistRepository
-) : RemoteMediator<Int, Playlist>() {
+    private val playlistRepository: PlaylistRepository,
+    override val category: String?,
+) : TopPlaylistRemoteMediator() {
 
 
     private var offset = 0
 
 
+    @ExperimentalPagingApi
     override suspend fun load(
         loadType: LoadType,
-        state: PagingState<Int, Playlist>
+        state: PagingState<Int, IPlaylist>,
     ): MediatorResult {
 
         try {
@@ -46,11 +46,9 @@ class TopPlaylistRemoteMediator constructor(
                 offset = offset
             )
 
-            if (offset == 0) {
-                playlistRepository.deleteTopPlaylistsByCategory(category = category)
-            }
 
-            playlistRepository.saveTopPlaylists(response)
+
+            playlistRepository.saveTopPlaylists(response, offset == 0)
 
             return MediatorResult.Success(
                 endOfPaginationReached =

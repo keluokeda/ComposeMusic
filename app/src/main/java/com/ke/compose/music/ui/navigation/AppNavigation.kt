@@ -30,7 +30,6 @@ import com.ke.compose.music.ui.main.MainRoute
 import com.ke.compose.music.ui.play.PlayRoute
 import com.ke.compose.music.ui.playlist_category.PlaylistCategoryRoute
 import com.ke.compose.music.ui.playlist_detail.PlaylistDetailRoute
-import com.ke.compose.music.ui.playlist_highquality.PlaylistHighqualityRoute
 import com.ke.compose.music.ui.playlist_info.PlaylistInfoScreen
 import com.ke.compose.music.ui.playlist_list.PlaylistListRoute
 import com.ke.compose.music.ui.playlist_new.PlaylistNewScreen
@@ -41,11 +40,11 @@ import com.ke.compose.music.ui.slpash.SplashScreen
 import com.ke.compose.music.ui.test.TestRoute
 import com.ke.compose.music.ui.users.UsersRoute
 import com.ke.music.common.entity.CommentType
+import com.ke.music.common.entity.ShareType
 import com.ke.music.download.DownloadManagerImpl
 import com.ke.music.download.LocalDownloadManager
 import com.ke.music.player.service.LocalMusicPlayerController
 import com.ke.music.player.service.MusicPlayerController
-import com.ke.music.repository.entity.ShareType
 import com.ke.music.repository.entity.UsersType
 import java.net.URLDecoder
 
@@ -296,15 +295,15 @@ private fun NavigationTree(navController: NavHostController) {
             })
         }
 
-        composable(Screen.HighqualityPlaylist.route) {
-            PlaylistHighqualityRoute({
-                navController.popBackStack()
-            }) {
-
-                navController.navigate(Screen.PlaylistDetail.createUrl(it))
-
-            }
-        }
+//        composable(Screen.HighqualityPlaylist.route) {
+//            PlaylistHighqualityRoute({
+//                navController.popBackStack()
+//            }) {
+//
+//                navController.navigate(Screen.PlaylistDetail.createUrl(it))
+//
+//            }
+//        }
 
         composable(Screen.DownloadedMusic.route) {
             DownloadedMusicRoute {

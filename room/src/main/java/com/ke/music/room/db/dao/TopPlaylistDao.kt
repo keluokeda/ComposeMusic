@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.ke.music.room.db.entity.Playlist
 import com.ke.music.room.db.entity.TopPlaylist
 
@@ -13,8 +14,15 @@ interface TopPlaylistDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(
-        list: List<TopPlaylist>
+        list: List<TopPlaylist>,
     )
+
+
+    @Transaction
+    suspend fun deleteOldAndInsertNew(category: String?, list: List<TopPlaylist>) {
+        deleteByCategory(category)
+        insertAll(list)
+    }
 
     /**
      * 根据分类查询歌单 distinct防止重复结果

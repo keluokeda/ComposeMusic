@@ -41,8 +41,8 @@ import com.ke.compose.music.ui.component.LocalNavigationHandler
 import com.ke.compose.music.ui.component.NavigationAction
 import com.ke.compose.music.ui.component.SongView
 import com.ke.music.common.entity.CommentType
+import com.ke.music.common.entity.ShareType
 import com.ke.music.download.LocalDownloadManager
-import com.ke.music.repository.entity.ShareType
 import com.ke.music.viewmodel.AlbumDetailUiState
 import com.ke.music.viewmodel.AlbumDetailViewModel
 

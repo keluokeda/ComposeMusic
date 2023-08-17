@@ -6,7 +6,7 @@ import com.ke.music.common.repository.CurrentUserRepository
 import com.ke.music.common.repository.PlaylistRepository
 import javax.inject.Inject
 
-class DeletePlaylistUseCaseImpl @Inject constructor(
+internal class DeletePlaylistUseCaseImpl @Inject constructor(
     private val httpService: HttpService,
     private val currentUserRepository: CurrentUserRepository,
     private val playlistRepository: PlaylistRepository,

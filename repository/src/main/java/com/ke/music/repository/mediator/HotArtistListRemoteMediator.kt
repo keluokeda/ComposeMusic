@@ -9,11 +9,16 @@ import com.ke.music.common.mediator.HotArtistRemoteMediator
 import com.ke.music.common.repository.ArtistRepository
 import javax.inject.Inject
 
-class HotArtistListRemoteMediator @Inject constructor(
+internal class HotArtistListRemoteMediator @Inject constructor(
     private val httpService: HttpService,
     private val artistRepository: ArtistRepository,
 ) :
     HotArtistRemoteMediator() {
+
+    override var area: Int = -1
+
+    override var type: Int = -1
+
 
     private var offset = 0
 
@@ -40,32 +45,15 @@ class HotArtistListRemoteMediator @Inject constructor(
 
             val response = httpService.getArtistList(type, area, 30, offset)
 
-            artistRepository.saveHotArtist(
+            artistRepository.saveHotArtists(
                 area, type, response.artists, offset == 0
             )
-
-//            if (offset == 0) {
-//                newAlbumDao.deleteAllByArea(area)
-//                hotArtistDao.deleteAll()
-//            }
-
-//            hotArtistDao.insertAll(
-//                response.artists.map {
-//                    HotArtist(
-//                        id = 0,
-//                        artistId = it.id,
-//                        name = it.name,
-//                        avatar = it.avatar
-//                    )
-//                }
-//            )
-
             return MediatorResult.Success(
                 endOfPaginationReached = !response.more
-
             )
 
         } catch (e: Exception) {
+            e.printStackTrace()
             return MediatorResult.Error(e)
         }
     }

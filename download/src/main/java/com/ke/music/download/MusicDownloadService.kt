@@ -7,15 +7,17 @@ import androidx.lifecycle.lifecycleScope
 import com.arialyy.annotations.Download
 import com.arialyy.aria.core.Aria
 import com.arialyy.aria.core.task.DownloadTask
-import com.ke.music.repository.DownloadRepository
-import com.ke.music.repository.domain.DownloadMusicListUseCase
-import com.ke.music.repository.domain.GetAlbumSongsUseCase
-import com.ke.music.repository.domain.GetMusicUrlUseCase
-import com.ke.music.repository.domain.GetPlaylistSongsUseCase
-import com.ke.music.repository.domain.GetRecommendSongsUseCase
-import com.ke.music.repository.domain.successOr
+import com.ke.music.common.domain.DownloadSongListUseCase
+import com.ke.music.common.domain.GetSongUrlUseCase
+import com.ke.music.common.domain.successOr
+import com.ke.music.common.entity.DownloadSourceType
+import com.ke.music.common.entity.DownloadStatus
+import com.ke.music.common.entity.IDownload
+import com.ke.music.common.repository.DownloadRepository
+import com.ke.music.common.repository.SongRepository
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
@@ -28,23 +30,16 @@ class MusicDownloadService : LifecycleService() {
 
 
     @Inject
-    lateinit var getMusicUrlUseCase: GetMusicUrlUseCase
-
-
-    @Inject
-    lateinit var getPlaylistSongsUseCase: GetPlaylistSongsUseCase
+    lateinit var getSongUrlUseCase: GetSongUrlUseCase
 
     @Inject
-    lateinit var getAlbumSongsUseCase: GetAlbumSongsUseCase
-
-    @Inject
-    lateinit var downloadMusicListUseCase: DownloadMusicListUseCase
-
-    @Inject
-    lateinit var getRecommendSongsUseCase: GetRecommendSongsUseCase
+    lateinit var downloadSongListUseCase: DownloadSongListUseCase
 
     @Inject
     lateinit var downloadRepository: DownloadRepository
+
+    @Inject
+    lateinit var songRepository: SongRepository
 
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -56,7 +51,7 @@ class MusicDownloadService : LifecycleService() {
                     val musicId = intent.getLongExtra(EXTRA_ID, 0L)
                     if (downloadRepository.canDownload(
                             musicId,
-                            com.ke.music.room.db.entity.Download.SOURCE_TYPE_MUSIC
+                            DownloadSourceType.Song
                         )
                     ) {
                         downloadMusicList(listOf(musicId))
@@ -71,16 +66,17 @@ class MusicDownloadService : LifecycleService() {
                 val playlistId = intent.getLongExtra(EXTRA_ID, 0L)
 
                 lifecycleScope.launch {
-                    val songs = getPlaylistSongsUseCase(playlistId).successOr(emptyList())
+                    val songs = songRepository.querySongsByPlaylistId(playlistId).first()
+//                        getPlaylistSongsUseCase(playlistId).successOr(emptyList())
                     val targetList = mutableListOf<Long>()
 
                     songs.forEach {
                         if (downloadRepository.canDownload(
-                                it.id,
-                                com.ke.music.room.db.entity.Download.SOURCE_TYPE_MUSIC
+                                it.song.id,
+                                DownloadSourceType.Song
                             )
                         ) {
-                            targetList.add(it.id)
+                            targetList.add(it.song.id)
                         }
                     }
 
@@ -93,16 +89,17 @@ class MusicDownloadService : LifecycleService() {
                 val albumId = intent.getLongExtra(EXTRA_ID, 0L)
 
                 lifecycleScope.launch {
-                    val songs = getAlbumSongsUseCase(albumId).successOr(emptyList())
+                    val songs = songRepository.querySongsByAlbumId(albumId).first()
+//                        getAlbumSongsUseCase(albumId).successOr(emptyList())
                     val targetList = mutableListOf<Long>()
 
                     songs.forEach {
                         if (downloadRepository.canDownload(
-                                it.id,
-                                com.ke.music.room.db.entity.Download.SOURCE_TYPE_MUSIC
+                                it.song.id,
+                                DownloadSourceType.Song
                             )
                         ) {
-                            targetList.add(it.id)
+                            targetList.add(it.song.id)
                         }
                     }
 
@@ -113,16 +110,17 @@ class MusicDownloadService : LifecycleService() {
 
             ACTION_DOWNLOAD_RECOMMEND_SONG -> {
                 lifecycleScope.launch {
-                    val songs = getRecommendSongsUseCase(Unit).successOr(emptyList())
+                    val songs = songRepository.getRecommendSongs().first()
+//                        getRecommendSongsUseCase(Unit).successOr(emptyList())
                     val targetList = mutableListOf<Long>()
 
                     songs.forEach {
                         if (downloadRepository.canDownload(
-                                it.id,
-                                com.ke.music.room.db.entity.Download.SOURCE_TYPE_MUSIC
+                                it.song.id,
+                                DownloadSourceType.Song
                             )
                         ) {
-                            targetList.add(it.id)
+                            targetList.add(it.song.id)
                         }
                     }
 
@@ -157,7 +155,7 @@ class MusicDownloadService : LifecycleService() {
      */
     private fun downloadMusicList(list: List<Long>) {
         lifecycleScope.launch {
-            downloadMusicListUseCase(list)
+            downloadSongListUseCase(list)
         }
     }
 
@@ -170,7 +168,9 @@ class MusicDownloadService : LifecycleService() {
 
 
         lifecycleScope.launch {
-            downloadRepository.getAll(com.ke.music.room.db.entity.Download.SOURCE_TYPE_MUSIC)
+            downloadRepository.getAll(
+                DownloadSourceType.Song
+            )
                 .collect { list ->
 
 //                    Logger.d("下载中的音乐列表发生变化 $list")
@@ -178,12 +178,12 @@ class MusicDownloadService : LifecycleService() {
                     //正在下载的任务
                     val downloadingMusic =
 
-                        list.find { it.status == com.ke.music.room.db.entity.Download.STATUS_DOWNLOADING }
+                        list.find { it.downloadStatus == DownloadStatus.Downloading }
 
                     if (downloadingMusic == null) {
                         Logger.d("没有正在下载的任务")
                         val target =
-                            list.firstOrNull { it.status == com.ke.music.room.db.entity.Download.STATUS_DOWNLOAD_IDLE }
+                            list.firstOrNull { it.downloadStatus == DownloadStatus.Idle }
                         if (target != null) {
                             Logger.d("找到了需要下载的任务 $target")
                             downloadMusic(target)
@@ -241,7 +241,7 @@ class MusicDownloadService : LifecycleService() {
             downloadRepository.setDownloadSuccess(
                 musicId,
                 path,
-                com.ke.music.room.db.entity.Download.SOURCE_TYPE_MUSIC
+                DownloadSourceType.Song
             )
         }
 
@@ -265,9 +265,9 @@ class MusicDownloadService : LifecycleService() {
     /**
      * 下载一个音乐
      */
-    private fun downloadMusic(download: com.ke.music.room.db.entity.Download) {
+    private fun downloadMusic(download: IDownload) {
 
-        if (download.status != com.ke.music.room.db.entity.Download.STATUS_DOWNLOAD_IDLE) {
+        if (download.downloadStatus != DownloadStatus.Idle) {
             Logger.d("要下载的任务状态不对 $download")
             return
         }
@@ -277,7 +277,7 @@ class MusicDownloadService : LifecycleService() {
         lifecycleScope.launch {
 
 
-            val musicUrl = getMusicUrlUseCase(musicId).successOr("")
+            val musicUrl = getSongUrlUseCase(musicId).successOr("")
 
             val newStatus = if (musicUrl.isNotEmpty()) {
 //                download.status = com.ke.compose.music.db.entity.Download.STATUS_DOWNLOADING
@@ -298,16 +298,16 @@ class MusicDownloadService : LifecycleService() {
 
                 downloadRepository.setDownloadId(
                     musicId,
-                    com.ke.music.room.db.entity.Download.SOURCE_TYPE_MUSIC,
+                    DownloadSourceType.Song,
                     downloadId
                 )
-                com.ke.music.room.db.entity.Download.STATUS_DOWNLOADING
+                DownloadStatus.Downloading
 
             } else {
 
                 //无法获取下载地址
 //                download.status = com.ke.compose.music.db.entity.Download.STATUS_DOWNLOAD_ERROR
-                com.ke.music.room.db.entity.Download.STATUS_DOWNLOAD_ERROR
+                DownloadStatus.Error
             }
 
 //            downloadingDao.update(downloadingMusic)

@@ -68,6 +68,9 @@ dependencies {
     implementation project(path: ':viewmodel')
     implementation project(path: ':player')
     implementation project(path: ':download')
+    implementation project(path: ':common')
+    implementation project(path: ':domain')
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'

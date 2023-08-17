@@ -5,7 +5,7 @@ import com.ke.music.api.response.PlaylistCategory
 import com.ke.music.common.domain.GetPlaylistCategoryListUseCase
 import javax.inject.Inject
 
-class GetPlaylistCategoryListUseCaseImpl @Inject constructor(private val httpService: HttpService) :
+internal class GetPlaylistCategoryListUseCaseImpl @Inject constructor(private val httpService: HttpService) :
     UseCase<Unit, List<PlaylistCategory>>(),
     GetPlaylistCategoryListUseCase {
 

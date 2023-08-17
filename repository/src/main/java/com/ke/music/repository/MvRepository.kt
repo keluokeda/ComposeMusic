@@ -12,7 +12,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MvRepository @Inject constructor(
+internal class MvRepository @Inject constructor(
     private val mvDao: MvDao,
     private val allMvDao: AllMvDao,
     private val mvArtistCrossRefDao: MvArtistCrossRefDao,

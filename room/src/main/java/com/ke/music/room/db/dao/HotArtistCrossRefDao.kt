@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.ke.music.room.db.entity.HotArtistCrossRef
 import com.ke.music.room.entity.QueryHotArtistResult
 
@@ -22,6 +23,14 @@ interface HotArtistCrossRefDao {
     suspend fun deleteByAreaAndType(area: Int, type: Int)
 
 
+    @Transaction
+    suspend fun deleteOldAndInsertNew(area: Int, type: Int, list: List<HotArtistCrossRef>) {
+        deleteByAreaAndType(area, type)
+        insertAll(list)
+    }
+
+
+    //    @Query("select hot_artist_cross_ref.id as id , artist.artist_id as artistId,name,avatar from artist inner join hot_artist_cross_ref on artist.artist_id = hot_artist_cross_ref.artist_id where area = :area and type = :type")
     @Query("select hot_artist_cross_ref.id as id , artist.artist_id as artistId,name,avatar from hot_artist_cross_ref inner join artist on artist.artist_id = hot_artist_cross_ref.artist_id where area = :area and type = :type")
     fun getHotArtists(area: Int, type: Int): PagingSource<Int, QueryHotArtistResult>
 }

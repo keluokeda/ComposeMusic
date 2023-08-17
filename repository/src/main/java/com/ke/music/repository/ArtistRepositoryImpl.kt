@@ -22,7 +22,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ArtistRepositoryImpl @Inject constructor(
+internal class ArtistRepositoryImpl @Inject constructor(
     private val artistDescriptionDao: ArtistDescriptionDao,
     private val artistDao: ArtistDao,
     private val userArtistCrossRefDao: UserArtistCrossRefDao,
@@ -81,7 +81,7 @@ class ArtistRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun saveHotArtist(
+    override suspend fun saveHotArtists(
         area: Int,
         type: Int,
         list: List<com.ke.music.api.response.Artist>,
@@ -89,21 +89,31 @@ class ArtistRepositoryImpl @Inject constructor(
     ) {
 
         //保存歌手信息
+
+
+//        artistDao.insertAll(list.map {
+//            Artist(it.id, it.name, it.avatar)
+//        })
+
         artistDao.insertArtists(list)
+
+
+        val target = list.map {
+            HotArtistCrossRef(0, it.id, area, type)
+        }
         if (deleteOld) {
-            hotArtistCrossRefDao.deleteByAreaAndType(area, type)
+            hotArtistCrossRefDao.deleteOldAndInsertNew(area, type, target)
+        } else {
+            //保存热门歌手记录
+            hotArtistCrossRefDao.insertAll(
+                target
+            )
         }
 
 
-        //保存热门歌手记录
-        hotArtistCrossRefDao.insertAll(
-            list.map {
-                HotArtistCrossRef(0, it.id, area, type)
-            }
-        )
     }
 
-    override fun hotArtist(type: Int, area: Int): PagingSource<Int, out IArtist> {
-        return hotArtistCrossRefDao.getHotArtists(type, area)
+    override fun hotArtists(type: Int, area: Int): PagingSource<Int, out IArtist> {
+        return hotArtistCrossRefDao.getHotArtists(area, type)
     }
 }

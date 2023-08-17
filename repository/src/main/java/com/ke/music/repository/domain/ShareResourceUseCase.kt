@@ -1,8 +1,8 @@
 package com.ke.music.repository.domain
 
 import com.ke.music.api.HttpService
-import com.ke.music.repository.entity.ShareRequest
-import com.ke.music.repository.entity.ShareType
+import com.ke.music.common.entity.ShareRequest
+import com.ke.music.common.entity.ShareType
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 

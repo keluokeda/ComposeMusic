@@ -5,7 +5,7 @@ import com.ke.music.common.domain.CollectAlbumUseCase
 import com.ke.music.common.repository.AlbumRepository
 import javax.inject.Inject
 
-class CollectAlbumUseCaseImpl @Inject constructor(
+internal class CollectAlbumUseCaseImpl @Inject constructor(
     private val albumRepository: AlbumRepository,
     private val httpService: HttpService,
 ) : UseCase<Pair<Long, Boolean>, Unit>(), CollectAlbumUseCase {

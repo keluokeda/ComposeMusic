@@ -1,7 +1,7 @@
 package com.ke.music.repository.domain
 
 import com.ke.music.api.HttpService
-import com.ke.music.repository.AlbumRepository
+import com.ke.music.common.repository.AlbumRepository
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 

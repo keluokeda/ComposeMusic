@@ -1,11 +1,9 @@
 package com.ke.music.viewmodel
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ke.music.repository.userIdFlow
+import com.ke.music.common.repository.CurrentUserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -14,7 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-    @ApplicationContext context: Context
+    currentUserRepository: CurrentUserRepository,
 ) :
     ViewModel() {
 
@@ -25,7 +23,7 @@ class SplashViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            context.userIdFlow.collect {
+            currentUserRepository.userIdFlow.collect {
                 _navigationActions.send(it != 0L)
             }
         }

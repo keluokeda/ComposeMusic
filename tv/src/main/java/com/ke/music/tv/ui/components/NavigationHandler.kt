@@ -2,7 +2,7 @@ package com.ke.music.tv.ui.components
 
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.ke.music.common.entity.CommentType
-import com.ke.music.repository.entity.ShareType
+import com.ke.music.common.entity.ShareType
 import com.ke.music.room.entity.AlbumEntity
 import com.ke.music.room.entity.MusicEntity
 import com.ke.music.tv.ui.Screen

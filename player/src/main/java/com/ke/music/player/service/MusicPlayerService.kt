@@ -23,7 +23,6 @@ import com.bumptech.glide.Glide
 import com.ke.music.common.entity.ISongEntity
 import com.ke.music.common.repository.SongRepository
 import com.ke.music.player.R
-import com.ke.music.repository.domain.GetMusicUrlUseCase
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -141,8 +140,6 @@ class MusicPlayerService : MediaBrowserServiceCompat(), Player.Listener,
     private lateinit var exoPlayer: ExoPlayer
     private lateinit var myNotificationManager: MyNotificationManager
 
-    @Inject
-    lateinit var getMusicUrlUseCase: GetMusicUrlUseCase
 
     @Inject
     lateinit var songRepository: SongRepository
@@ -351,14 +348,14 @@ class MusicPlayerService : MediaBrowserServiceCompat(), Player.Listener,
     override fun onGetRoot(
         clientPackageName: String,
         clientUid: Int,
-        rootHints: Bundle?
+        rootHints: Bundle?,
     ): BrowserRoot {
         return BrowserRoot("root-id", null)
     }
 
     override fun onLoadChildren(
         parentId: String,
-        result: Result<MutableList<MediaBrowserCompat.MediaItem>>
+        result: Result<MutableList<MediaBrowserCompat.MediaItem>>,
     ) {
         result.sendResult(null)
     }
@@ -474,7 +471,7 @@ internal class MyNotificationManager(
     private val context: Context,
     private val coroutineScope: CoroutineScope,
     sessionToken: MediaSessionCompat.Token,
-    notificationListener: PlayerNotificationManager.NotificationListener
+    notificationListener: PlayerNotificationManager.NotificationListener,
 ) {
 
     private val notificationManager: PlayerNotificationManager
@@ -519,7 +516,7 @@ internal class MyNotificationManager(
 private class DescriptionAdapter(
     private val coroutineScope: CoroutineScope,
     private val mediaController: MediaControllerCompat,
-    private val context: Context
+    private val context: Context,
 ) : PlayerNotificationManager.MediaDescriptionAdapter {
     override fun getCurrentContentTitle(player: Player): CharSequence {
 //        return mediaController.metadata?.description?.title ?: ""
@@ -537,7 +534,7 @@ private class DescriptionAdapter(
 
     override fun getCurrentLargeIcon(
         player: Player,
-        callback: PlayerNotificationManager.BitmapCallback
+        callback: PlayerNotificationManager.BitmapCallback,
     ): Bitmap? {
 
         val iconUri = player.mediaMetadata.artworkUri

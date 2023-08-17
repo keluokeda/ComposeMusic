@@ -55,8 +55,8 @@ import com.ke.compose.music.ui.theme.ComposeMusicTheme
 import com.ke.music.api.response.User
 import com.ke.music.common.entity.IPlaylist
 import com.ke.music.common.entity.ISongEntity
+import com.ke.music.common.entity.ShareType
 import com.ke.music.download.LocalDownloadManager
-import com.ke.music.repository.entity.ShareType
 import com.ke.music.viewmodel.PlaylistDetailUiState
 import com.ke.music.viewmodel.PlaylistDetailViewModel
 

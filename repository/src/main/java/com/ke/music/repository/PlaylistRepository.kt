@@ -200,24 +200,27 @@ class PlaylistRepository @Inject constructor(
         playlistSubscriberCrossRefDao.deleteByPlaylistIdAndUserId(playlistId, userId)
     }
 
-    /**
-     * 保存网友精选碟
-     */
-    suspend fun saveTopPlaylists(playlistTopResponse: PlaylistTopResponse) {
-
-        savePlaylistList(playlistTopResponse.playlists.map {
+    override suspend fun saveTopPlaylists(response: PlaylistTopResponse, deleteOld: Boolean) {
+        savePlaylistList(response.playlists.map {
             it.convert()
         })
+        val list = response.playlists
+            .map {
+                TopPlaylist(0, it.id, response.category)
+            }
+        if (deleteOld) {
 
-        topPlaylistDao.insertAll(
-            playlistTopResponse.playlists
-                .map {
-                    TopPlaylist(0, it.id, playlistTopResponse.category)
-                }
-        )
+            topPlaylistDao.deleteOldAndInsertNew(
+                response.category,
+                list
+            )
+        } else {
+            topPlaylistDao.insertAll(list)
+        }
     }
 
-    fun topPlaylist(category: String?) = topPlaylistDao.queryByCategory(category)
+
+    override fun topPlaylist(category: String?) = topPlaylistDao.queryByCategory(category)
 
     suspend fun deleteTopPlaylistsByCategory(category: String?) =
         topPlaylistDao.deleteByCategory(category)

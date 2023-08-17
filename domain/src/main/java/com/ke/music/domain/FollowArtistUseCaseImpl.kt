@@ -6,7 +6,7 @@ import com.ke.music.common.repository.ArtistRepository
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 
-class FollowArtistUseCaseImpl @Inject constructor(
+internal class FollowArtistUseCaseImpl @Inject constructor(
     private val httpService: HttpService,
     private val artistRepository: ArtistRepository,
 ) :

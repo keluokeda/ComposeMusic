@@ -2,6 +2,7 @@ package com.ke.music.repository
 
 import androidx.paging.PagingSource
 import com.ke.music.api.response.Comment
+import com.ke.music.common.repository.CurrentUserRepository
 import com.ke.music.room.db.dao.ChildCommentDao
 import com.ke.music.room.db.dao.UserDao
 import com.ke.music.room.db.dao.UserLikeCommentCrossRefDao
@@ -16,8 +17,8 @@ import javax.inject.Singleton
 class ChildCommentRepository @Inject constructor(
     private val childCommentDao: ChildCommentDao,
     private val userLikeCommentCrossRefDao: UserLikeCommentCrossRefDao,
-    private val userIdRepository: UserIdRepository,
-    private val userDao: UserDao
+    private val userIdRepository: CurrentUserRepository,
+    private val userDao: UserDao,
 ) {
 
     fun getChildComments(

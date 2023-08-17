@@ -34,7 +34,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MusicRepository @Inject constructor(
+internal class MusicRepository @Inject constructor(
     private val musicDao: MusicDao,
     private val albumDao: AlbumDao,
     private val artistDao: ArtistDao,
@@ -48,7 +48,7 @@ class MusicRepository @Inject constructor(
     private val currentUserRepository: CurrentUserRepository,
 ) : SongRepository {
 
-    suspend fun findById(musicId: Long): Music? = musicDao.findById(musicId)
+    override suspend fun findById(musicId: Long): Music? = musicDao.findById(musicId)
 
     /**
      * 保存歌曲列表到数据库
@@ -270,7 +270,7 @@ class MusicRepository @Inject constructor(
     override fun getLocalPlaylistSongs() =
         localPlaylistSongDao.getLocalPlaylistSongList()
 
-    fun getLocalPlaylistSongList() = localPlaylistSongDao.getLocalPlaylistSongList()
+    override fun getLocalPlaylistSongList() = localPlaylistSongDao.getLocalPlaylistSongList()
 
     /**
      * 清空本地播放列表
@@ -279,7 +279,7 @@ class MusicRepository @Inject constructor(
         localPlaylistSongDao.clear()
     }
 
-    suspend fun deleteLocalPlaylistSong(songId: Long) = localPlaylistSongDao.delete(songId)
+    override suspend fun deleteLocalPlaylistSong(songId: Long) = localPlaylistSongDao.delete(songId)
 
 
     /**

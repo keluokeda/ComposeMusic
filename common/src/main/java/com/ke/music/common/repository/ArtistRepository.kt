@@ -47,8 +47,8 @@ interface ArtistRepository {
     /**
      * 保存热门歌手
      */
-    suspend fun saveHotArtist(area: Int, type: Int, list: List<Artist>, deleteOld: Boolean)
+    suspend fun saveHotArtists(area: Int, type: Int, list: List<Artist>, deleteOld: Boolean)
 
 
-    fun hotArtist(type: Int, area: Int): PagingSource<Int, out IArtist>
+    fun hotArtists(type: Int, area: Int): PagingSource<Int, out IArtist>
 }

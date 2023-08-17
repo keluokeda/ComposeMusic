@@ -32,6 +32,7 @@ import com.ke.compose.music.ui.component.MvView
 import com.ke.compose.music.ui.component.items
 import com.ke.music.common.entity.IMv
 import com.ke.music.viewmodel.AllMvViewModel
+import com.orhanobut.logger.Logger
 
 
 private val areaList = listOf("全部", "内地", "港台", "欧美", "日本", "韩国")
@@ -43,6 +44,8 @@ fun AllMvRoute() {
     val viewModel: AllMvViewModel = hiltViewModel()
 
     val list = viewModel.allMv.collectAsLazyPagingItems()
+    Logger.d("list state = ${list.loadState}")
+
     val area by viewModel.area.collectAsStateWithLifecycle()
     val type by viewModel.type.collectAsStateWithLifecycle()
 

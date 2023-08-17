@@ -16,7 +16,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class DownloadRepository @Inject constructor(private val downloadDao: DownloadDao) :
+internal class DownloadRepository @Inject constructor(private val downloadDao: DownloadDao) :
     DownloadRepository {
 
 
@@ -24,10 +24,23 @@ class DownloadRepository @Inject constructor(private val downloadDao: DownloadDa
         download(list, downloadSourceType.type)
     }
 
+    override suspend fun download(list: List<Long>, sourceType: DownloadSourceType) {
+        downloadDao.insertAll(
+            list.map {
+                Download(
+                    sourceId = it,
+                    sourceType = sourceType.type,
+                    path = null,
+                    status = Download.STATUS_DOWNLOAD_IDLE
+                )
+            }
+        )
+    }
+
     /**
      * 开始下载
      */
-    suspend fun download(list: List<Long>, sourceType: Int) {
+    override suspend fun download(list: List<Long>, sourceType: Int) {
         downloadDao.insertAll(
             list.map {
                 Download(
@@ -90,7 +103,7 @@ class DownloadRepository @Inject constructor(private val downloadDao: DownloadDa
 
     override suspend fun deleteDownloadedSong(songId: Long): Boolean = deleteDownloadedMusic(songId)
 
-    suspend fun deleteDownloadedMusic(musicId: Long): Boolean {
+    private suspend fun deleteDownloadedMusic(musicId: Long): Boolean {
         val download = downloadDao.findBySourceTypeAndSourceId(Download.SOURCE_TYPE_MUSIC, musicId)
             ?: return false
 

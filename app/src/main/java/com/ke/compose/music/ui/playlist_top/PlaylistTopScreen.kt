@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -29,12 +28,13 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.component.items
-import com.ke.music.room.db.entity.Playlist
+import com.ke.music.common.entity.IPlaylist
+import com.ke.music.viewmodel.PlaylistTopViewModel
 
 @Composable
 fun PlaylistTopRoute(
     onBackButtonClick: () -> Unit,
-    onItemClick: (Playlist) -> Unit,
+    onItemClick: (IPlaylist) -> Unit,
     onCategoryButtonClick: (String?) -> Unit,
 ) {
 
@@ -54,14 +54,14 @@ fun PlaylistTopRoute(
 
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlaylistTopScreen(
-    list: LazyPagingItems<Playlist>,
+    list: LazyPagingItems<IPlaylist>,
     category: String?,
     onCategoryButtonClick: (String?) -> Unit,
     onBackButtonClick: () -> Unit,
-    onItemClick: (Playlist) -> Unit,
+    onItemClick: (IPlaylist) -> Unit,
 ) {
     Scaffold(topBar = {
         AppTopBar(
@@ -80,23 +80,6 @@ fun PlaylistTopScreen(
             }
         )
     }) { padding ->
-//        LazyColumn(modifier = Modifier.padding(padding)) {
-//            items(
-//                count = list.itemCount,
-//                key = list.itemKey(key = {
-//                    it.id
-//                }),
-//                contentType = list.itemContentType(
-//                )
-//            ) { index ->
-//                val item = list[index]
-//                ListItem(modifier = Modifier.clickable {
-//                    onItemClick(item!!)
-//                }) {
-//                    Text(text = item!!.name)
-//                }
-//            }
-//        }
         LazyVerticalGrid(columns = GridCells.Fixed(3), modifier = Modifier.padding(padding)) {
             items(list, key = {
                 it.id

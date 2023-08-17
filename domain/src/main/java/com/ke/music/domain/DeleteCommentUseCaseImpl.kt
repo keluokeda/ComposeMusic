@@ -6,7 +6,7 @@ import com.ke.music.common.entity.DeleteCommentRequest
 import com.ke.music.common.repository.CommentRepository
 import javax.inject.Inject
 
-class DeleteCommentUseCaseImpl @Inject constructor(
+internal class DeleteCommentUseCaseImpl @Inject constructor(
     private val httpService: HttpService,
     private val commentRepository: CommentRepository,
 ) :

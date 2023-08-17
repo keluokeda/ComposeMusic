@@ -1,4 +1,4 @@
-package com.ke.music.repository.entity
+package com.ke.music.common.entity
 
 data class ShareRequest(
     val shareType: ShareType,

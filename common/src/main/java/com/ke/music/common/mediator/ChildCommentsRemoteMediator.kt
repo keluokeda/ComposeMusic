@@ -7,7 +7,7 @@ import com.ke.music.common.entity.IChildComment
 
 @OptIn(ExperimentalPagingApi::class)
 abstract class ChildCommentsRemoteMediator : RemoteMediator<Int, IChildComment>() {
-    abstract var commentId: Long
-    abstract var sourceId: Long
-    abstract var commentType: CommentType
+    abstract val commentId: Long
+    abstract val sourceId: Long
+    abstract val commentType: CommentType
 }

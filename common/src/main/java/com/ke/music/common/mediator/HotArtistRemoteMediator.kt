@@ -6,6 +6,6 @@ import com.ke.music.common.entity.IArtist
 
 @OptIn(ExperimentalPagingApi::class)
 abstract class HotArtistRemoteMediator : RemoteMediator<Int, IArtist>() {
-    open var type: Int = -1
-    open var area: Int = -1
+    abstract var type: Int
+    abstract var area: Int
 }

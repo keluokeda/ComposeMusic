@@ -9,7 +9,7 @@ import com.ke.music.common.mediator.NewAlbumsRemoteMediator
 import com.ke.music.common.repository.AlbumRepository
 import javax.inject.Inject
 
-class NewAlbumListRemoteMediator @Inject constructor(
+internal class NewAlbumListRemoteMediator @Inject constructor(
     private val httpService: HttpService,
     private val albumRepository: AlbumRepository,
 ) :

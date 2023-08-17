@@ -41,7 +41,7 @@ android {
 
 dependencies {
 
-    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.9.0'
     testImplementation 'junit:junit:4.13.2'
@@ -51,7 +51,9 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-service:2.6.1"
 
     implementation project(path: ':api')
-    implementation project(path: ':repository')
+    implementation project(path: ':common')
+    implementation project(path: ':domain')
+
 
     implementation "com.google.dagger:hilt-android:2.45"
     kapt "com.google.dagger:hilt-compiler:2.45"

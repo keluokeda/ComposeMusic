@@ -6,7 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 
-abstract class UseCase<in P, R>(private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO) :
+internal abstract class UseCase<in P, R>(private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO) :
     IUseCase<P, R> {
 
     /** Executes the use case asynchronously and returns a [Result].

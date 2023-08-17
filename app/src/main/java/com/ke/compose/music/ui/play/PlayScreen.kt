@@ -1,6 +1,5 @@
 package com.ke.compose.music.ui.play
 
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
@@ -49,7 +48,6 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -57,10 +55,8 @@ import coil.compose.AsyncImage
 import com.dokar.amlv.LyricsView
 import com.dokar.amlv.LyricsViewState
 import com.dokar.amlv.parser.LrcLyricsParser
-import com.ke.compose.music.ui.theme.ComposeMusicTheme
+import com.ke.music.common.entity.ISongEntity
 import com.ke.music.player.service.LocalMusicPlayerController
-import com.ke.music.room.entity.DownloadedMusicEntity
-import com.ke.music.room.entity.QueryDownloadedMusicResult
 import com.ke.music.viewmodel.LocalPlaylistSongsViewModel
 import com.ke.music.viewmodel.SongLrcViewModel
 import com.orhanobut.logger.Logger
@@ -78,7 +74,7 @@ fun PlayRoute() {
     val songs by viewModel.songs.collectAsStateWithLifecycle()
     val songLrcViewModel: SongLrcViewModel = hiltViewModel()
 
-    PlayScreen(currentPlayingSong as QueryDownloadedMusicResult?, progress, playing, songs, {
+    PlayScreen(currentPlayingSong, progress, playing, songs, {
         musicPlayerController.skipToNext()
     }, {
         musicPlayerController.skipToPrevious()
@@ -103,10 +99,10 @@ fun PlayRoute() {
 
 @Composable
 private fun PlayScreen(
-    currentPlayingSong: QueryDownloadedMusicResult?,
+    currentPlayingSong: ISongEntity?,
     progress: Pair<Long, Long>,
     playing: Boolean,
-    songs: List<DownloadedMusicEntity>,
+    songs: List<ISongEntity>,
     skipNext: () -> Unit,
     skipPrevious: () -> Unit,
     playPause: () -> Unit,
@@ -118,7 +114,7 @@ private fun PlayScreen(
     },
     seekTo: (Long) -> Unit = {
 
-    }
+    },
 ) {
 
 
@@ -132,7 +128,7 @@ private fun PlayScreen(
                 .fillMaxSize()
         ) {
             Crossfade(
-                targetState = currentPlayingSong?.albumImage,
+                targetState = currentPlayingSong?.album?.image,
                 label = "background",
                 animationSpec = tween(durationMillis = 1000)
             ) { imageUrl ->
@@ -171,7 +167,7 @@ private fun PlayScreen(
 
                             Card {
                                 AsyncImage(
-                                    model = currentPlayingSong?.albumImage,
+                                    model = currentPlayingSong?.album?.image,
                                     contentDescription = null,
                                     modifier = Modifier
                                         .fillMaxWidth(0.8f)
@@ -188,12 +184,12 @@ private fun PlayScreen(
                             Spacer(modifier = Modifier.height(32.dp))
 
                             Text(
-                                text = currentPlayingSong?.name ?: "",
+                                text = currentPlayingSong?.song?.name ?: "",
                                 style = MaterialTheme.typography.titleLarge
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
-                                text = currentPlayingSong?.albumName ?: "",
+                                text = currentPlayingSong?.album?.name ?: "",
                                 style = MaterialTheme.typography.bodyLarge,
                                 textAlign = TextAlign.Center
                             )
@@ -217,8 +213,8 @@ private fun PlayScreen(
                         val scope = rememberCoroutineScope()
 
 
-                        LaunchedEffect(key1 = currentPlayingSong?.musicId) {
-                            val songId = currentPlayingSong?.musicId ?: return@LaunchedEffect
+                        LaunchedEffect(key1 = currentPlayingSong?.song?.id) {
+                            val songId = currentPlayingSong?.song?.id ?: return@LaunchedEffect
                             val lrc = getSongLrc(songId)
                             state = LyricsViewState(
                                 parser.parse(lrc), scope
@@ -284,26 +280,26 @@ private fun PlayScreen(
 
 
                             items(songs, key = {
-                                it.musicId
+                                it.song.id
                             }) {
 
-                                val isCurrent = it.musicId == currentPlayingSong?.musicId
+                                val isCurrent = it.song.id == currentPlayingSong?.song?.id
 
 
                                 ListItem(modifier = Modifier.clickable {
-                                    playNow(it.musicId)
+                                    playNow(it.song.id)
                                 },
 
                                     headlineContent = {
                                         Text(
-                                            text = it.name, maxLines = 1,
+                                            text = it.song.name, maxLines = 1,
                                             style = if (isCurrent) LocalTextStyle.current.copy(
                                                 Color.Red
                                             ) else LocalTextStyle.current
                                         )
                                     }, supportingContent = {
                                         Text(
-                                            text = it.albumName,
+                                            text = it.album.name,
                                             maxLines = 1,
                                             style = if (isCurrent) LocalTextStyle.current.copy(
                                                 Color.Red
@@ -311,13 +307,13 @@ private fun PlayScreen(
                                         )
                                     }, leadingContent = {
                                         AsyncImage(
-                                            model = it.albumImage,
+                                            model = it.album.image,
                                             contentDescription = null,
                                             modifier = Modifier.size(40.dp)
                                         )
                                     }, trailingContent = {
                                         IconButton(onClick = {
-                                            removeFromLocalPlaylist(it.musicId)
+                                            removeFromLocalPlaylist(it.song.id)
                                         }) {
                                             Icon(
                                                 imageVector = Icons.Default.Clear,
@@ -488,18 +484,18 @@ private val Long.niceTime: String
     }
 
 
-@Composable
-@Preview(uiMode = UI_MODE_NIGHT_YES)
-private fun PlayScreenAlbumPreview() {
-    ComposeMusicTheme {
-        PlayScreen(
-            currentPlayingSong = QueryDownloadedMusicResult(
-                musicId = 0L,
-                name = "暧昧",
-                albumId = 0,
-                albumName = "杨丞琳",
-                albumImage = "",
-                path = null
-            ), progress = 10000L to 20000, playing = true, emptyList(), {}, {}, {}, {}, {})
-    }
-}
+//@Composable
+//@Preview(uiMode = UI_MODE_NIGHT_YES)
+//private fun PlayScreenAlbumPreview() {
+//    ComposeMusicTheme {
+//        PlayScreen(
+//            currentPlayingSong = QueryDownloadedMusicResult(
+//                musicId = 0L,
+//                name = "暧昧",
+//                albumId = 0,
+//                albumName = "杨丞琳",
+//                albumImage = "",
+//                path = null
+//            ), progress = 10000L to 20000, playing = true, emptyList(), {}, {}, {}, {}, {})
+//    }
+//}

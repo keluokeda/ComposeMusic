@@ -1,8 +1,8 @@
 package com.ke.music.repository.domain
 
 import com.ke.music.api.HttpService
+import com.ke.music.common.repository.CurrentUserRepository
 import com.ke.music.repository.PlaylistRepository
-import com.ke.music.repository.UserIdRepository
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 
@@ -12,7 +12,7 @@ import javax.inject.Inject
 class DeletePlaylistUseCase @Inject constructor(
     private val httpService: HttpService,
     private val playlistRepository: PlaylistRepository,
-    private val userIdRepository: UserIdRepository,
+    private val userIdRepository: CurrentUserRepository,
 ) :
     UseCase<Long, Unit>(Dispatchers.IO) {
 

@@ -9,7 +9,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class UserIdRepository @Inject constructor(@ApplicationContext private val context: Context) :
+internal class UserIdRepository @Inject constructor(@ApplicationContext private val context: Context) :
     CurrentUserRepository {
 
     override val userIdFlow: Flow<Long>

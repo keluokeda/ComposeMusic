@@ -2,20 +2,15 @@ package com.ke.compose.music.ui.users
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.ke.music.api.HttpService
-import com.ke.music.repository.domain.FollowUserUseCase
+import com.ke.music.common.entity.IUser
 import com.ke.music.repository.entity.UsersType
-import com.ke.music.room.db.dao.UserDao
-import com.ke.music.room.db.entity.User
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class UsersViewModel @Inject constructor(
-    private val userDao: UserDao,
-    private val followUserUseCase: FollowUserUseCase,
-    httpService: HttpService,
-    savedStateHandle: SavedStateHandle
+
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val usersType = savedStateHandle.get<UsersType>("type")!!
     private val sourceId = savedStateHandle.get<Long>("id")!!
@@ -36,7 +31,7 @@ class UsersViewModel @Inject constructor(
 //        .flow.cachedIn(viewModelScope)
 
 
-    internal fun toggleFollow(user: User) {
+    internal fun toggleFollow(user: IUser) {
 //        viewModelScope.launch {
 //            userDao.updateUser(
 //                user.copy(

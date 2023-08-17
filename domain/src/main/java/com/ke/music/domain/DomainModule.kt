@@ -1,12 +1,16 @@
 package com.ke.music.domain
 
 import com.ke.music.common.domain.CollectAlbumUseCase
+import com.ke.music.common.domain.CreatePlaylistUseCase
 import com.ke.music.common.domain.DeleteCommentUseCase
 import com.ke.music.common.domain.DeletePlaylistUseCase
+import com.ke.music.common.domain.DownloadSongListUseCase
 import com.ke.music.common.domain.FollowArtistUseCase
 import com.ke.music.common.domain.FollowPlaylistUseCase
 import com.ke.music.common.domain.GetPlaylistCategoryListUseCase
+import com.ke.music.common.domain.GetShareUsersUseCase
 import com.ke.music.common.domain.GetSongLrcUseCase
+import com.ke.music.common.domain.GetSongUrlUseCase
 import com.ke.music.common.domain.LikeCommentUseCase
 import com.ke.music.common.domain.LoadAlbumDetailUseCase
 import com.ke.music.common.domain.LoadArtistDetailUseCase
@@ -14,84 +18,75 @@ import com.ke.music.common.domain.LoadCurrentUserPlaylistUseCase
 import com.ke.music.common.domain.LoadPlaylistDetailUseCase
 import com.ke.music.common.domain.LoadRecommendSongsUseCase
 import com.ke.music.common.domain.SendCommentUseCase
+import com.ke.music.common.domain.ShareResourceUseCase
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
 @Suppress("unused")
-object DomainModule {
+abstract class DomainModule {
 
-    @Provides
-    fun provideGetSongLrcUseCase(getSongLrcUseCaseImpl: GetSongLrcUseCaseImpl): GetSongLrcUseCase {
-        return getSongLrcUseCaseImpl
-    }
+    @Binds
+    internal abstract fun bindGetSongLrcUseCase(getSongLrcUseCaseImpl: GetSongLrcUseCaseImpl): GetSongLrcUseCase
 
-    @Provides
-    fun provideLoadArtistDetailUseCase(loadArtistDetailUseCaseImpl: LoadArtistDetailUseCaseImpl): LoadArtistDetailUseCase {
-        return loadArtistDetailUseCaseImpl
-    }
+    @Binds
+    internal abstract fun bindLoadArtistDetailUseCase(loadArtistDetailUseCaseImpl: LoadArtistDetailUseCaseImpl): LoadArtistDetailUseCase
 
-    @Provides
-    fun provideFollowArtistUseCase(followArtistUseCaseImpl: FollowArtistUseCaseImpl): FollowArtistUseCase {
-        return followArtistUseCaseImpl
-    }
+    @Binds
+    internal abstract fun bindFollowArtistUseCase(followArtistUseCaseImpl: FollowArtistUseCaseImpl): FollowArtistUseCase
 
-    @Provides
-    fun provideLoadAlbumDetailUseCase(loadAlbumDetailUseCaseImpl: LoadAlbumDetailUseCaseImpl): LoadAlbumDetailUseCase {
-        return loadAlbumDetailUseCaseImpl
-    }
+    @Binds
+    internal abstract fun bindLoadAlbumDetailUseCase(loadAlbumDetailUseCaseImpl: LoadAlbumDetailUseCaseImpl): LoadAlbumDetailUseCase
 
-    @Provides
-    fun provideCollectAlbumUseCase(collectAlbumUseCaseImpl: CollectAlbumUseCaseImpl): CollectAlbumUseCase {
-        return collectAlbumUseCaseImpl
-    }
+    @Binds
+    internal abstract fun bindCollectAlbumUseCase(collectAlbumUseCaseImpl: CollectAlbumUseCaseImpl): CollectAlbumUseCase
 
-    @Provides
-    fun provideLoadRecommendSongsUseCase(loadRecommendSongsUseCaseImpl: LoadRecommendSongsUseCaseImpl): LoadRecommendSongsUseCase {
-        return loadRecommendSongsUseCaseImpl
-    }
+    @Binds
+    internal abstract fun bindLoadRecommendSongsUseCase(loadRecommendSongsUseCaseImpl: LoadRecommendSongsUseCaseImpl): LoadRecommendSongsUseCase
 
-    @Provides
-    fun provideLikeCommentUseCase(likeCommentUseCaseImpl: LikeCommentUseCaseImpl): LikeCommentUseCase {
-        return likeCommentUseCaseImpl
-    }
+    @Binds
+    internal abstract fun bindLikeCommentUseCase(likeCommentUseCaseImpl: LikeCommentUseCaseImpl): LikeCommentUseCase
 
-    @Provides
-    fun provideSendCommentUseCase(sendCommentUseCaseImpl: SendCommentUseCaseImpl): SendCommentUseCase {
-        return sendCommentUseCaseImpl
-    }
+    @Binds
+    internal abstract fun bindSendCommentUseCase(sendCommentUseCaseImpl: SendCommentUseCaseImpl): SendCommentUseCase
 
-    @Provides
-    fun provideDeleteCommentUseCase(deleteCommentUseCaseImpl: DeleteCommentUseCaseImpl): DeleteCommentUseCase {
-        return deleteCommentUseCaseImpl
-    }
+    @Binds
+    internal abstract fun bindDeleteCommentUseCase(deleteCommentUseCaseImpl: DeleteCommentUseCaseImpl): DeleteCommentUseCase
 
-    @Provides
-    fun provideLoadCurrentUserPlaylistUseCase(loadCurrentUserPlaylistUseCaseImpl: LoadCurrentUserPlaylistUseCaseImpl): LoadCurrentUserPlaylistUseCase {
-        return loadCurrentUserPlaylistUseCaseImpl
-    }
+    @Binds
+    internal abstract fun bindLoadCurrentUserPlaylistUseCase(loadCurrentUserPlaylistUseCaseImpl: LoadCurrentUserPlaylistUseCaseImpl):
+            LoadCurrentUserPlaylistUseCase
 
-    @Provides
-    fun provideDeletePlaylistUseCase(deletePlaylistUseCaseImpl: DeletePlaylistUseCaseImpl): DeletePlaylistUseCase {
-        return deletePlaylistUseCaseImpl
-    }
+    @Binds
+    internal abstract fun bindDeletePlaylistUseCase(deletePlaylistUseCaseImpl: DeletePlaylistUseCaseImpl): DeletePlaylistUseCase
 
-    @Provides
-    fun provideGetPlaylistCategoryListUseCase(getPlaylistCategoryListUseCaseImpl: GetPlaylistCategoryListUseCaseImpl): GetPlaylistCategoryListUseCase {
-        return getPlaylistCategoryListUseCaseImpl
-    }
+    @Binds
+    internal abstract fun bindGetPlaylistCategoryListUseCase(getPlaylistCategoryListUseCaseImpl: GetPlaylistCategoryListUseCaseImpl):
+            GetPlaylistCategoryListUseCase
 
 
-    @Provides
-    fun provideLoadPlaylistDetailUseCase(loadPlaylistDetailUseCaseImpl: LoadPlaylistDetailUseCaseImpl): LoadPlaylistDetailUseCase {
-        return loadPlaylistDetailUseCaseImpl
-    }
+    @Binds
+    internal abstract fun bindLoadPlaylistDetailUseCase(loadPlaylistDetailUseCaseImpl: LoadPlaylistDetailUseCaseImpl):
+            LoadPlaylistDetailUseCase
 
-    @Provides
-    fun provideFollowPlaylistUseCase(followPlaylistUseCaseImpl: FollowPlaylistUseCaseImpl): FollowPlaylistUseCase {
-        return followPlaylistUseCaseImpl
-    }
+    @Binds
+    internal abstract fun bindFollowPlaylistUseCase(followPlaylistUseCaseImpl: FollowPlaylistUseCaseImpl): FollowPlaylistUseCase
+
+    @Binds
+    internal abstract fun bindCreatePlaylistUseCase(createPlaylistUseCaseImpl: CreatePlaylistUseCaseImpl): CreatePlaylistUseCase
+
+    @Binds
+    internal abstract fun bindsGetShareUsersUseCase(getShareUsersUseCaseImpl: GetShareUsersUseCaseImpl): GetShareUsersUseCase
+
+    @Binds
+    internal abstract fun bindShareResourceUseCase(shareResourceUseCaseImpl: ShareResourceUseCaseImpl): ShareResourceUseCase
+
+    @Binds
+    internal abstract fun bindDownloadSongListUseCase(downloadSongListUseCaseImpl: DownloadSongListUseCaseImpl): DownloadSongListUseCase
+
+    @Binds
+    internal abstract fun bindGetSongUrlUseCase(getSongUrlUseCaseImpl: GetSongUrlUseCaseImpl): GetSongUrlUseCase
 }

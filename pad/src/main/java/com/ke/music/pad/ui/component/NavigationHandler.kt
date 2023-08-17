@@ -2,8 +2,8 @@ package com.ke.music.pad.ui.component
 
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.ke.music.common.entity.CommentType
+import com.ke.music.common.entity.ShareType
 import com.ke.music.pad.ui.Screen
-import com.ke.music.repository.entity.ShareType
 
 sealed interface NavigationAction {
 

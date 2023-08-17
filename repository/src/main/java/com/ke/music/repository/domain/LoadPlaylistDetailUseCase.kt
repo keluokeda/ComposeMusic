@@ -2,7 +2,7 @@ package com.ke.music.repository.domain
 
 import android.content.Context
 import com.ke.music.api.HttpService
-import com.ke.music.repository.MusicRepository
+import com.ke.music.common.repository.SongRepository
 import com.ke.music.repository.PlaylistRepository
 import com.ke.music.repository.UserRepository
 import com.ke.music.repository.convert
@@ -18,12 +18,12 @@ import javax.inject.Inject
 
 class LoadPlaylistDetailUseCase @Inject constructor(
     private val httpService: HttpService,
-    private val musicRepository: MusicRepository,
+    private val musicRepository: SongRepository,
     private val playlistMusicCrossRefDao: PlaylistMusicCrossRefDao,
     private val userRepository: UserRepository,
     private val playlistSubscriberCrossRefDao: PlaylistSubscriberCrossRefDao,
     private val playlistRepository: PlaylistRepository,
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
 ) :
     UseCase<Long, Unit>(Dispatchers.IO) {
 
@@ -42,7 +42,7 @@ class LoadPlaylistDetailUseCase @Inject constructor(
 
 
             //保存歌曲到room
-            musicRepository.saveMusicListToRoom(songs)
+            musicRepository.saveSongs(songs)
 
             val playlistMusicCrossRefList = mutableListOf<PlaylistMusicCrossRef>()
             songs.forEachIndexed { index, song ->

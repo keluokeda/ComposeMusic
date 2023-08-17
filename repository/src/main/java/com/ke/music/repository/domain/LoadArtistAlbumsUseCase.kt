@@ -1,14 +1,13 @@
 package com.ke.music.repository.domain
 
 import com.ke.music.api.HttpService
-import com.ke.music.repository.AlbumRepository
 import com.ke.music.room.db.entity.Album
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 
 class LoadArtistAlbumsUseCase @Inject constructor(
     private val httpService: HttpService,
-    private val albumRepository: AlbumRepository
+    private val albumRepository: com.ke.music.common.repository.AlbumRepository,
 ) :
     UseCase<Long, Unit>(Dispatchers.IO) {
 

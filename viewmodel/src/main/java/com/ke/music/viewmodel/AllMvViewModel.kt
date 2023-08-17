@@ -8,14 +8,13 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import androidx.paging.cachedIn
-import androidx.paging.map
 import com.ke.music.common.entity.IMv
 import com.ke.music.common.repository.MvRepository
+import com.orhanobut.logger.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 @HiltViewModel
@@ -58,11 +57,14 @@ class AllMvViewModel @Inject constructor(
         ),
         remoteMediator = remoteMediator
     ) {
+        Logger.d("数据发生了变化 重新加载数据 ${type.value} ${area.value}")
         mvRepository.getAllMv(area.value, type.value) as PagingSource<Int, IMv>
-    }.flow.map { data ->
-        data.map {
-            it
-        }
-    }
+    }.flow
+//        .map { data ->
+//            data.map {
+//                it
+//            }
+//        }
+
         .cachedIn(viewModelScope)
 }

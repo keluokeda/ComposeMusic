@@ -22,7 +22,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AlbumRepository @Inject constructor(
+internal class AlbumRepository @Inject constructor(
     private val albumDao: AlbumDao,
     private val albumDetailDao: AlbumDetailDao,
     private val albumArtistCrossRefDao: AlbumArtistCrossRefDao,

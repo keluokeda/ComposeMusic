@@ -16,36 +16,36 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.ke.music.common.entity.IAlbum
-import com.ke.music.room.db.entity.Album
 
-@Composable
-fun AlbumView(
-    album: Album
-) {
-    val navigationHandler = LocalNavigationHandler.current
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .aspectRatio(1f)
-        .clickable {
-            navigationHandler.navigate(NavigationAction.NavigateToAlbumDetail(album.albumId))
-        }
-        .padding(2.dp), contentAlignment = Alignment.BottomEnd) {
-        AsyncImage(
-            model = album.imageUrl,
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize()
-        )
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.Black.copy(alpha = .6f))
-                .padding(4.dp)
-        ) {
-            Text(text = album.name, maxLines = 1)
-
-        }
-    }
-}
+//
+//@Composable
+//fun AlbumView(
+//    album: Album
+//) {
+//    val navigationHandler = LocalNavigationHandler.current
+//    Box(modifier = Modifier
+//        .fillMaxSize()
+//        .aspectRatio(1f)
+//        .clickable {
+//            navigationHandler.navigate(NavigationAction.NavigateToAlbumDetail(album.albumId))
+//        }
+//        .padding(2.dp), contentAlignment = Alignment.BottomEnd) {
+//        AsyncImage(
+//            model = album.imageUrl,
+//            contentDescription = null,
+//            modifier = Modifier.fillMaxSize()
+//        )
+//        Column(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .background(Color.Black.copy(alpha = .6f))
+//                .padding(4.dp)
+//        ) {
+//            Text(text = album.name, maxLines = 1)
+//
+//        }
+//    }
+//}
 
 
 @Composable
@@ -53,13 +53,14 @@ fun AlbumView(
     album: IAlbum,
 ) {
     val navigationHandler = LocalNavigationHandler.current
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .aspectRatio(1f)
-        .clickable {
-            navigationHandler.navigate(NavigationAction.NavigateToAlbumDetail(album.albumId))
-        }
-        .padding(2.dp), contentAlignment = Alignment.BottomEnd) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .aspectRatio(1f)
+            .clickable {
+                navigationHandler.navigate(NavigationAction.NavigateToAlbumDetail(album.albumId))
+            }
+            .padding(2.dp), contentAlignment = Alignment.BottomEnd) {
         AsyncImage(
             model = album.image,
             contentDescription = null,

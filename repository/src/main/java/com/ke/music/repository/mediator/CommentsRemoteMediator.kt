@@ -9,17 +9,14 @@ import com.ke.music.common.entity.IComment
 import com.ke.music.common.mediator.CommentsRemoteMediator
 import com.ke.music.common.repository.CommentRepository
 import com.orhanobut.logger.Logger
-import javax.inject.Inject
 
-class CommentsRemoteMediator @Inject constructor(
+internal class CommentsRemoteMediator constructor(
     private val httpService: HttpService,
     private val commentRepository: CommentRepository,
+    private val commentType: CommentType,
+    private val sourceId: Long,
 ) : CommentsRemoteMediator() {
 
-    override var commentType: CommentType = CommentType.Music
-
-
-    override var sourceId: Long = 0L
 
     /**
      * 排序方式, 1:按推荐排序, 2:按热度排序, 3:按时间排序

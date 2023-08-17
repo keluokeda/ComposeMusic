@@ -1,7 +1,7 @@
 package com.ke.music.pad.ui
 
 import com.ke.music.common.entity.CommentType
-import com.ke.music.repository.entity.ShareType
+import com.ke.music.common.entity.ShareType
 import com.ke.music.repository.entity.UsersType
 import com.ke.music.room.db.entity.Playlist
 import java.net.URLEncoder

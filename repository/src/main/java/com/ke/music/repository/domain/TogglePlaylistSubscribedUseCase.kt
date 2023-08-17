@@ -1,7 +1,7 @@
 package com.ke.music.repository.domain
 
 import com.ke.music.api.HttpService
-import com.ke.music.repository.UserIdRepository
+import com.ke.music.common.repository.CurrentUserRepository
 import com.ke.music.room.db.dao.PlaylistSubscriberCrossRefDao
 import com.ke.music.room.db.entity.PlaylistSubscriberCrossRef
 import kotlinx.coroutines.Dispatchers
@@ -13,7 +13,7 @@ import javax.inject.Inject
 class TogglePlaylistSubscribedUseCase @Inject constructor(
     private val httpService: HttpService,
     private val playlistSubscriberCrossRefDao: PlaylistSubscriberCrossRefDao,
-    private val userIdRepository: UserIdRepository
+    private val userIdRepository: CurrentUserRepository,
 ) :
     UseCase<Pair<Long, Boolean>, Unit>(Dispatchers.IO) {
 

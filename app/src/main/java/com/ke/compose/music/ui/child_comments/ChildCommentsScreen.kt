@@ -39,7 +39,6 @@ import com.ke.compose.music.ui.component.Avatar
 import com.ke.compose.music.ui.theme.ComposeMusicTheme
 import com.ke.music.common.entity.IChildComment
 import com.ke.music.common.entity.IComment
-import com.ke.music.room.entity.QueryChildCommentResult
 import com.ke.music.viewmodel.ChildCommentsViewModel
 import com.orhanobut.logger.Logger
 
@@ -138,68 +137,68 @@ private fun HeaderPreview() {
     }
 }
 
-
-@Composable
-private fun CommentItem(
-    comment: QueryChildCommentResult,
-    modifier: Modifier = Modifier,
-    onThumbClick: (QueryChildCommentResult) -> Unit,
-) {
-    Column(modifier = modifier) {
-        Row(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-            Avatar(url = comment.userAvatar, size = 40)
-            Spacer(modifier = Modifier.width(8.dp))
-            Column {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = comment.username, style = MaterialTheme.typography.bodySmall)
-                    if (comment.beRepliedUsername != null) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowRight,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Text(
-                            text = comment.beRepliedUsername ?: "",
-                            style = MaterialTheme.typography.bodySmall
-                        )
-
-                    }
-                }
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(text = comment.content ?: "")
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = "${comment.timeString} ${comment.ip}",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    IconButton(onClick = {
-                        onThumbClick(comment)
-                    }) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            if (comment.likedCount > 0)
-                                Text(
-                                    text = comment.likedCount.niceCount(),
-                                    style = MaterialTheme.typography.bodySmall
-                                )
-                            Icon(
-                                imageVector = if (comment.liked) Icons.Default.ThumbUp else Icons.Outlined.ThumbUp,
-                                contentDescription = null,
-                                tint = Color.Gray,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-
-
-                    }
-                }
-
-
-            }
-        }
-        Divider(modifier = Modifier.height(0.2.dp))
-    }
-}
+//
+//@Composable
+//private fun CommentItem(
+//    comment: QueryChildCommentResult,
+//    modifier: Modifier = Modifier,
+//    onThumbClick: (QueryChildCommentResult) -> Unit,
+//) {
+//    Column(modifier = modifier) {
+//        Row(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+//            Avatar(url = comment.userAvatar, size = 40)
+//            Spacer(modifier = Modifier.width(8.dp))
+//            Column {
+//                Row(verticalAlignment = Alignment.CenterVertically) {
+//                    Text(text = comment.username, style = MaterialTheme.typography.bodySmall)
+//                    if (comment.beRepliedUsername != null) {
+//                        Icon(
+//                            imageVector = Icons.Default.ArrowRight,
+//                            contentDescription = null,
+//                            modifier = Modifier.size(16.dp)
+//                        )
+//                        Text(
+//                            text = comment.beRepliedUsername ?: "",
+//                            style = MaterialTheme.typography.bodySmall
+//                        )
+//
+//                    }
+//                }
+//                Spacer(modifier = Modifier.height(2.dp))
+//                Text(text = comment.content ?: "")
+//                Row(verticalAlignment = Alignment.CenterVertically) {
+//                    Text(
+//                        text = "${comment.timeString} ${comment.ip}",
+//                        style = MaterialTheme.typography.bodySmall
+//                    )
+//                    Spacer(modifier = Modifier.weight(1f))
+//                    IconButton(onClick = {
+//                        onThumbClick(comment)
+//                    }) {
+//                        Row(verticalAlignment = Alignment.CenterVertically) {
+//                            if (comment.likedCount > 0)
+//                                Text(
+//                                    text = comment.likedCount.niceCount(),
+//                                    style = MaterialTheme.typography.bodySmall
+//                                )
+//                            Icon(
+//                                imageVector = if (comment.liked) Icons.Default.ThumbUp else Icons.Outlined.ThumbUp,
+//                                contentDescription = null,
+//                                tint = Color.Gray,
+//                                modifier = Modifier.size(18.dp)
+//                            )
+//                        }
+//
+//
+//                    }
+//                }
+//
+//
+//            }
+//        }
+//        Divider(modifier = Modifier.height(0.2.dp))
+//    }
+//}
 
 
 @Composable
@@ -229,7 +228,7 @@ private fun CommentItem(
                     }
                 }
                 Spacer(modifier = Modifier.height(2.dp))
-                Text(text = comment.content ?: "")
+                Text(text = comment.content)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = "${comment.timeString} ${comment.ip}",

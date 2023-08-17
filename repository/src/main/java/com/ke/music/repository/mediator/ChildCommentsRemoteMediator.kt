@@ -9,16 +9,14 @@ import com.ke.music.common.entity.IChildComment
 import com.ke.music.common.mediator.ChildCommentsRemoteMediator
 import com.ke.music.common.repository.CommentRepository
 import com.orhanobut.logger.Logger
-import javax.inject.Inject
 
-class ChildCommentsRemoteMediator @Inject constructor(
+internal class ChildCommentsRemoteMediator constructor(
     private val httpService: HttpService,
     private val commentRepository: CommentRepository,
+    override val commentId: Long,
+    override val sourceId: Long,
+    override val commentType: CommentType,
 ) : ChildCommentsRemoteMediator() {
-
-    override var commentType: CommentType = CommentType.Music
-    override var sourceId: Long = 0
-    override var commentId: Long = 0
 
 
     @ExperimentalPagingApi

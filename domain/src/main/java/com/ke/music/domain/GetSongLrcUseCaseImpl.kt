@@ -6,7 +6,7 @@ import com.ke.music.common.repository.SongRepository
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 
-class GetSongLrcUseCaseImpl @Inject constructor(
+internal class GetSongLrcUseCaseImpl @Inject constructor(
     private val httpService: HttpService,
     private val musicRepository: SongRepository,
 ) : UseCase<Pair<Long, Boolean>, String>(Dispatchers.IO), GetSongLrcUseCase {

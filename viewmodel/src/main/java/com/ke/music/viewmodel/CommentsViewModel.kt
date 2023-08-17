@@ -54,13 +54,6 @@ class CommentsViewModel @Inject constructor(
     private val _sendCommentResult = Channel<Boolean?>(capacity = Channel.CONFLATED)
 
 
-    init {
-        commentsRemoteMediator.apply {
-            sourceId = id
-            this.commentType = this@CommentsViewModel.commentType
-        }
-    }
-
     /**
      * 发送评论结果
      * true表示成功并且需要刷新列表 false表示成功不需要刷新列表 null表示失败

@@ -1,4 +1,4 @@
-package com.ke.compose.music.ui.playlist_top
+package com.ke.music.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -7,10 +7,11 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.PagingSource
 import androidx.paging.cachedIn
-import com.ke.music.api.HttpService
-import com.ke.music.repository.PlaylistRepository
-import com.ke.music.repository.mediator.TopPlaylistRemoteMediator
+import com.ke.music.common.entity.IPlaylist
+import com.ke.music.common.mediator.TopPlaylistRemoteMediator
+import com.ke.music.common.repository.PlaylistRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -18,20 +19,15 @@ import javax.inject.Inject
 @HiltViewModel
 class PlaylistTopViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    httpService: HttpService,
-    private val playlistRepository: PlaylistRepository
+    private val playlistRepository: PlaylistRepository,
+    topPlaylistRemoteMediator: TopPlaylistRemoteMediator,
 ) :
     ViewModel() {
-    internal val category = savedStateHandle.get<String>("category") ?: "全部"
-
-
-    private val topPlaylistRemoteMediator = TopPlaylistRemoteMediator(
-        httpService, category, playlistRepository
-    )
+    val category = savedStateHandle.get<String>("category") ?: "全部"
 
 
     @OptIn(ExperimentalPagingApi::class)
-    val playlists: Flow<PagingData<com.ke.music.room.db.entity.Playlist>> = Pager(
+    val playlists: Flow<PagingData<IPlaylist>> = Pager(
         config = PagingConfig(
             pageSize = 50,
             enablePlaceholders = false,
@@ -39,7 +35,7 @@ class PlaylistTopViewModel @Inject constructor(
         ),
         remoteMediator = topPlaylistRemoteMediator
     ) {
-        playlistRepository.topPlaylist(category)
+        playlistRepository.topPlaylist(category) as PagingSource<Int, IPlaylist>
     }.flow
         .cachedIn(viewModelScope)
 

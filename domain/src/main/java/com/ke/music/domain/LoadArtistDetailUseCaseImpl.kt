@@ -14,7 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
-class LoadArtistDetailUseCaseImpl @Inject constructor(
+internal class LoadArtistDetailUseCaseImpl @Inject constructor(
     private val artistRepository: ArtistRepository,
     private val songRepository: SongRepository,
     private val httpService: HttpService,

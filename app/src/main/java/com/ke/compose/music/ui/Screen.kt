@@ -2,7 +2,7 @@ package com.ke.compose.music.ui
 
 import com.ke.music.common.entity.CommentType
 import com.ke.music.common.entity.IPlaylist
-import com.ke.music.repository.entity.ShareType
+import com.ke.music.common.entity.ShareType
 import com.ke.music.repository.entity.UsersType
 import java.net.URLEncoder
 

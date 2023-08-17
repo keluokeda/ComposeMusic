@@ -43,9 +43,8 @@ import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.component.LocalNavigationHandler
 import com.ke.compose.music.ui.component.NavigationAction
 import com.ke.music.common.entity.IPlaylist
+import com.ke.music.common.entity.ShareType
 import com.ke.music.download.LocalDownloadManager
-import com.ke.music.repository.entity.ShareType
-import com.ke.music.room.db.entity.Playlist
 import com.ke.music.viewmodel.PlaylistViewModel
 
 
@@ -116,86 +115,86 @@ private fun PlaylistScreen(
         }
     }
 }
-
-@Composable
-private fun PlaylistItem(
-    playlist: Playlist,
-    onClick: (Playlist) -> Unit,
-    onDeletePlaylistClick: (Playlist) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-
-    var expanded by remember {
-        mutableStateOf(false)
-    }
-
-    val viewModel = LocalAppViewModel.current
-
-    Column {
-
-        Row(modifier = modifier
-            .clickable {
-                onClick(playlist)
-            }
-            .padding(start = 16.dp, top = 8.dp, bottom = 8.dp, end = 4.dp),
-            verticalAlignment = Alignment.CenterVertically) {
-            AsyncImage(
-                model = playlist.coverImgUrl,
-                contentDescription = null,
-                modifier = Modifier.size(40.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(text = playlist.name, maxLines = 1)
-                Text(text = "${playlist.trackCount}首", style = MaterialTheme.typography.bodySmall)
-            }
-
-
-            Box(contentAlignment = Alignment.Center) {
-                IconButton(onClick = { expanded = true }) {
-                    Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
-                }
-                DropdownMenu(expanded = expanded, onDismissRequest = {
-                    expanded = false
-                }) {
-                    val downloadManager = LocalDownloadManager.current
-                    DropdownMenuItem(text = { Text(text = "下载") }, onClick = {
-                        downloadManager.downloadPlaylist(playlist.id)
-                        expanded = false
-                    })
-                    val navigationHandler = LocalNavigationHandler.current
-                    DropdownMenuItem(text = { Text(text = "分享") }, onClick = {
-                        navigationHandler.navigate(
-                            NavigationAction.NavigateToShare(
-                                ShareType.Playlist,
-                                playlist.id,
-                                playlist.name,
-                                playlist.description ?: "",
-                                playlist.coverImgUrl
-                            )
-                        )
-                        expanded = false
-                    })
-                    DropdownMenuItem(text = { Text(text = "删除") }, onClick = {
-                        expanded = false
-                        onDeletePlaylistClick(playlist)
-                    })
-
-                    val appViewModel = LocalAppViewModel.current
-
-                    if (playlist.creatorId == appViewModel.currentUserId)
-                        DropdownMenuItem(text = { Text(text = "编辑") }, onClick = {
-                            expanded = false
-                        })
-                }
-            }
-        }
-
-        Divider(startIndent = 16.dp)
-    }
-}
-
+//
+//@Composable
+//private fun PlaylistItem(
+//    playlist: Playlist,
+//    onClick: (Playlist) -> Unit,
+//    onDeletePlaylistClick: (Playlist) -> Unit,
+//    modifier: Modifier = Modifier,
+//) {
+//
+//    var expanded by remember {
+//        mutableStateOf(false)
+//    }
+//
+//    val viewModel = LocalAppViewModel.current
+//
+//    Column {
+//
+//        Row(modifier = modifier
+//            .clickable {
+//                onClick(playlist)
+//            }
+//            .padding(start = 16.dp, top = 8.dp, bottom = 8.dp, end = 4.dp),
+//            verticalAlignment = Alignment.CenterVertically) {
+//            AsyncImage(
+//                model = playlist.coverImgUrl,
+//                contentDescription = null,
+//                modifier = Modifier.size(40.dp)
+//            )
+//            Spacer(modifier = Modifier.width(8.dp))
+//
+//            Column(modifier = Modifier.weight(1f)) {
+//                Text(text = playlist.name, maxLines = 1)
+//                Text(text = "${playlist.trackCount}首", style = MaterialTheme.typography.bodySmall)
+//            }
+//
+//
+//            Box(contentAlignment = Alignment.Center) {
+//                IconButton(onClick = { expanded = true }) {
+//                    Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
+//                }
+//                DropdownMenu(expanded = expanded, onDismissRequest = {
+//                    expanded = false
+//                }) {
+//                    val downloadManager = LocalDownloadManager.current
+//                    DropdownMenuItem(text = { Text(text = "下载") }, onClick = {
+//                        downloadManager.downloadPlaylist(playlist.id)
+//                        expanded = false
+//                    })
+//                    val navigationHandler = LocalNavigationHandler.current
+//                    DropdownMenuItem(text = { Text(text = "分享") }, onClick = {
+//                        navigationHandler.navigate(
+//                            NavigationAction.NavigateToShare(
+//                                ShareType.Playlist,
+//                                playlist.id,
+//                                playlist.name,
+//                                playlist.description ?: "",
+//                                playlist.coverImgUrl
+//                            )
+//                        )
+//                        expanded = false
+//                    })
+//                    DropdownMenuItem(text = { Text(text = "删除") }, onClick = {
+//                        expanded = false
+//                        onDeletePlaylistClick(playlist)
+//                    })
+//
+//                    val appViewModel = LocalAppViewModel.current
+//
+//                    if (playlist.creatorId == appViewModel.currentUserId)
+//                        DropdownMenuItem(text = { Text(text = "编辑") }, onClick = {
+//                            expanded = false
+//                        })
+//                }
+//            }
+//        }
+//
+//        Divider(startIndent = 16.dp)
+//    }
+//}
+//
 
 @Composable
 private fun PlaylistItem(

@@ -10,7 +10,7 @@ import com.ke.music.common.repository.MvRepository
 import com.orhanobut.logger.BuildConfig
 import javax.inject.Inject
 
-class AllMvRemoteMediator @Inject constructor(
+internal class AllMvRemoteMediator @Inject constructor(
     private val httpService: HttpService,
     private val mvRepository: MvRepository,
 ) :

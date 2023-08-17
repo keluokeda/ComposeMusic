@@ -1,6 +1,7 @@
 package com.ke.music.common.repository
 
 import com.ke.music.api.response.Song
+import com.ke.music.common.entity.ISong
 import com.ke.music.common.entity.ISongEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -77,4 +78,7 @@ interface SongRepository {
      * 获取歌曲歌词
      */
     suspend fun getSongLrc(songId: Long): String?
+    suspend fun findById(musicId: Long): ISong?
+    suspend fun deleteLocalPlaylistSong(songId: Long)
+    fun getLocalPlaylistSongList(): Flow<List<ISongEntity>>
 }

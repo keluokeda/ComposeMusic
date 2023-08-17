@@ -1,7 +1,9 @@
 package com.ke.music.common.repository
 
+import androidx.paging.PagingSource
 import com.ke.music.api.response.Playlist
 import com.ke.music.api.response.PlaylistDynamicResponse
+import com.ke.music.api.response.PlaylistTopResponse
 import com.ke.music.api.response.Song
 import com.ke.music.common.entity.IPlaylist
 import kotlinx.coroutines.flow.Flow
@@ -57,4 +59,14 @@ interface PlaylistRepository {
      * @return 新的关注状态
      */
     suspend fun toggleFollowPlaylist(playlistId: Long): Boolean
+
+    /**
+     * 保存网友精选碟数据
+     */
+    suspend fun saveTopPlaylists(response: PlaylistTopResponse, deleteOld: Boolean)
+
+    /**
+     * 网友精选碟
+     */
+    fun topPlaylist(category: String?): PagingSource<Int, out IPlaylist>
 }

@@ -67,4 +67,14 @@ interface DownloadRepository {
         downloadSourceType: DownloadSourceType,
         downloadId: Long,
     )
+
+
+    /**
+     * 开始下载
+     */
+    @Deprecated("弃用")
+    suspend fun download(list: List<Long>, sourceType: Int)
+
+    suspend fun download(list: List<Long>, sourceType: DownloadSourceType)
+
 }

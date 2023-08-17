@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.ke.music.room.db.entity.Artist
 import kotlinx.coroutines.flow.Flow
 
@@ -34,6 +35,7 @@ interface ArtistDao {
         insertAllInner(result)
     }
 
+    @Transaction
     suspend fun insertArtists(list: List<com.ke.music.api.response.Artist>) {
         insert(list.map {
             Artist(it.id, it.name, it.avatar)

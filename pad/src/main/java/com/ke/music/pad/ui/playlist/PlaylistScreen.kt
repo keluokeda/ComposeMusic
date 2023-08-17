@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.IconButton
@@ -39,11 +38,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.ke.music.api.response.mockPlaylist
+import com.ke.music.common.entity.ShareType
 import com.ke.music.download.LocalDownloadManager
 import com.ke.music.pad.ui.component.LocalNavigationHandler
 import com.ke.music.pad.ui.component.NavigationAction
 import com.ke.music.repository.convert
-import com.ke.music.repository.entity.ShareType
 import com.ke.music.room.db.entity.Playlist
 
 

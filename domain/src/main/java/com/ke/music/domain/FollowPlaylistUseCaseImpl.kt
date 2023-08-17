@@ -5,7 +5,7 @@ import com.ke.music.common.domain.FollowPlaylistUseCase
 import com.ke.music.common.repository.PlaylistRepository
 import javax.inject.Inject
 
-class FollowPlaylistUseCaseImpl @Inject constructor(
+internal class FollowPlaylistUseCaseImpl @Inject constructor(
     private val httpService: HttpService,
     private val playlistRepository: PlaylistRepository,
 ) :

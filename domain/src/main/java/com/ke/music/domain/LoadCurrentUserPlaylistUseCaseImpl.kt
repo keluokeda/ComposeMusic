@@ -6,7 +6,7 @@ import com.ke.music.common.repository.CurrentUserRepository
 import com.ke.music.common.repository.PlaylistRepository
 import javax.inject.Inject
 
-class LoadCurrentUserPlaylistUseCaseImpl @Inject constructor(
+internal class LoadCurrentUserPlaylistUseCaseImpl @Inject constructor(
     private val httpService: HttpService,
     private val playlistRepository: PlaylistRepository,
     private val currentUserRepository: CurrentUserRepository,

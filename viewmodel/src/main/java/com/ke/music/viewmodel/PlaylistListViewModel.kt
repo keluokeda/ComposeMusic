@@ -1,4 +1,4 @@
-package com.ke.compose.music.ui.playlist_list
+package com.ke.music.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,10 +13,6 @@ class PlaylistListViewModel @Inject constructor(
     playlistRepository: PlaylistRepository
 ) : ViewModel() {
 
-//    private val _uiState = MutableStateFlow<PlaylistListUiState>(PlaylistListUiState.Loading)
-//
-//    internal val uiState: StateFlow<PlaylistListUiState>
-//        get() = _uiState
 
 
     val list = playlistRepository.getCurrentUserPlaylist()

@@ -5,6 +5,7 @@ import com.ke.music.api.response.Comment
 import com.ke.music.common.entity.CommentType
 import com.ke.music.common.entity.IComment
 import com.ke.music.common.repository.CommentRepository
+import com.ke.music.common.repository.CurrentUserRepository
 import com.ke.music.room.db.dao.ChildCommentDao
 import com.ke.music.room.db.dao.CommentDao
 import com.ke.music.room.db.dao.UserDao
@@ -21,7 +22,7 @@ class CommentRepository @Inject constructor(
     private val commentDao: CommentDao,
     private val userDao: UserDao,
     private val userLikeCommentCrossRefDao: UserLikeCommentCrossRefDao,
-    private val userIdRepository: UserIdRepository,
+    private val userIdRepository: CurrentUserRepository,
     private val childCommentDao: ChildCommentDao,
 ) : CommentRepository {
 

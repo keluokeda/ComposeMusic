@@ -18,11 +18,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.items
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
 import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.component.Avatar
 import com.ke.compose.music.ui.component.LocalBackHandler
-import com.ke.music.room.db.entity.User
+import com.ke.music.common.entity.IUser
 
 @Composable
 fun UsersRoute() {
@@ -35,7 +36,11 @@ fun UsersRoute() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun UserScreen(users: LazyPagingItems<User>, title: String, toggleFollow: (User) -> Unit) {
+private fun UserScreen(
+    users: LazyPagingItems<IUser>,
+    title: String,
+    toggleFollow: (IUser) -> Unit,
+) {
     val backHandler = LocalBackHandler.current
     Scaffold(topBar = {
         AppTopBar(title = {
@@ -49,9 +54,15 @@ private fun UserScreen(users: LazyPagingItems<User>, title: String, toggleFollow
         })
     }) { padding ->
         LazyColumn(modifier = Modifier.padding(padding)) {
-            items(users, key = { it.id }) {
-                UserItem(user = it!!) {
-                    toggleFollow(it)
+            items(
+                count = users.itemCount,
+                key = users.itemKey(key = { it.key }),
+                contentType = users.itemContentType(
+                )
+            ) { index ->
+                val item = users[index]
+                UserItem(user = item!!) {
+                    toggleFollow(item)
                 }
             }
         }
@@ -59,7 +70,7 @@ private fun UserScreen(users: LazyPagingItems<User>, title: String, toggleFollow
 }
 
 @Composable
-private fun UserItem(user: User, followClick: () -> Unit) {
+private fun UserItem(user: IUser, followClick: () -> Unit) {
     Row(
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically

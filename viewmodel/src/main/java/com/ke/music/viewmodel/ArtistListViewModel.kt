@@ -58,7 +58,10 @@ class ArtistListViewModel @Inject constructor(
         ),
         remoteMediator = hotArtistRemoteMediator
     ) {
-        artistRepository.hotArtist(type.value.value, area.value.value) as PagingSource<Int, IArtist>
+        artistRepository.hotArtists(
+            type.value.value,
+            area.value.value
+        ) as PagingSource<Int, IArtist>
     }.flow
         .cachedIn(viewModelScope)
 

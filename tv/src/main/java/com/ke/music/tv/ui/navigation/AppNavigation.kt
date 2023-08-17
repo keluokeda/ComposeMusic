@@ -10,11 +10,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.ke.music.common.entity.ShareType
 import com.ke.music.download.DownloadManagerImpl
 import com.ke.music.download.LocalDownloadManager
 import com.ke.music.player.service.LocalMusicPlayerController
 import com.ke.music.player.service.MusicPlayerController
-import com.ke.music.repository.entity.ShareType
 import com.ke.music.tv.AppViewModel
 import com.ke.music.tv.LocalAppViewModel
 import com.ke.music.tv.ui.Screen

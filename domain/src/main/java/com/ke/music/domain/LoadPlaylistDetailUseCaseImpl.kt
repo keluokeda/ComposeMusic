@@ -5,7 +5,7 @@ import com.ke.music.common.domain.LoadPlaylistDetailUseCase
 import com.ke.music.common.repository.PlaylistRepository
 import javax.inject.Inject
 
-class LoadPlaylistDetailUseCaseImpl @Inject constructor(
+internal class LoadPlaylistDetailUseCaseImpl @Inject constructor(
     private val httpService: HttpService,
     private val playlistRepository: PlaylistRepository,
 ) : UseCase<Long, Unit>(), LoadPlaylistDetailUseCase {

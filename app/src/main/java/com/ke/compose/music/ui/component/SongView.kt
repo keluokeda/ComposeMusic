@@ -35,10 +35,10 @@ import coil.compose.AsyncImage
 import com.ke.music.common.entity.CommentType
 import com.ke.music.common.entity.DownloadStatus
 import com.ke.music.common.entity.ISongEntity
+import com.ke.music.common.entity.ShareType
 import com.ke.music.download.LocalDownloadManager
 import com.ke.music.player.service.LocalMusicPlayerController
 import com.ke.music.player.service.MusicPlayerController
-import com.ke.music.repository.entity.ShareType
 
 
 data class SongViewAction(

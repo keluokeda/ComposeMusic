@@ -6,7 +6,7 @@ import com.ke.music.common.entity.SendCommentRequest
 import com.ke.music.common.repository.CommentRepository
 import javax.inject.Inject
 
-class SendCommentUseCaseImpl @Inject constructor(
+internal class SendCommentUseCaseImpl @Inject constructor(
     private val httpService: HttpService,
     private val commentRepository: CommentRepository,
 ) : UseCase<SendCommentRequest, Boolean>(), SendCommentUseCase {

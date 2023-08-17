@@ -39,14 +39,6 @@ class ChildCommentsViewModel @Inject constructor(
         viewModelScope, SharingStarted.Eagerly, null
     )
 
-
-    init {
-        remoteMediator.sourceId = sourceId
-        remoteMediator.commentType = commentType
-        remoteMediator.commentId = commentId
-    }
-
-
     @OptIn(ExperimentalPagingApi::class)
     val comments: Flow<PagingData<IChildComment>> = Pager(
         config = PagingConfig(

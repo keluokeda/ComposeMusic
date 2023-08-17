@@ -6,7 +6,7 @@ import com.ke.music.common.entity.LikeCommentRequest
 import com.ke.music.common.repository.CommentRepository
 import javax.inject.Inject
 
-class LikeCommentUseCaseImpl @Inject constructor(
+internal class LikeCommentUseCaseImpl @Inject constructor(
     private val httpService: HttpService,
     private val commentRepository: CommentRepository,
 ) :

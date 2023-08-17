@@ -29,7 +29,6 @@ import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.component.LocalBackHandler
 import com.ke.compose.music.ui.component.items
 import com.ke.music.common.entity.IAlbum
-import com.ke.music.room.db.entity.Album
 import com.ke.music.viewmodel.AllAlbumSquareViewModel
 import com.ke.music.viewmodel.EaAlbumSquareViewModel
 import com.ke.music.viewmodel.JpAlbumSquareViewModel
@@ -155,9 +154,7 @@ private fun NewAlbumList(list: LazyPagingItems<IAlbum>) {
             val album = it!!
 
             AlbumView(
-                album = Album(
-                    album.albumId, album.name, album.image
-                )
+                album = album
             )
 
         }

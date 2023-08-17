@@ -22,7 +22,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,11 +38,13 @@ import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.component.LocalBackHandler
 import com.ke.compose.music.ui.component.LocalNavigationHandler
 import com.ke.compose.music.ui.component.NavigationAction
+import com.ke.compose.music.ui.component.NavigationHandler
 import com.ke.compose.music.ui.component.items
 import com.ke.music.common.entity.IArtist
 import com.ke.music.viewmodel.ArtistArea
 import com.ke.music.viewmodel.ArtistListViewModel
 import com.ke.music.viewmodel.ArtistType
+import com.orhanobut.logger.Logger
 
 @Composable
 fun ArtistListRoute() {
@@ -50,6 +52,7 @@ fun ArtistListRoute() {
 
     val list = viewModel.artistList.collectAsLazyPagingItems()
 
+    Logger.d("list state = ${list.loadState}")
     val area by viewModel.area.collectAsStateWithLifecycle()
     val type by viewModel.type.collectAsStateWithLifecycle()
 
@@ -85,7 +88,7 @@ private fun ArtistListScreen(
                 },
                 actions = {
 
-                    var isAreaContextMenuVisible by rememberSaveable {
+                    var isAreaContextMenuVisible by remember {
                         mutableStateOf(false)
                     }
                     DropDownButton(
@@ -102,12 +105,12 @@ private fun ArtistListScreen(
                             it.title
                         },
                         onItemClick = {
-                            isAreaContextMenuVisible = false
                             onUpdateArea(ArtistArea.values()[it])
+                            isAreaContextMenuVisible = false
                         }
                     )
 
-                    var isTypeContextMenuVisible by rememberSaveable {
+                    var isTypeContextMenuVisible by remember {
                         mutableStateOf(false)
                     }
                     DropDownButton(
@@ -124,8 +127,9 @@ private fun ArtistListScreen(
                             it.title
                         },
                         onItemClick = {
-                            isTypeContextMenuVisible = false
                             onUpdateType(ArtistType.values()[it])
+                            isTypeContextMenuVisible = false
+
                         }
                     )
                 }
@@ -137,48 +141,17 @@ private fun ArtistListScreen(
 
         Box(
             modifier = Modifier
-                .fillMaxSize()
                 .padding(paddingValues)
+                .fillMaxSize()
         ) {
 
             val navigationHandler = LocalNavigationHandler.current
 
             LazyVerticalGrid(columns = GridCells.Fixed(3)) {
                 items(list, key = {
-                    it.artistId
+                    it.key
                 }) {
-                    val artist = it!!
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .aspectRatio(1f)
-                            .clickable {
-                                navigationHandler.navigate(
-                                    NavigationAction.NavigateToArtistDetail(
-                                        artist.artistId
-                                    )
-                                )
-                            },
-                        contentAlignment = Alignment.BottomCenter
-                    ) {
-                        AsyncImage(
-                            model = artist.avatar,
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
-                        )
-
-                        Text(
-                            text = artist.name,
-                            maxLines = 1,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(
-                                    Color.Black.copy(alpha = 0.3f)
-                                )
-                                .padding(3.dp)
-                        )
-                    }
+                    ArtistView(it, navigationHandler)
                 }
             }
 
@@ -199,6 +172,44 @@ private fun ArtistListScreen(
 //            }
         }
 
+    }
+}
+
+@Composable
+private fun ArtistView(
+    it: IArtist?,
+    navigationHandler: NavigationHandler,
+) {
+    val artist = it!!
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .aspectRatio(1f)
+            .clickable {
+                navigationHandler.navigate(
+                    NavigationAction.NavigateToArtistDetail(
+                        artist.artistId
+                    )
+                )
+            },
+        contentAlignment = Alignment.BottomCenter
+    ) {
+        AsyncImage(
+            model = artist.avatar,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+        Text(
+            text = artist.name,
+            maxLines = 1,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    Color.Black.copy(alpha = 0.3f)
+                )
+                .padding(3.dp)
+        )
     }
 }
 
