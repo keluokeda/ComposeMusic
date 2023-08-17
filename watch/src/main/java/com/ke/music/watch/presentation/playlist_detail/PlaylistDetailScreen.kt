@@ -19,9 +19,9 @@ import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.OutlinedChip
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
+import com.ke.music.common.entity.DownloadStatus
 import com.ke.music.download.LocalDownloadManager
 import com.ke.music.player.service.LocalMusicPlayerController
-import com.ke.music.room.db.entity.Download
 import com.ke.music.viewmodel.PlaylistDetailViewModel
 
 @Composable
@@ -47,21 +47,21 @@ fun PlaylistDetailRoute() {
                 }
 
                 items(uiState.songs, key = {
-                    it.musicId
+                    it.song.id
                 }) {
                     Chip(label = {
-                        Text(text = it.name)
+                        Text(text = it.song.name)
                     }, icon = {
-                        val image = when (it.downloadStatus) {
-                            Download.STATUS_DOWNLOADED -> {
+                        val image = when (it.status) {
+                            DownloadStatus.Downloaded -> {
                                 Icons.Default.PlayCircle
                             }
 
-                            Download.STATUS_DOWNLOAD_ERROR -> {
+                            DownloadStatus.Error -> {
                                 Icons.Default.Refresh
                             }
 
-                            Download.STATUS_DOWNLOADING -> {
+                            DownloadStatus.Downloading -> {
                                 Icons.Default.Downloading
                             }
 
@@ -72,17 +72,17 @@ fun PlaylistDetailRoute() {
 
                         Icon(imageVector = image, contentDescription = image.name)
                     }, modifier = Modifier.fillMaxWidth(), onClick = {
-                        when (it.downloadStatus) {
-                            Download.STATUS_DOWNLOADED -> {
-                                playerController.playMusic(it.musicId)
+                        when (it.status) {
+                            DownloadStatus.Downloaded -> {
+                                playerController.playMusic(it.song.id)
                             }
 
-                            Download.STATUS_DOWNLOAD_IDLE, null -> {
-                                downloadManager.downloadMusic(it.musicId)
+                            DownloadStatus.Idle -> {
+                                downloadManager.downloadMusic(it.song.id)
                             }
 
-                            Download.STATUS_DOWNLOAD_ERROR -> {
-                                downloadManager.retry(it.musicId)
+                            DownloadStatus.Error -> {
+                                downloadManager.retry(it.song.id)
                             }
 
                             else -> {

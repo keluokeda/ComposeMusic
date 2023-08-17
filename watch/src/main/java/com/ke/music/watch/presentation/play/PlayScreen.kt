@@ -35,7 +35,7 @@ import com.ke.music.player.service.LocalMusicPlayerController
 @Composable
 fun PlayRoute(
     toLocalPlaylist: () -> Unit,
-    toMain: () -> Unit
+    toMain: () -> Unit,
 ) {
     val musicPlayerController = LocalMusicPlayerController.current
 
@@ -67,13 +67,13 @@ fun PlayRoute(
                 ) {
                     Spacer(modifier = Modifier.height(3.dp))
                     Text(
-                        text = currentSong?.name ?: "",
+                        text = currentSong?.song?.name ?: "",
                         style = MaterialTheme.typography.body1,
                         maxLines = 1
                     )
                     Spacer(modifier = Modifier.height(3.dp))
                     Text(
-                        text = currentSong?.albumName ?: "",
+                        text = currentSong?.album?.name ?: "",
 
                         style = MaterialTheme.typography.caption2,
                         maxLines = 1

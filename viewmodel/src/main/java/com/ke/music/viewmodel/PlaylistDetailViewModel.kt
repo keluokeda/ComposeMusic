@@ -3,8 +3,10 @@ package com.ke.music.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ke.music.common.domain.AddOrRemoveSongsToPlaylistUseCase
 import com.ke.music.common.domain.FollowPlaylistUseCase
 import com.ke.music.common.domain.LoadPlaylistDetailUseCase
+import com.ke.music.common.entity.AddOrRemoveSongsToPlaylistRequest
 import com.ke.music.common.entity.IPlaylist
 import com.ke.music.common.entity.ISongEntity
 import com.ke.music.common.entity.IUser
@@ -30,6 +32,7 @@ class PlaylistDetailViewModel @Inject constructor(
     private val playlistRepository: PlaylistRepository,
     userIdRepository: CurrentUserRepository,
     private val userRepository: UserRepository,
+    private val addOrRemoveSongsToPlaylistUseCase: AddOrRemoveSongsToPlaylistUseCase,
 ) : ViewModel() {
 
     val userId = userIdRepository.userIdFlow.stateIn(viewModelScope, SharingStarted.Eagerly, 0)
@@ -70,21 +73,19 @@ class PlaylistDetailViewModel @Inject constructor(
     private fun loadData() {
         viewModelScope.launch {
             loadPlaylistDetailUseCase(id)
-//            when (val result = loadPlaylistDetailUseCase(id)) {
-//                is Result.Error -> {
-//                    result.exception.printStackTrace()
-//                }
-//
-//                is Result.Success -> {
-//
-//                }
-//            }
         }
     }
 
     fun toggleBooked(playlistId: Long) {
         viewModelScope.launch {
             followPlaylistUseCase(playlistId)
+        }
+    }
+
+    fun deleteSong(songId: Long) {
+        viewModelScope.launch {
+            val request = AddOrRemoveSongsToPlaylistRequest(id, listOf(songId), false)
+            addOrRemoveSongsToPlaylistUseCase(request)
         }
     }
 

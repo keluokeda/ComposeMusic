@@ -1,7 +1,6 @@
 package com.ke.music.watch.presentation.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.wear.compose.navigation.SwipeDismissableNavHost
@@ -20,7 +19,6 @@ import com.ke.music.watch.presentation.splash.SplashRoute
 @Composable
 fun AppNavigation() {
     val controller = rememberSwipeDismissableNavController()
-    val context = LocalContext.current
     SwipeDismissableNavHost(navController = controller, startDestination = Screen.Splash.route) {
         composable(Screen.Splash.route) {
             SplashRoute { isLogin ->

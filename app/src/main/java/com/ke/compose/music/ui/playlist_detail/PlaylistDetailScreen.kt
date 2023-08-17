@@ -81,9 +81,7 @@ fun PlaylistDetailRoute(
         userId,
         onBackButtonTap,
         onDeleteSong = {
-            appViewModel.removeMusicsFromPlaylist(
-                listOf(it.song.id), viewModel.id
-            )
+            viewModel.deleteSong(it.song.id)
         },
         onCommentButtonClick,
         onCoverImageClick,

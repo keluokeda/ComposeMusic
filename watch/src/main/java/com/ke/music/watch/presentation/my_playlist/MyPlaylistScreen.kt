@@ -11,12 +11,12 @@ import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.material.Chip
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
-import com.ke.music.room.db.entity.Playlist
+import com.ke.music.common.entity.IPlaylist
 import com.ke.music.viewmodel.PlaylistViewModel
 
 @Composable
 fun MyPlaylistRoute(
-    onItemClick: (Playlist) -> Unit
+    onItemClick: (IPlaylist) -> Unit,
 ) {
     val viewModel: PlaylistViewModel = hiltViewModel()
 

@@ -69,4 +69,14 @@ interface PlaylistRepository {
      * 网友精选碟
      */
     fun topPlaylist(category: String?): PagingSource<Int, out IPlaylist>
+
+    /**
+     * 添加歌曲到歌单
+     */
+    suspend fun addSongsToPlaylist(playlistId: Long, songIds: List<Long>)
+
+    /**
+     * 从歌单中移除歌曲
+     */
+    suspend fun removeSongsFromPlaylist(playlistId: Long, songIds: List<Long>)
 }

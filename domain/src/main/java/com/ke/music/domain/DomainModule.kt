@@ -9,10 +9,12 @@ import com.ke.music.common.domain.DeletePlaylistUseCase
 import com.ke.music.common.domain.DownloadSongListUseCase
 import com.ke.music.common.domain.FollowArtistUseCase
 import com.ke.music.common.domain.FollowPlaylistUseCase
+import com.ke.music.common.domain.GetCurrentUserDetailUseCase
 import com.ke.music.common.domain.GetPlaylistCategoryListUseCase
 import com.ke.music.common.domain.GetShareUsersUseCase
 import com.ke.music.common.domain.GetSongLrcUseCase
 import com.ke.music.common.domain.GetSongUrlUseCase
+import com.ke.music.common.domain.GetUserMessagesUseCase
 import com.ke.music.common.domain.LikeCommentUseCase
 import com.ke.music.common.domain.LoadAlbumDetailUseCase
 import com.ke.music.common.domain.LoadArtistDetailUseCase
@@ -103,4 +105,10 @@ abstract class DomainModule {
     internal abstract fun bindAddOrRemoveSongsToPlaylistUseCase(
         addOrRemoveSongsToPlaylistUseCaseImpl: AddOrRemoveSongsToPlaylistUseCaseImpl,
     ): AddOrRemoveSongsToPlaylistUseCase
+
+    @Binds
+    internal abstract fun bindGetUserMessagesUseCase(getUserMessagesUseCaseImpl: GetUserMessagesUseCaseImpl): GetUserMessagesUseCase
+
+    @Binds
+    internal abstract fun bindGetCurrentUserDetailUseCase(getCurrentUserDetailUseCaseImpl: GetCurrentUserDetailUseCaseImpl): GetCurrentUserDetailUseCase
 }

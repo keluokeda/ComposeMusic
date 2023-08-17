@@ -83,7 +83,7 @@ dependencies {
     kapt "com.google.dagger:hilt-compiler:2.45"
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
-    def nav_version = "2.5.3"
+    def nav_version = "2.7.0"
     implementation "androidx.navigation:navigation-compose:$nav_version"
 
     implementation "com.lightspark:compose-qr-code:1.0.1"
@@ -104,11 +104,8 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-runtime-compose:2.6.1'
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.1"
 
-    implementation "androidx.compose.material:material:1.4.3"
-    implementation("io.coil-kt:coil-compose:2.4.0")
-    implementation "androidx.paging:paging-compose:1.0.0-alpha20"
-
-
+    implementation "androidx.compose.material:material:1.5.0"
+    implementation "androidx.paging:paging-compose:3.2.0"
 
 
     implementation("org.greenrobot:eventbus:3.3.1")

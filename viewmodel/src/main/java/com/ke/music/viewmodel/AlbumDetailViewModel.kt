@@ -8,7 +8,6 @@ import com.ke.music.common.entity.IAlbumEntity
 import com.ke.music.common.entity.ISongEntity
 import com.ke.music.common.repository.AlbumRepository
 import com.ke.music.common.repository.SongRepository
-import com.ke.music.repository.domain.LoadAlbumDetailUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -18,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AlbumDetailViewModel @Inject constructor(
-    private val loadAlbumDetailUseCase: LoadAlbumDetailUseCase,
+    private val loadAlbumDetailUseCase: com.ke.music.common.domain.LoadAlbumDetailUseCase,
     private val collectAlbumUseCase: CollectAlbumUseCase,
     savedStateHandle: SavedStateHandle,
     songRepository: SongRepository,

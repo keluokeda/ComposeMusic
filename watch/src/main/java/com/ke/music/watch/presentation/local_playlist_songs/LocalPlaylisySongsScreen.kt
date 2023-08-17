@@ -26,21 +26,16 @@ fun LocalPlaylistSongsRoute() {
     Scaffold {
         ScalingLazyColumn {
             items(songs, key = {
-                it.musicId
+                it.song.id
             }) {
-//                SwipeToDismissBox(onDismissed = {
-//
-//                }) { _ ->
-//                    Text(text = it.name)
-//                }
                 Chip(label = {
-                    Text(text = it.name)
+                    Text(text = it.song.name)
                 }, icon = {
                     Icon(
                         imageVector = Icons.Default.Clear, contentDescription = null
                     )
                 }, onClick = {
-                    viewModel.removeSong(it.musicId)
+                    viewModel.removeSong(it.song.id)
                 }, modifier = Modifier.fillMaxWidth())
             }
         }

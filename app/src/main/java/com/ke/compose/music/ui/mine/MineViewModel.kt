@@ -3,9 +3,8 @@ package com.ke.compose.music.ui.mine
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ke.music.api.response.UserDetailResponse
-import com.ke.music.common.repository.CurrentUserRepository
-import com.ke.music.repository.domain.GetUserDetailUseCase
-import com.ke.music.repository.domain.Result
+import com.ke.music.common.domain.GetCurrentUserDetailUseCase
+import com.ke.music.common.domain.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,8 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MineViewModel @Inject constructor(
-    private val getUserDetailUseCase: GetUserDetailUseCase,
-    private val userIdRepository: CurrentUserRepository,
+    private val getUserDetailUseCase: GetCurrentUserDetailUseCase,
 ) : ViewModel() {
 
     private val _refreshing = MutableStateFlow(false)
@@ -36,8 +34,7 @@ class MineViewModel @Inject constructor(
         viewModelScope.launch {
             _refreshing.value = true
 
-            val userId = userIdRepository.userId()
-            when (val result = getUserDetailUseCase(userId)) {
+            when (val result = getUserDetailUseCase(Unit)) {
                 is Result.Error -> {
                     _currentUser.value = null
                 }

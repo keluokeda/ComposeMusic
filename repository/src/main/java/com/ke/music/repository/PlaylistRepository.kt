@@ -249,4 +249,17 @@ class PlaylistRepository @Inject constructor(
             false
         }
     }
+
+    override suspend fun addSongsToPlaylist(playlistId: Long, songIds: List<Long>) {
+        playlistMusicCrossRefDao.insertAll(songIds.map {
+            PlaylistMusicCrossRef(playlistId, it, 0)
+        })
+    }
+
+    override suspend fun removeSongsFromPlaylist(playlistId: Long, songIds: List<Long>) {
+        songIds.forEach {
+            playlistMusicCrossRefDao.deleteByPlaylistIdAndMusicId(playlistId, it)
+        }
+
+    }
 }

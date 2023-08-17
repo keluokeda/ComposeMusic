@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ke.music.common.domain.DeletePlaylistUseCase
 import com.ke.music.common.domain.LoadCurrentUserPlaylistUseCase
+import com.ke.music.common.repository.CurrentUserRepository
 import com.ke.music.common.repository.PlaylistRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,8 +19,12 @@ class PlaylistViewModel @Inject constructor(
     private val loadUserPlaylistUseCase: LoadCurrentUserPlaylistUseCase,
     private val deletePlaylistUseCase: DeletePlaylistUseCase,
     playlistRepository: PlaylistRepository,
+    currentUserRepository: CurrentUserRepository,
 ) : ViewModel() {
 
+
+    val currentUserId =
+        currentUserRepository.userIdFlow.stateIn(viewModelScope, SharingStarted.Eagerly, 0L)
 
     val playlistList =
         playlistRepository.getCurrentUserPlaylist(true)
@@ -31,7 +36,6 @@ class PlaylistViewModel @Inject constructor(
         get() = _refreshing
 
     init {
-
         refresh()
     }
 
