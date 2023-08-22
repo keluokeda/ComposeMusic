@@ -27,9 +27,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
 import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.component.MvView
-import com.ke.compose.music.ui.component.items
 import com.ke.music.common.entity.IMv
 import com.ke.music.viewmodel.AllMvViewModel
 import com.orhanobut.logger.Logger
@@ -133,10 +134,10 @@ private fun AllMvScreen(
             modifier = Modifier.padding(padding),
             contentPadding = PaddingValues(8.dp)
         ) {
-            items(list, key = {
+            items(list.itemCount, key = list.itemKey {
                 it.id
-            }) {
-                MvView(mv = it!!)
+            }, contentType = list.itemContentType()) {
+                MvView(mv = list[it]!!)
             }
         }
     }

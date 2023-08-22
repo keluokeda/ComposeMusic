@@ -169,7 +169,7 @@ private fun MusicDropDownMenu(
                     Text(text = "下载")
                 }, onClick = {
                     expanded = false
-                    downloadManager.downloadMusic(entity.song.id)
+                    downloadManager.downloadSong(entity.song.id)
                 })
             }
 

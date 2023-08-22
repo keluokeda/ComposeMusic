@@ -98,7 +98,7 @@ fun SongView(
                 DownloadStatus.Idle -> {
                     //可以下载
                     {
-                        downloadManager.downloadMusic(entity.song.id)
+                        downloadManager.downloadSong(entity.song.id)
                     }
                 }
 

@@ -50,9 +50,7 @@ dependencies {
 
     implementation "androidx.lifecycle:lifecycle-service:2.6.1"
 
-    implementation project(path: ':api')
     implementation project(path: ':common')
-    implementation project(path: ':domain')
 
 
     implementation "com.google.dagger:hilt-android:2.45"

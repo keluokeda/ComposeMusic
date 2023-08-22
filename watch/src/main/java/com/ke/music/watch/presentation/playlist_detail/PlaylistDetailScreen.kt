@@ -78,7 +78,7 @@ fun PlaylistDetailRoute() {
                             }
 
                             DownloadStatus.Idle -> {
-                                downloadManager.downloadMusic(it.song.id)
+                                downloadManager.downloadSong(it.song.id)
                             }
 
                             DownloadStatus.Error -> {

@@ -8,9 +8,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyGridItemScope
-import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,7 +19,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.paging.compose.LazyPagingItems
 import coil.compose.AsyncImage
 import com.ke.compose.music.ui.theme.ComposeMusicTheme
 
@@ -167,42 +163,44 @@ fun PlaylistViewPreview() {
     }
 }
 
-fun <T : Any> LazyGridScope.items(
-    items: LazyPagingItems<T>,
-    key: ((item: T) -> Any)? = null,
-    span: ((item: T) -> GridItemSpan)? = null,
-    contentType: ((item: T) -> Any)? = null,
-    itemContent: @Composable LazyGridItemScope.(value: T?) -> Unit
-) {
-    items(
-        count = items.itemCount,
-        key = if (key == null) null else { index ->
-            val item = items.peek(index)
-            if (item == null) {
-//                PagingPlaceholderKey(index)
-            } else {
-                key(item)
-            }
-        },
-        span = if (span == null) null else { index ->
-            val item = items.peek(index)
-            if (item == null) {
-                GridItemSpan(1)
-            } else {
-                span(item)
-            }
-        },
-        contentType = if (contentType == null) {
-            { null }
-        } else { index ->
-            val item = items.peek(index)
-            if (item == null) {
-                null
-            } else {
-                contentType(item)
-            }
-        }
-    ) { index ->
-        itemContent(items[index])
-    }
-}
+//
+//@Deprecated("弃用")
+//fun <T : Any> LazyGridScope.items(
+//    items: LazyPagingItems<T>,
+//    key: ((item: T) -> Any)? = null,
+//    span: ((item: T) -> GridItemSpan)? = null,
+//    contentType: ((item: T) -> Any)? = null,
+//    itemContent: @Composable LazyGridItemScope.(value: T?) -> Unit,
+//) {
+//    items(
+//        count = items.itemCount,
+//        key = if (key == null) null else { index ->
+//            val item = items.peek(index)
+//            if (item == null) {
+////                PagingPlaceholderKey(index)
+//            } else {
+//                key(item)
+//            }
+//        },
+//        span = if (span == null) null else { index ->
+//            val item = items.peek(index)
+//            if (item == null) {
+//                GridItemSpan(1)
+//            } else {
+//                span(item)
+//            }
+//        },
+//        contentType = if (contentType == null) {
+//            { null }
+//        } else { index ->
+//            val item = items.peek(index)
+//            if (item == null) {
+//                null
+//            } else {
+//                contentType(item)
+//            }
+//        }
+//    ) { index ->
+//        itemContent(items[index])
+//    }
+//}

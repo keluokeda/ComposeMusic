@@ -24,10 +24,11 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
 import com.ke.compose.music.ui.component.AlbumView
 import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.component.LocalBackHandler
-import com.ke.compose.music.ui.component.items
 import com.ke.music.common.entity.IAlbum
 import com.ke.music.viewmodel.AllAlbumSquareViewModel
 import com.ke.music.viewmodel.EaAlbumSquareViewModel
@@ -148,17 +149,23 @@ private fun JpNewAlbumList() {
 private fun NewAlbumList(list: LazyPagingItems<IAlbum>) {
 
     LazyVerticalGrid(columns = GridCells.Fixed(3)) {
-        items(list, key = {
+//        items(list, key = {
+//            it.key
+//        }) {
+//            val album = it!!
+//
+//            AlbumView(
+//                album = album
+//            )
+//
+//        }
+
+        items(list.itemCount, key = list.itemKey {
             it.key
-        }) {
-            val album = it!!
-
-            AlbumView(
-                album = album
-            )
-
+        }, contentType = list.itemContentType()) {
+            val album = list[it]!!
+            AlbumView(album = album)
         }
-
 
     }
 }

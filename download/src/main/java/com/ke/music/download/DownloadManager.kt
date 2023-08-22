@@ -8,7 +8,7 @@ interface DownloadManager {
     /**
      * 下载音乐
      */
-    fun downloadMusic(musicId: Long)
+    fun downloadSong(songId: Long)
 
 
     /**
@@ -29,16 +29,16 @@ interface DownloadManager {
     /**
      * 重试
      */
-    fun retry(musicId: Long)
+    fun retry(songId: Long)
 }
 
 
 class DownloadManagerImpl(context: Context) : DownloadManager {
     private val applicationContext = context.applicationContext
-    override fun downloadMusic(musicId: Long) {
+    override fun downloadSong(songId: Long) {
         val intent = Intent(applicationContext, MusicDownloadService::class.java)
-        intent.action = MusicDownloadService.ACTION_DOWNLOAD_MUSIC
-        intent.putExtra(MusicDownloadService.EXTRA_ID, musicId)
+        intent.action = MusicDownloadService.ACTION_DOWNLOAD_SONG
+        intent.putExtra(MusicDownloadService.EXTRA_ID, songId)
         applicationContext.startService(intent)
     }
 
@@ -63,10 +63,10 @@ class DownloadManagerImpl(context: Context) : DownloadManager {
         applicationContext.startService(intent)
     }
 
-    override fun retry(musicId: Long) {
+    override fun retry(songId: Long) {
         val intent = Intent(applicationContext, MusicDownloadService::class.java)
         intent.action = MusicDownloadService.ACTION_DOWNLOAD_RETRY
-        intent.putExtra(MusicDownloadService.EXTRA_ID, musicId)
+        intent.putExtra(MusicDownloadService.EXTRA_ID, songId)
         applicationContext.startService(intent)
     }
 
@@ -74,7 +74,7 @@ class DownloadManagerImpl(context: Context) : DownloadManager {
 
 val LocalDownloadManager = staticCompositionLocalOf<DownloadManager> {
     object : DownloadManager {
-        override fun downloadMusic(musicId: Long) {
+        override fun downloadSong(songId: Long) {
 
         }
 
@@ -87,7 +87,7 @@ val LocalDownloadManager = staticCompositionLocalOf<DownloadManager> {
         override fun downloadRecommendSongs() {
         }
 
-        override fun retry(musicId: Long) {
+        override fun retry(songId: Long) {
 
         }
 

@@ -25,9 +25,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
 import coil.compose.AsyncImage
 import com.ke.compose.music.ui.component.AppTopBar
-import com.ke.compose.music.ui.component.items
 import com.ke.music.common.entity.IPlaylist
 import com.ke.music.viewmodel.PlaylistTopViewModel
 
@@ -81,32 +82,49 @@ fun PlaylistTopScreen(
         )
     }) { padding ->
         LazyVerticalGrid(columns = GridCells.Fixed(3), modifier = Modifier.padding(padding)) {
-            items(list, key = {
-                it.id
-            }) {
-                Box(
-                    contentAlignment = Alignment.BottomCenter,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .aspectRatio(1f)
-                        .clickable {
-                            onItemClick(it!!)
-                        }) {
-                    AsyncImage(
-                        model = it!!.coverImgUrl,
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                    Text(
-                        text = "${it.name}\n", maxLines = 2, modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                Color.Black.copy(alpha = 0.4f)
-                            )
-                    )
-                }
+//            items(list, key = {
+//                it.id
+//            }) {
+//                PlaylistView(onItemClick, it)
+//            }
+            items(
+                list.itemCount,
+                key = list.itemKey { it.id },
+                contentType = list.itemContentType()
+            ) {
+                PlaylistView(
+                    onItemClick = onItemClick, it = list[it]
+                )
             }
         }
+    }
+}
+
+@Composable
+private fun PlaylistView(
+    onItemClick: (IPlaylist) -> Unit,
+    it: IPlaylist?,
+) {
+    Box(
+        contentAlignment = Alignment.BottomCenter,
+        modifier = Modifier
+            .fillMaxSize()
+            .aspectRatio(1f)
+            .clickable {
+                onItemClick(it!!)
+            }) {
+        AsyncImage(
+            model = it!!.coverImgUrl,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+        Text(
+            text = "${it.name}\n", maxLines = 2, modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    Color.Black.copy(alpha = 0.4f)
+                )
+        )
     }
 }

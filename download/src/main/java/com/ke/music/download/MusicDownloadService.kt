@@ -44,19 +44,19 @@ class MusicDownloadService : LifecycleService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
-            ACTION_DOWNLOAD_MUSIC -> {
+            ACTION_DOWNLOAD_SONG -> {
 //                downloadMusic(musicId)
 
                 lifecycleScope.launch {
-                    val musicId = intent.getLongExtra(EXTRA_ID, 0L)
+                    val songId = intent.getLongExtra(EXTRA_ID, 0L)
                     if (downloadRepository.canDownload(
-                            musicId,
+                            songId,
                             DownloadSourceType.Song
                         )
                     ) {
-                        downloadMusicList(listOf(musicId))
+                        downloadSongs(listOf(songId))
                     } else {
-                        Logger.d("id是 $musicId 的歌曲已下载或正在下载")
+                        Logger.d("id是 $songId 的歌曲已下载或正在下载")
                     }
                 }
 
@@ -80,7 +80,7 @@ class MusicDownloadService : LifecycleService() {
                         }
                     }
 
-                    downloadMusicList(targetList)
+                    downloadSongs(targetList)
 
                 }
             }
@@ -103,7 +103,7 @@ class MusicDownloadService : LifecycleService() {
                         }
                     }
 
-                    downloadMusicList(targetList)
+                    downloadSongs(targetList)
 
                 }
             }
@@ -124,7 +124,7 @@ class MusicDownloadService : LifecycleService() {
                         }
                     }
 
-                    downloadMusicList(targetList)
+                    downloadSongs(targetList)
 
                 }
             }
@@ -132,9 +132,9 @@ class MusicDownloadService : LifecycleService() {
             ACTION_DOWNLOAD_RETRY -> {
 
                 lifecycleScope.launch {
-                    val musicId = intent.getLongExtra(EXTRA_ID, 0L)
+                    val songId = intent.getLongExtra(EXTRA_ID, 0L)
 
-                    downloadRepository.retryDownload(musicId)
+                    downloadRepository.retryDownload(songId)
                 }
 
             }
@@ -153,7 +153,7 @@ class MusicDownloadService : LifecycleService() {
     /**
      * 批量下载歌曲
      */
-    private fun downloadMusicList(list: List<Long>) {
+    private fun downloadSongs(list: List<Long>) {
         lifecycleScope.launch {
             downloadSongListUseCase(list)
         }
@@ -335,7 +335,7 @@ class MusicDownloadService : LifecycleService() {
         /**
          * 下载单个音乐
          */
-        internal const val ACTION_DOWNLOAD_MUSIC = "ACTION_DOWNLOAD_MUSIC"
+        internal const val ACTION_DOWNLOAD_SONG = "ACTION_DOWNLOAD_SONG"
 
         /**
          * 重试下载

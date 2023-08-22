@@ -33,13 +33,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
 import coil.compose.AsyncImage
 import com.ke.compose.music.ui.component.AppTopBar
 import com.ke.compose.music.ui.component.LocalBackHandler
 import com.ke.compose.music.ui.component.LocalNavigationHandler
 import com.ke.compose.music.ui.component.NavigationAction
 import com.ke.compose.music.ui.component.NavigationHandler
-import com.ke.compose.music.ui.component.items
 import com.ke.music.common.entity.IArtist
 import com.ke.music.viewmodel.ArtistArea
 import com.ke.music.viewmodel.ArtistListViewModel
@@ -148,11 +149,20 @@ private fun ArtistListScreen(
             val navigationHandler = LocalNavigationHandler.current
 
             LazyVerticalGrid(columns = GridCells.Fixed(3)) {
-                items(list, key = {
+//                items(list, key = {
+//                    it.key
+//                }) {
+//                    ArtistView(it, navigationHandler)
+//                }
+
+                items(list.itemCount, key = list.itemKey {
                     it.key
-                }) {
-                    ArtistView(it, navigationHandler)
+                }, contentType = list.itemContentType()) {
+                    ArtistView(
+                        it = list[it], navigationHandler = navigationHandler
+                    )
                 }
+
             }
 
 //            LazyColumn {
