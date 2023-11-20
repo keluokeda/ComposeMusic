@@ -24,17 +24,21 @@ java {
 //}
 
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            groupId = 'com.ke.music'
-            artifactId = 'music'
-            version = '0.1'
+afterEvaluate {
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                groupId = 'com.ke.music'
+                artifactId = 'music'
+                version = '0.1'
 
-            from components.java
+                from components.java
+            }
         }
     }
 }
+
+
 dependencies {
     api 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation "com.squareup.moshi:moshi-kotlin:1.14.0"
